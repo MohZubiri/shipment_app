@@ -1,0 +1,140 @@
+<?php
+
+use App\Http\Controllers\Admin\ShippingLineController;
+use App\Http\Controllers\Admin\CustomsPortController;
+use App\Http\Controllers\Admin\ShipGroupController;
+use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\Admin\PermissionManagementController;
+use App\Http\Controllers\Admin\RoleManagementController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\ReportController; // Added this line
+use App\Http\Controllers\CustomsDataController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShipmentController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'permission:view dashboard'])
+    ->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'permission:view shipments'])->group(function () {
+    Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
+});
+
+Route::middleware(['auth', 'permission:export shipments'])->group(function () {
+    Route::get('/shipments/export', [ShipmentController::class, 'export'])->name('shipments.export');
+});
+
+Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
+    Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
+    Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
+    
+    // Shipping Lines
+    Route::resource('/admin/shipping-lines', ShippingLineController::class)->names([
+        'index' => 'admin.shipping-lines.index',
+        'create' => 'admin.shipping-lines.create',
+        'store' => 'admin.shipping-lines.store',
+        'edit' => 'admin.shipping-lines.edit',
+        'update' => 'admin.shipping-lines.update',
+        'destroy' => 'admin.shipping-lines.destroy',
+    ]);
+
+    // Ship Groups
+    Route::resource('/admin/ship-groups', ShipGroupController::class)->names([
+        'index' => 'admin.ship-groups.index',
+        'create' => 'admin.ship-groups.create',
+        'store' => 'admin.ship-groups.store',
+        'edit' => 'admin.ship-groups.edit',
+        'update' => 'admin.ship-groups.update',
+        'destroy' => 'admin.ship-groups.destroy',
+    ]);
+
+    // Departments
+    Route::resource('/admin/departments', DepartmentController::class)->names([
+        'index' => 'admin.departments.index',
+        'create' => 'admin.departments.create',
+        'store' => 'admin.departments.store',
+        'edit' => 'admin.departments.edit',
+        'update' => 'admin.departments.update',
+        'destroy' => 'admin.departments.destroy',
+    ]);
+
+    // Sections
+    Route::resource('/admin/sections', SectionController::class)->names([
+        'index' => 'admin.sections.index',
+        'create' => 'admin.sections.create',
+        'store' => 'admin.sections.store',
+        'edit' => 'admin.sections.edit',
+        'update' => 'admin.sections.update',
+        'destroy' => 'admin.sections.destroy',
+    ]);
+});
+
+Route::middleware(['auth', 'permission:view customs'])->group(function () {
+    Route::get('/customs-data', [CustomsDataController::class, 'index'])->name('customs.index');
+});
+
+Route::middleware(['auth', 'permission:manage customs'])->group(function () {
+    Route::get('/customs-data/create', [CustomsDataController::class, 'create'])->name('customs.create');
+    Route::post('/customs-data', [CustomsDataController::class, 'store'])->name('customs.store');
+    Route::get('/customs-data/{customsData}/edit', [CustomsDataController::class, 'edit'])->name('customs.edit');
+    Route::put('/customs-data/{customsData}', [CustomsDataController::class, 'update'])->name('customs.update');
+    Route::delete('/customs-data/{customsData}', [CustomsDataController::class, 'destroy'])->name('customs.destroy');
+
+    // Customs Ports
+    Route::resource('/admin/customs-ports', CustomsPortController::class)->names([
+        'index' => 'admin.customs-ports.index',
+        'create' => 'admin.customs-ports.create',
+        'store' => 'admin.customs-ports.store',
+        'edit' => 'admin.customs-ports.edit',
+        'update' => 'admin.customs-ports.update',
+        'destroy' => 'admin.customs-ports.destroy',
+    ]);
+});
+
+Route::middleware(['auth', 'permission:manage users'])->group(function () {
+    Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/create', [UserManagementController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [UserManagementController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}/edit', [UserManagementController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [UserManagementController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+});
+
+Route::middleware(['auth', 'permission:manage roles'])->group(function () {
+    Route::get('/admin/roles', [RoleManagementController::class, 'index'])->name('admin.roles.index');
+    Route::get('/admin/roles/create', [RoleManagementController::class, 'create'])->name('admin.roles.create');
+    Route::post('/admin/roles', [RoleManagementController::class, 'store'])->name('admin.roles.store');
+    Route::get('/admin/roles/{role}/edit', [RoleManagementController::class, 'edit'])->name('admin.roles.edit');
+    Route::put('/admin/roles/{role}', [RoleManagementController::class, 'update'])->name('admin.roles.update');
+    Route::delete('/admin/roles/{role}', [RoleManagementController::class, 'destroy'])->name('admin.roles.destroy');
+});
+
+Route::middleware(['auth', 'permission:manage permissions'])->group(function () {
+    Route::get('/admin/permissions', [PermissionManagementController::class, 'index'])->name('admin.permissions.index');
+    Route::get('/admin/permissions/create', [PermissionManagementController::class, 'create'])->name('admin.permissions.create');
+    Route::post('/admin/permissions', [PermissionManagementController::class, 'store'])->name('admin.permissions.store');
+    Route::get('/admin/permissions/{permission}/edit', [PermissionManagementController::class, 'edit'])->name('admin.permissions.edit');
+    Route::put('/admin/permissions/{permission}', [PermissionManagementController::class, 'update'])->name('admin.permissions.update');
+    Route::delete('/admin/permissions/{permission}', [PermissionManagementController::class, 'destroy'])->name('admin.permissions.destroy');
+});
+
+Route::middleware(['auth', 'permission:view reports'])->prefix('admin/reports')->name('admin.reports.')->group(function () {
+    Route::get('/', [ReportController::class, 'index'])->name('index');
+    Route::get('/shipments', [ReportController::class, 'shipmentReport'])->name('shipments');
+    Route::get('/shipments/pdf', [ReportController::class, 'shipmentReportPdf'])->name('shipments.pdf');
+});
+
+require __DIR__.'/auth.php';
