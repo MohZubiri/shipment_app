@@ -41,6 +41,7 @@ class ShipmentController extends Controller
             'sections' => Section::query()->orderBy('name')->get(),
             'shipgroups' => Shipgroup::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
+            'customsPorts' => \App\Models\CustomsPort::query()->orderBy('name')->get(),
         ]);
     }
 
