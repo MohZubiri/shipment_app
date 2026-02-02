@@ -102,13 +102,19 @@
                                     المنافذ الجمركية
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.ship-groups.index')">
-                                    مجموعات السفن
+                                    مجموعات الشحن
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.departments.index')">
                                     الأقسام
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.sections.index')">
                                     الشعب
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.shipment-types.index')">
+                                    أنواع الشحنات
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.shipment-statuses.index')">
+                                    حالات الشحنات
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
@@ -242,9 +248,16 @@
                         :active="request()->routeIs('admin.departments.*')">
                         الأقسام
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.sections.index')"
-                        :active="request()->routeIs('admin.sections.*')">
-                        الشعب
+                    :active="request()->routeIs('admin.sections.*')">
+                    الشعب
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.shipment-types.index')"
+                        :active="request()->routeIs('admin.shipment-types.*')">
+                        أنواع الشحنات
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.shipment-statuses.index')"
+                        :active="request()->routeIs('admin.shipment-statuses.*')">
+                        حالات الشحنات
                     </x-responsive-nav-link>
                 </div>
 

@@ -80,6 +80,26 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
         'update' => 'admin.sections.update',
         'destroy' => 'admin.sections.destroy',
     ]);
+
+    // Shipment Types
+    Route::resource('/admin/shipment-types', \App\Http\Controllers\Admin\ShipmentTypeController::class)->names([
+        'index' => 'admin.shipment-types.index',
+        'create' => 'admin.shipment-types.create',
+        'store' => 'admin.shipment-types.store',
+        'edit' => 'admin.shipment-types.edit',
+        'update' => 'admin.shipment-types.update',
+        'destroy' => 'admin.shipment-types.destroy',
+    ]);
+
+    // Shipment Statuses
+    Route::resource('/admin/shipment-statuses', \App\Http\Controllers\Admin\ShipmentStatusController::class)->names([
+        'index' => 'admin.shipment-statuses.index',
+        'create' => 'admin.shipment-statuses.create',
+        'store' => 'admin.shipment-statuses.store',
+        'edit' => 'admin.shipment-statuses.edit',
+        'update' => 'admin.shipment-statuses.update',
+        'destroy' => 'admin.shipment-statuses.destroy',
+    ]);
 });
 
 Route::middleware(['auth', 'permission:view customs'])->group(function () {

@@ -29,7 +29,7 @@ class ShipGroupController extends Controller
         Shipgroup::create($validated);
 
         return redirect()->route('admin.ship-groups.index')
-            ->with('status', 'تم إضافة مجموعة السفن بنجاح');
+            ->with('status', 'تم إضافة مجموعة الشحن بنجاح');
     }
 
     public function edit(Shipgroup $shipGroup)
@@ -47,7 +47,7 @@ class ShipGroupController extends Controller
         $shipGroup->update($validated);
 
         return redirect()->route('admin.ship-groups.index')
-            ->with('status', 'تم تحديث مجموعة السفن بنجاح');
+            ->with('status', 'تم تحديث مجموعة الشحن بنجاح');
     }
 
     public function destroy(Shipgroup $shipGroup)
@@ -55,6 +55,6 @@ class ShipGroupController extends Controller
         $shipGroup->delete();
 
         return redirect()->route('admin.ship-groups.index')
-            ->with('status', 'تم حذف مجموعة السفن بنجاح');
+            ->with('status', 'تم حذف مجموعة الشحن بنجاح');
     }
 }

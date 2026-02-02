@@ -42,6 +42,9 @@ class ShipmentController extends Controller
             'shipgroups' => Shipgroup::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
             'customsPorts' => \App\Models\CustomsPort::query()->orderBy('name')->get(),
+            'shipmentTypes' => \App\Models\ShipmentType::query()->orderBy('name')->get(),
+            'shipmentStatuses' => \App\Models\ShipmentStatus::query()->orderBy('name')->get(),
+            'customsDataList' => \App\Models\CustomsData::query()->orderByDesc('datano')->pluck('datano'),
         ]);
     }
 

@@ -76,11 +76,43 @@
                             <input id="shippmintno" name="shippmintno" type="number" value="{{ old('shippmintno') }}"
                                 required class="mt-2 w-full rounded-md border-slate-300">
                         </div>
-                        <div>
+                        <div x-data="{
+                                open: false,
+                                search: '{{ old('datano') }}',
+                                selected: '{{ old('datano') }}',
+                                items: {{ json_encode($customsDataList) }},
+                                get filteredItems() {
+                                    if (this.search === '') return this.items;
+                                    return this.items.filter(item => item.toString().includes(this.search));
+                                }
+                            }" class="relative">
                             <label class="block text-sm font-medium text-slate-700" for="datano">رقم البيان
                                 الجمركي</label>
-                            <input id="datano" name="datano" type="number" value="{{ old('datano') }}"
-                                class="mt-2 w-full rounded-md border-slate-300" placeholder="اختياري">
+
+                            <!-- Search Input -->
+                            <input type="text" id="datano_search" x-model="search" @focus="open = true"
+                                @click.away="open = false" @keydown.escape="open = false"
+                                class="mt-2 w-full rounded-md border-slate-300" placeholder="ابحث عن رقم البيان..."
+                                autocomplete="off">
+
+                            <!-- Hidden Input for Form Submission -->
+                            <input type="hidden" name="datano" x-model="selected">
+
+                            <!-- Dropdown -->
+                            <div x-show="open && filteredItems.length > 0"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                                style="display: none;">
+                                <template x-for="item in filteredItems" :key="item">
+                                    <div @click="selected = item; search = item; open = false"
+                                        class="px-4 py-2 cursor-pointer hover:bg-slate-50 text-sm text-slate-700"
+                                        x-text="item"></div>
+                                </template>
+                            </div>
+                            <div x-show="open && filteredItems.length === 0"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2 text-sm text-gray-500"
+                                style="display: none;">
+                                لا توجد نتائج
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700" for="shipgroupno">مجموعة
@@ -150,13 +182,26 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700" for="shipmtype">نوع الشحنة</label>
-                            <input id="shipmtype" name="shipmtype" type="number" value="{{ old('shipmtype', 0) }}"
+                            <select id="shipmtype" name="shipmtype" required
                                 class="mt-2 w-full rounded-md border-slate-300">
+                                <option value="">اختر نوع الشحنة</option>
+                                @foreach($shipmentTypes as $type)
+                                    <option value="{{ $type->id }}" @selected(old('shipmtype') == $type->id)>
+                                        {{ $type->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700" for="state">حالة الشحنة</label>
-                            <input id="state" name="state" type="number" value="{{ old('state', 0) }}"
-                                class="mt-2 w-full rounded-md border-slate-300">
+                            <select id="state" name="state" required class="mt-2 w-full rounded-md border-slate-300">
+                                <option value="">اختر حالة الشحنة</option>
+                                @foreach($shipmentStatuses as $status)
+                                    <option value="{{ $status->id }}" @selected(old('state') == $status->id)>
+                                        {{ $status->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </section>
