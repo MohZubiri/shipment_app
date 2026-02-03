@@ -248,8 +248,9 @@
                         :active="request()->routeIs('admin.departments.*')">
                         الأقسام
                     </x-responsive-nav-link>
-                    :active="request()->routeIs('admin.sections.*')">
-                    الشعب
+                    <x-responsive-nav-link :href="route('admin.sections.index')"
+                        :active="request()->routeIs('admin.sections.*')">
+                        الشعب
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.shipment-types.index')"
                         :active="request()->routeIs('admin.shipment-types.*')">
