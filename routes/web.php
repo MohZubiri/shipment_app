@@ -100,6 +100,26 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
         'update' => 'admin.shipment-statuses.update',
         'destroy' => 'admin.shipment-statuses.destroy',
     ]);
+
+    // Shipments (Master Data)
+    Route::resource('/admin/shipments', \App\Http\Controllers\Admin\ShipmentController::class)->names([
+        'index' => 'admin.shipments.index',
+        'create' => 'admin.shipments.create',
+        'store' => 'admin.shipments.store',
+        'edit' => 'admin.shipments.edit',
+        'update' => 'admin.shipments.update',
+        'destroy' => 'admin.shipments.destroy',
+    ]);
+
+    // Documents
+    Route::resource('/admin/documents', \App\Http\Controllers\Admin\DocumentController::class)->names([
+        'index' => 'admin.documents.index',
+        'create' => 'admin.documents.create',
+        'store' => 'admin.documents.store',
+        'edit' => 'admin.documents.edit',
+        'update' => 'admin.documents.update',
+        'destroy' => 'admin.documents.destroy',
+    ]);
 });
 
 Route::middleware(['auth', 'permission:view customs'])->group(function () {

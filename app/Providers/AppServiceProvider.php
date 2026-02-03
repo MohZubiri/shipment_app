@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Shipment;
-use App\Observers\ShipmentObserver;
+use App\Models\ShipmentTransaction;
+use App\Observers\ShipmentTransactionObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
@@ -22,7 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Shipment::observe(ShipmentObserver::class);
+        ShipmentTransaction::observe(ShipmentTransactionObserver::class);
         Paginator::useTailwind();
     }
 }
+

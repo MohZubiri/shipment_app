@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreShipmentRequest;
 use App\Models\Departement;
 use App\Models\Section;
-use App\Models\Shipment;
+use App\Models\ShipmentTransaction;
 use App\Models\ShipmentDocument;
 use App\Models\Shipgroup;
 use App\Models\ShippingLine;
@@ -16,7 +16,7 @@ class ShipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Shipment::query()
+        $query = ShipmentTransaction::query()
             ->with(['department', 'section', 'shipgroup', 'shippingLine', 'documents']);
 
         $this->applyFilters($query, $request);
@@ -45,6 +45,8 @@ class ShipmentController extends Controller
             'shipmentTypes' => \App\Models\ShipmentType::query()->orderBy('name')->get(),
             'shipmentStatuses' => \App\Models\ShipmentStatus::query()->orderBy('name')->get(),
             'customsDataList' => \App\Models\CustomsData::query()->orderByDesc('datano')->pluck('datano'),
+            'shipmentsList' => \App\Models\Shipment::query()->orderBy('name')->get(['id', 'name', 'quantity', 'status']),
+            'activeDocuments' => \App\Models\Document::query()->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -52,9 +54,41 @@ class ShipmentController extends Controller
     {
         $data = $request->validated();
         unset($data['bill_of_lading']);
+        unset($data['containers']);
+        unset($data['attached_documents']);
+        unset($data['documents_zip']);
 
-        $shipment = Shipment::create($data);
+        $shipment = ShipmentTransaction::create($data);
 
+        // Save containers
+        if ($request->has('containers')) {
+            foreach ($request->input('containers') as $containerData) {
+                $shipment->containers()->create([
+                    'invoice_number' => $containerData['invoice_number'] ?? null,
+                    'packing_list_number' => $containerData['packing_list_number'] ?? null,
+                    'certificate_of_origin' => $containerData['certificate_of_origin'] ?? null,
+                    'bill_of_lading' => $containerData['bill_of_lading'] ?? null,
+                    'container_count' => $containerData['container_count'] ?? 1,
+                    'container_size' => $containerData['container_size'] ?? null,
+                ]);
+            }
+        }
+
+        // Handle ZIP file upload
+        if ($request->hasFile('documents_zip')) {
+            $file = $request->file('documents_zip');
+            $path = $file->store("shipment_documents/{$shipment->id}", 'public');
+
+            ShipmentDocument::create([
+                'shipment_id' => $shipment->id,
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+            ]);
+        }
+
+        // Legacy support for bill_of_lading files
         if ($request->hasFile('bill_of_lading')) {
             foreach ($request->file('bill_of_lading') as $file) {
                 $path = $file->store("bill_of_lading/{$shipment->id}", 'public');
@@ -76,7 +110,7 @@ class ShipmentController extends Controller
 
     public function export(Request $request)
     {
-        $query = Shipment::query()
+        $query = ShipmentTransaction::query()
             ->with(['department', 'section', 'shippingLine']);
 
         $this->applyFilters($query, $request);

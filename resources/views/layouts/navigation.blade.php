@@ -116,6 +116,12 @@
                                 <x-dropdown-link :href="route('admin.shipment-statuses.index')">
                                     حالات الشحنات
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.shipments.index')">
+                                    الشحنات
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.documents.index')">
+                                    المستندات
+                                </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -259,6 +265,14 @@
                     <x-responsive-nav-link :href="route('admin.shipment-statuses.index')"
                         :active="request()->routeIs('admin.shipment-statuses.*')">
                         حالات الشحنات
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.shipments.index')"
+                        :active="request()->routeIs('admin.shipments.*')">
+                        الشحنات
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.documents.index')"
+                        :active="request()->routeIs('admin.documents.*')">
+                        المستندات
                     </x-responsive-nav-link>
                 </div>
 
