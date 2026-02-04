@@ -74,6 +74,8 @@ class ShipmentController extends Controller
             'shipmentStatus',
             'containers',
             'documents',
+            'currentStage',
+            'trackingRecords',
         ]);
 
         return view('shipments.show', [

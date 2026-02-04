@@ -12,6 +12,10 @@
                     class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     رجوع
                 </a>
+                <a href="{{ route('shipments.tracking.index', $shipment) }}"
+                    class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    تتبع الشحنة
+                </a>
                 @can('manage shipments')
                     <a href="{{ route('shipments.edit', $shipment) }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -45,7 +49,7 @@
                     </div>
                     <div>
                         <p class="text-slate-500">اسم الشحنة</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->shipment?->name ?? $shipment->shippmintno }}</p>
+                        <p class="font-semibold text-slate-900">{{ $shipment->shippmintno ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-slate-500">رقم البيان الجمركي</p>

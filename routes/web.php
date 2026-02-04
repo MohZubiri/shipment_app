@@ -8,11 +8,13 @@ use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\Admin\PermissionManagementController;
 use App\Http\Controllers\Admin\RoleManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
-use App\Http\Controllers\Admin\ReportController; // Added this line
+use App\Http\Controllers\Admin\ShipmentStageController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CustomsDataController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\ShipmentTrackingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,21 +31,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// المسارات الثابتة يجب أن تأتي قبل المسارات الديناميكية
+Route::get('/shipments/create', [ShipmentController::class, 'create'])
+    ->middleware(['auth', 'permission:manage shipments'])
+    ->name('shipments.create');
+
+Route::post('/shipments', [ShipmentController::class, 'store'])
+    ->middleware(['auth', 'permission:manage shipments'])
+    ->name('shipments.store');
+
+Route::get('/shipments/export', [ShipmentController::class, 'export'])
+    ->middleware(['auth', 'permission:export shipments'])
+    ->name('shipments.export');
+
 Route::middleware(['auth', 'permission:view shipments'])->group(function () {
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
-});
-
-Route::middleware(['auth', 'permission:export shipments'])->group(function () {
-    Route::get('/shipments/export', [ShipmentController::class, 'export'])->name('shipments.export');
+    Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+    Route::get('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'index'])->name('shipments.tracking.index');
+    Route::get('/shipments/{shipment}/tracking/create', [ShipmentTrackingController::class, 'create'])->name('shipments.tracking.create');
+    Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])->name('shipments.tracking.store');
+    Route::get('/shipments/{shipment}/tracking/{tracking}/edit', [ShipmentTrackingController::class, 'edit'])->name('shipments.tracking.edit');
+    Route::put('/shipments/{shipment}/tracking/{tracking}', [ShipmentTrackingController::class, 'update'])->name('shipments.tracking.update');
+    Route::delete('/shipments/{shipment}/tracking/{tracking}', [ShipmentTrackingController::class, 'destroy'])->name('shipments.tracking.destroy');
+    Route::get('/shipments/{shipment}/tracking/container-info', [ShipmentTrackingController::class, 'getContainerInfo'])->name('shipments.tracking.container-info');
 });
 
 Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
-    Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
-    Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
     Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
     Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
     Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
-    
+
     // Shipping Lines
     Route::resource('/admin/shipping-lines', ShippingLineController::class)->names([
         'index' => 'admin.shipping-lines.index',
@@ -53,6 +70,16 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
         'update' => 'admin.shipping-lines.update',
         'destroy' => 'admin.shipping-lines.destroy',
     ]);
+
+    // Shipment Stages
+    Route::resource('/admin/shipment-stages', ShipmentStageController::class)->names([
+        'index' => 'admin.shipment-stages.index',
+        'create' => 'admin.shipment-stages.create',
+        'store' => 'admin.shipment-stages.store',
+        'edit' => 'admin.shipment-stages.edit',
+        'update' => 'admin.shipment-stages.update',
+        'destroy' => 'admin.shipment-stages.destroy',
+    ])->except(['show']);
 
     // Ship Groups
     Route::resource('/admin/ship-groups', ShipGroupController::class)->names([

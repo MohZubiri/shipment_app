@@ -51,6 +51,25 @@ class ShipmentTransaction extends Model
         'returndate',
         'stillday',
         'customs_port_id',
+        'current_stage_id',
+        'origin_country',
+        'origin_port',
+        'factory_name',
+        'factory_address',
+        'manufacturing_date',
+        'factory_departure_date',
+        'port_departure_date',
+        'transit_arrival_date',
+        'customs_clearance_date',
+        'warehouse_arrival_date',
+        'carrier',
+        'tracking_number',
+        'vessel_name',
+        'voyage_number',
+        'warehouse_location',
+        'warehouse_section',
+        'warehouse_zone',
+        'shipping_notes',
     ];
 
     protected $casts = [
@@ -61,6 +80,12 @@ class ShipmentTransaction extends Model
         'relaydate' => 'date',
         'endallowdate' => 'date',
         'returndate' => 'date',
+        'manufacturing_date' => 'date',
+        'factory_departure_date' => 'date',
+        'port_departure_date' => 'date',
+        'transit_arrival_date' => 'date',
+        'customs_clearance_date' => 'date',
+        'warehouse_arrival_date' => 'date',
         'value' => 'decimal:0',
         'park20' => 'integer',
         'park40' => 'integer',
@@ -127,6 +152,50 @@ class ShipmentTransaction extends Model
     public function auditLogs()
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+  public function trackingStageRecords($stage_no)
+    {
+        return $this->hasMany(ShipmentTracking::class, 'shipment_transaction_id')
+           ->where('stage_id', $stage_no) ->orderBy('created_at');
+
+    }
+    public function trackingRecords()
+    {
+        return $this->hasMany(ShipmentTracking::class, 'shipment_transaction_id')
+            ->orderBy('created_at');
+    }
+
+    public function currentStage()
+    {
+        return $this->belongsTo(ShipmentStage::class, 'current_stage_id');
+    }
+
+    public function addTrackingRecord(array $data): ShipmentTracking
+    {
+        $tracking = $this->trackingRecords()->create($data);
+
+        // تحديث المرحلة الحالية للشحنة
+        $this->update(['current_stage_id' => $tracking->stage_id]);
+
+        return $tracking;
+    }
+
+    public function getTotalContainers(): int
+    {
+        return $this->containers()->sum('container_count');
+        // return ($this->park20 ?? 0) + ($this->park40 ?? 0);
+    }
+
+    public function getUsedContainers($stage_no): int
+    {
+        return $this->trackingStageRecords($stage_no)
+            ->whereNotNull('container_count')
+            ->sum('container_count');
+    }
+
+    public function getRemainingContainers($stage_no): int
+    {
+        return $this->getTotalContainers() - $this->getUsedContainers($stage_no);
     }
 
     public function recalculateAllowances(?Carbon $today = null): void

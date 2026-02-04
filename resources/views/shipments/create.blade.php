@@ -9,25 +9,25 @@
     @endphp
     <x-slot name="header">
         <div>
-            <h2 class="font-semibold text-xl text-slate-900 leading-tight">
+            <h2 class="text-xl font-semibold leading-tight text-slate-900">
                 {{ $pageTitle }}
             </h2>
-            <p class="text-sm text-slate-500 mt-1">{{ $pageSubtitle }}</p>
+            <p class="mt-1 text-sm text-slate-500">{{ $pageSubtitle }}</p>
         </div>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
             @if(session('status'))
-                <div class="bg-emerald-50 text-emerald-800 px-4 py-3 rounded-lg">
+                <div class="px-4 py-3 text-emerald-800 bg-emerald-50 rounded-lg">
                     {{ session('status') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="bg-amber-50 text-amber-800 px-4 py-3 rounded-lg">
-                    <p class="font-semibold mb-2">يرجى تصحيح الأخطاء التالية:</p>
-                    <ul class="list-disc list-inside space-y-1">
+                <div class="px-4 py-3 text-amber-800 bg-amber-50 rounded-lg">
+                    <p class="mb-2 font-semibold">يرجى تصحيح الأخطاء التالية:</p>
+                    <ul class="space-y-1 list-disc list-inside">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -36,40 +36,40 @@
             @endif
 
             <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data"
-                class="bg-white shadow-sm sm:rounded-xl p-6 space-y-8 border border-slate-100">
+                class="p-6 space-y-8 bg-white border shadow-sm sm:rounded-xl border-slate-100">
                 @csrf
                 @if($isEdit)
                     @method('PUT')
                 @endif
 
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between flex-wrap">
-                    <div class="flex items-center gap-3">
+                <div class="flex flex-col flex-wrap gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex gap-3 items-center">
                         <span
-                            class="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">1</span>
+                            class="flex justify-center items-center w-10 h-10 font-semibold text-white bg-blue-600 rounded-full">1</span>
                         <div>
                             <p class="text-sm text-slate-500">المرحلة الأولى</p>
                             <p class="text-base font-semibold text-slate-900">البيانات الأساسية</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex gap-3 items-center">
                         <span
-                            class="h-10 w-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-semibold">2</span>
+                            class="flex justify-center items-center w-10 h-10 font-semibold rounded-full bg-slate-200 text-slate-600">2</span>
                         <div>
                             <p class="text-sm text-slate-500">المرحلة الثانية</p>
                             <p class="text-base font-semibold text-slate-700">بيانات الحاويات</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex gap-3 items-center">
                         <span
-                            class="h-10 w-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-semibold">3</span>
+                            class="flex justify-center items-center w-10 h-10 font-semibold rounded-full bg-slate-200 text-slate-600">3</span>
                         <div>
                             <p class="text-sm text-slate-500">المرحلة الثالثة</p>
                             <p class="text-base font-semibold text-slate-700">بيانات المكتب</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex gap-3 items-center">
                         <span
-                            class="h-10 w-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-semibold">4</span>
+                            class="flex justify-center items-center w-10 h-10 font-semibold rounded-full bg-slate-200 text-slate-600">4</span>
                         <div>
                             <p class="text-sm text-slate-500">المرحلة الرابعة</p>
                             <p class="text-base font-semibold text-slate-700">المستندات</p>
@@ -77,8 +77,8 @@
                     </div>
                 </div>
 
-                <section class="space-y-4 border border-slate-100 rounded-xl p-5 bg-slate-50/30">
-                    <div class="flex items-center justify-between">
+                <section class="p-5 space-y-4 rounded-xl border border-slate-100 bg-slate-50/30">
+                    <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-slate-900">البيانات الأساسية</h3>
                         <span class="text-xs text-slate-400">Step 1</span>
                     </div>
@@ -89,53 +89,13 @@
                             <input id="operationno" name="operationno" type="number" value="{{ old('operationno', $shipment?->operationno ?? '') }}"
                                 required class="mt-2 w-full rounded-md border-slate-300">
                         </div>
-                        <div x-data="{
-                                open: false,
-                                search: '',
-                                selected: '{{ old('shippmintno', $shipment?->shippmintno ?? '') }}',
-                                selectedName: '',
-                                items: {{ Js::from($shipmentsList) }},
-                                get filteredItems() {
-                                    if (this.search === '') return this.items;
-                                    const s = this.search.toLowerCase();
-                                    return this.items.filter(item => item.name.toLowerCase().includes(s));
-                                },
-                                init() {
-                                    if (this.selected) {
-                                        const item = this.items.find(i => i.id == this.selected);
-                                        if (item) this.selectedName = item.name;
-                                    }
-                                }
-                            }" class="relative">
+                        <div>
                             <label class="block text-sm font-medium text-slate-700" for="shippmintno">
                                 اسم الشحنة </label>
-
-                            <!-- Search Input -->
-                            <input type="text" id="shippmintno_search" x-model="search" @focus="open = true"
-                                @click.away="open = false" @keydown.escape="open = false"
-                                class="mt-2 w-full rounded-md border-slate-300" placeholder="ابحث عن الشحنة..."
-                                autocomplete="off" :value="selectedName">
-
-                            <!-- Hidden Input for Form Submission -->
-                            <input type="hidden" name="shippmintno" x-model="selected" required>
-
-                            <!-- Dropdown -->
-                            <div x-show="open && filteredItems.length > 0"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                                style="display: none;">
-                                <template x-for="item in filteredItems" :key="item.id">
-                                    <div @click="selected = item.id; selectedName = item.name; search = ''; open = false"
-                                        class="px-4 py-2 cursor-pointer hover:bg-slate-50 text-sm text-slate-700 flex justify-between items-center">
-                                        <span x-text="item.name"></span>
-                                        <span class="text-xs text-slate-400" x-text="'الكمية: ' + item.quantity"></span>
-                                    </div>
-                                </template>
-                            </div>
-                            <div x-show="open && filteredItems.length === 0"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2 text-sm text-gray-500"
-                                style="display: none;">
-                                لا توجد شحنات مطابقة
-                            </div>
+                            <input id="shippmintno" name="shippmintno" type="text"
+                                value="{{ old('shippmintno', $shipment?->shippmintno ?? '') }}"
+                                required class="mt-2 w-full rounded-md border-slate-300"
+                                placeholder="أدخل اسم الشحنة">
                         </div>
                         <div x-data="{
                                 open: false,
@@ -161,16 +121,16 @@
 
                             <!-- Dropdown -->
                             <div x-show="open && filteredItems.length > 0"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                                class="overflow-y-auto absolute z-50 mt-1 w-full max-h-60 bg-white rounded-md border border-gray-200 shadow-lg"
                                 style="display: none;">
                                 <template x-for="item in filteredItems" :key="item">
                                     <div @click="selected = item; search = item; open = false"
-                                        class="px-4 py-2 cursor-pointer hover:bg-slate-50 text-sm text-slate-700"
+                                        class="px-4 py-2 text-sm cursor-pointer hover:bg-slate-50 text-slate-700"
                                         x-text="item"></div>
                                 </template>
                             </div>
                             <div x-show="open && filteredItems.length === 0"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2 text-sm text-gray-500"
+                                class="absolute z-50 px-4 py-2 mt-1 w-full text-sm text-gray-500 bg-white rounded-md border border-gray-200 shadow-lg"
                                 style="display: none;">
                                 لا توجد نتائج
                             </div>
@@ -214,9 +174,9 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
-                            <select id="sectionno" name="sectionno" required
+                            <select id="sectionno" name="sectionno"
                                 class="mt-2 w-full rounded-md border-slate-300">
-                                <option value="">اختر القسم</option>
+                                <option value="">اختر الشعبة</option>
                                 @foreach($sections as $section)
                                     <option value="{{ $section->id }}" @selected(old('sectionno', $shipment?->sectionno ?? '') == $section->id)>
                                         {{ $section->name }}
@@ -286,7 +246,7 @@
                         $sizeRows = [['container_size' => '', 'container_count' => 1]];
                     }
                 @endphp
-                <section class="space-y-4 border border-slate-100 rounded-xl p-5 bg-slate-50/30" x-data="{
+                <section class="p-5 space-y-4 rounded-xl border border-slate-100 bg-slate-50/30" x-data="{
                     containerMeta: {{ Js::from($containerMeta) }},
                     sizeRows: {{ Js::from($sizeRows) }},
                     init() {
@@ -304,13 +264,13 @@
                         }
                     }
                 }">
-                    <div class="flex items-center justify-between">
+                    <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-slate-900">بيانات الحاوية</h3>
-                        <div class="flex items-center gap-2">
+                        <div class="flex gap-2 items-center">
                             <span class="text-xs text-slate-400">Step 2</span>
                             <button type="button" @click="addSize()"
-                                class="inline-flex items-center px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-md hover:bg-emerald-700 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                class="inline-flex items-center px-3 py-1.5 text-xs text-white bg-emerald-600 rounded-md transition hover:bg-emerald-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
                                 إضافة حجم
@@ -348,10 +308,10 @@
 
                     <div class="space-y-3">
                         <template x-for="(row, index) in sizeRows" :key="index">
-                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 border border-slate-200 rounded-lg p-4 bg-white relative">
+                            <div class="grid relative gap-4 p-4 bg-white rounded-lg border sm:grid-cols-2 lg:grid-cols-3 border-slate-200">
                                 <button type="button" @click="removeSize(index)" x-show="sizeRows.length > 1"
-                                    class="absolute top-2 left-2 text-red-500 hover:text-red-700 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    class="absolute top-2 left-2 text-red-500 transition hover:text-red-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -381,65 +341,60 @@
                     </div>
                 </section>
 
-                <section class="space-y-4 border border-slate-100 rounded-xl p-5 bg-slate-50/30">
-                    <div class="flex items-center justify-between">
+                <section class="p-5 space-y-4 rounded-xl border border-slate-100 bg-slate-50/30">
+                    <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-slate-900">بيانات المكتب</h3>
                         <span class="text-xs text-slate-400">Step 3</span>
                     </div>
                     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="sendingdate">تاريخ الإرسال</label>
+                            <label class="block text-sm font-medium text-slate-700" for="sendingdate">تاريخ ارسل الوثائق</label>
                             <input id="sendingdate" name="sendingdate" type="date" value="{{ old('sendingdate', $shipment?->sendingdate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="officedate">تاريخ المكتب</label>
+                            <label class="block text-sm font-medium text-slate-700" for="officedate">تاريخ  استلام المكتب للوثائق</label>
                             <input id="officedate" name="officedate" type="date" value="{{ old('officedate', $shipment?->officedate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="workerdate">تاريخ الموظف الميداني</label>
+                            <label class="block text-sm font-medium text-slate-700" for="workerdate">تاريخ  استلام المخلص</label>
                             <input id="workerdate" name="workerdate" type="date" value="{{ old('workerdate', $shipment?->workerdate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="workername">اسم الموظف الميداني</label>
+                            <label class="block text-sm font-medium text-slate-700" for="workername">اسم المخلص </label>
                             <input id="workername" name="workername" type="text" value="{{ old('workername', $shipment?->workername ?? '') }}"
                                 class="mt-2 w-full rounded-md border-slate-300" placeholder="اسم الموظف">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="relayname">جهة التسليم</label>
+                            <label class="block text-sm font-medium text-slate-700" for="relayname">الموظف المستلم للوثائق من المخلص </label>
                             <input id="relayname" name="relayname" type="text" value="{{ old('relayname', $shipment?->relayname ?? '') }}"
-                                class="mt-2 w-full rounded-md border-slate-300" placeholder="جهة التسليم">
+                                class="mt-2 w-full rounded-md border-slate-300" placeholder="اسم الموظف">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700" for="relaydate">تاريخ التسليم</label>
-                            <input id="relaydate" name="relaydate" type="date" value="{{ old('relaydate', $shipment?->relaydate?->format('Y-m-d')) }}"
-                                class="mt-2 w-full rounded-md border-slate-300">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700" for="returndate">تاريخ العودة</label>
+                       <div>
+                            <label class="block text-sm font-medium text-slate-700" for="returndate">تاريخ ارجاع الوثائق من المخلص</label>
                             <input id="returndate" name="returndate" type="date" value="{{ old('returndate', $shipment?->returndate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
                     </div>
                 </section>
 
-                <section class="space-y-4 border border-slate-100 rounded-xl p-5 bg-slate-50/30">
-                    <div class="flex items-center justify-between">
+                <section class="p-5 space-y-4 rounded-xl border border-slate-100 bg-slate-50/30">
+                    <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-slate-900">المستندات المرفقة</h3>
                         <span class="text-xs text-slate-400">Step 4</span>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">اختر المستندات المرفقة</label>
+                            <label class="block mb-3 text-sm font-medium text-slate-700">اختر المستندات المرفقة</label>
                             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach($activeDocuments as $document)
-                                    <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition">
+                                    <label class="flex gap-3 items-center p-3 rounded-lg border transition cursor-pointer border-slate-200 hover:bg-slate-50">
                                         <input type="checkbox" name="attached_documents[]" value="{{ $document->id }}"
                                             {{ in_array($document->id, old('attached_documents', [])) ? 'checked' : '' }}
-                                            class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                            class="text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                         <span class="text-sm text-slate-700">{{ $document->name }}</span>
                                     </label>
                                 @endforeach
@@ -449,7 +404,7 @@
                             @endif
                         </div>
 
-                        <div class="border-t border-slate-200 pt-4">
+                        <div class="pt-4 border-t border-slate-200">
                             <label class="block text-sm font-medium text-slate-700" for="documents_zip">رفع ملف المستندات (ZIP)</label>
                             <input id="documents_zip" name="documents_zip" type="file" accept=".zip"
                                 class="mt-2 w-full text-sm text-slate-700">
@@ -466,7 +421,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        class="inline-flex items-center px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
                         {{ $submitLabel }}
                     </button>
                 </div>

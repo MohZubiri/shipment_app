@@ -23,7 +23,7 @@ class StoreShipmentRequest extends FormRequest
     {
         return [
             'operationno' => ['required', 'integer', 'min:1'],
-            'shippmintno' => ['required', 'integer', 'min:1'],
+            'shippmintno' => ['required', 'string', 'max:255'],
             'shipgroupno' => ['required', 'exists:shipgroup,id'],
             'datano' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'pillno' => ['required', 'string', 'max:255'],
@@ -38,7 +38,7 @@ class StoreShipmentRequest extends FormRequest
             'others' => ['nullable', 'string'],
             'shipmtype' => ['required', 'integer', 'min:0'],
             'departmentno' => ['required', 'exists:departement,id'],
-            'sectionno' => ['required', 'exists:section,id'],
+            'sectionno' => ['nullable', 'exists:section,id'],
             'sendingdate' => ['nullable', 'date'],
             'officedate' => ['nullable', 'date'],
             'workerdate' => ['nullable', 'date'],
