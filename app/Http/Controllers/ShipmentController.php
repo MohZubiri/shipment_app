@@ -17,7 +17,18 @@ class ShipmentController extends Controller
     public function index(Request $request)
     {
         $query = ShipmentTransaction::query()
-            ->with(['department', 'section', 'shipgroup', 'shippingLine', 'documents']);
+            ->with([
+                'department',
+                'section',
+                'shipgroup',
+                'shippingLine',
+                'customsPort',
+                'shipment',
+                'shipmentType',
+                'shipmentStatus',
+                'containers',
+                'documents',
+            ]);
 
         $this->applyFilters($query, $request);
 
@@ -50,6 +61,45 @@ class ShipmentController extends Controller
         ]);
     }
 
+    public function show(ShipmentTransaction $shipment)
+    {
+        $shipment->load([
+            'department',
+            'section',
+            'shipgroup',
+            'shippingLine',
+            'customsPort',
+            'shipment',
+            'shipmentType',
+            'shipmentStatus',
+            'containers',
+            'documents',
+        ]);
+
+        return view('shipments.show', [
+            'shipment' => $shipment,
+        ]);
+    }
+
+    public function edit(ShipmentTransaction $shipment)
+    {
+        $shipment->load(['containers', 'documents']);
+
+        return view('shipments.create', [
+            'shipment' => $shipment,
+            'departments' => Departement::query()->orderBy('name')->get(),
+            'sections' => Section::query()->orderBy('name')->get(),
+            'shipgroups' => Shipgroup::query()->orderBy('name')->get(),
+            'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
+            'customsPorts' => \App\Models\CustomsPort::query()->orderBy('name')->get(),
+            'shipmentTypes' => \App\Models\ShipmentType::query()->orderBy('name')->get(),
+            'shipmentStatuses' => \App\Models\ShipmentStatus::query()->orderBy('name')->get(),
+            'customsDataList' => \App\Models\CustomsData::query()->orderByDesc('datano')->pluck('datano'),
+            'shipmentsList' => \App\Models\Shipment::query()->orderBy('name')->get(['id', 'name', 'quantity', 'status']),
+            'activeDocuments' => \App\Models\Document::query()->where('is_active', true)->orderBy('name')->get(),
+        ]);
+    }
+
     public function store(StoreShipmentRequest $request)
     {
         $data = $request->validated();
@@ -63,11 +113,16 @@ class ShipmentController extends Controller
         // Save containers
         if ($request->has('containers')) {
             foreach ($request->input('containers') as $containerData) {
+                $billOfLading = $containerData['bill_of_lading'] ?? null;
+                if ($billOfLading === null || $billOfLading === '') {
+                    $billOfLading = $data['pillno'] ?? null;
+                }
+
                 $shipment->containers()->create([
                     'invoice_number' => $containerData['invoice_number'] ?? null,
                     'packing_list_number' => $containerData['packing_list_number'] ?? null,
                     'certificate_of_origin' => $containerData['certificate_of_origin'] ?? null,
-                    'bill_of_lading' => $containerData['bill_of_lading'] ?? null,
+                    'bill_of_lading' => $billOfLading,
                     'container_count' => $containerData['container_count'] ?? 1,
                     'container_size' => $containerData['container_size'] ?? null,
                 ]);
@@ -106,6 +161,49 @@ class ShipmentController extends Controller
         return redirect()
             ->route('shipments.create')
             ->with('status', 'تم حفظ الشحنة بنجاح وتم احتساب فترة السماح تلقائياً.');
+    }
+
+    public function update(StoreShipmentRequest $request, ShipmentTransaction $shipment)
+    {
+        $data = $request->validated();
+        unset($data['bill_of_lading']);
+        unset($data['containers']);
+        unset($data['attached_documents']);
+        unset($data['documents_zip']);
+
+        $shipment->update($data);
+
+        $shipment->containers()->delete();
+        if ($request->has('containers')) {
+            foreach ($request->input('containers') as $containerData) {
+                $billOfLading = $containerData['bill_of_lading'] ?? null;
+                if ($billOfLading === null || $billOfLading === '') {
+                    $billOfLading = $data['pillno'] ?? null;
+                }
+
+                $shipment->containers()->create([
+                    'invoice_number' => $containerData['invoice_number'] ?? null,
+                    'packing_list_number' => $containerData['packing_list_number'] ?? null,
+                    'certificate_of_origin' => $containerData['certificate_of_origin'] ?? null,
+                    'bill_of_lading' => $billOfLading,
+                    'container_count' => $containerData['container_count'] ?? 1,
+                    'container_size' => $containerData['container_size'] ?? null,
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('shipments.index')
+            ->with('status', 'تم تحديث الشحنة بنجاح.');
+    }
+
+    public function destroy(ShipmentTransaction $shipment)
+    {
+        $shipment->delete();
+
+        return redirect()
+            ->route('shipments.index')
+            ->with('status', 'تم حذف الشحنة بنجاح.');
     }
 
     public function export(Request $request)

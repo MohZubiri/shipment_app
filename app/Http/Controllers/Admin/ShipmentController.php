@@ -19,6 +19,11 @@ class ShipmentController extends Controller
         return view('admin.shipments.create');
     }
 
+    public function show(Shipment $shipment)
+    {
+        return view('admin.shipments.show', compact('shipment'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

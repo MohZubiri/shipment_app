@@ -85,9 +85,9 @@
             </form>
 
             <div class="bg-white shadow-sm sm:rounded-xl p-6 overflow-x-auto border border-slate-100">
-                <table class="min-w-full text-sm text-right">
-                    <thead>
-                    <tr class="text-slate-500 border-b">
+                    <table class="min-w-full text-sm text-right">
+                        <thead>
+                        <tr class="text-slate-500 border-b">
                         <th class="py-2">العملية</th>
                         <th class="py-2">البوليصة</th>
                         <th class="py-2">الحاوية</th>
@@ -99,6 +99,7 @@
                         <th class="py-2">الحالة</th>
                         <th class="py-2">الأيام المتبقية</th>
                         <th class="py-2">المستندات</th>
+                        <th class="py-2">الإجراءات</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -149,18 +150,44 @@
                                     -
                                 @endforelse
                             </td>
+                            <td class="py-2">
+                                <div class="flex items-center gap-2">
+                                    @can('view shipments')
+                                        <a href="{{ route('shipments.show', $shipment) }}"
+                                            class="px-3 py-1.5 text-xs rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                            استعراض
+                                        </a>
+                                    @endcan
+                                    @can('manage shipments')
+                                        <a href="{{ route('shipments.edit', $shipment) }}"
+                                            class="px-3 py-1.5 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                                            تعديل
+                                        </a>
+                                        <form method="POST" action="{{ route('shipments.destroy', $shipment) }}"
+                                            onsubmit="return confirm('هل أنت متأكد من حذف الشحنة؟');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="px-3 py-1.5 text-xs rounded-md bg-red-600 text-white hover:bg-red-700">
+                                                حذف
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
+                            <td colspan="12" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
                         </tr>
                     @endforelse
                     </tbody>
                 </table>
-            </div>
+                </div>
 
-            <div>
-                {{ $shipments->links() }}
+                <div class="mt-6">
+                    {{ $shipments->links() }}
+                </div>
             </div>
         </div>
     </div>

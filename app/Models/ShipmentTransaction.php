@@ -99,6 +99,21 @@ class ShipmentTransaction extends Model
         return $this->belongsTo(CustomsPort::class, 'customs_port_id');
     }
 
+    public function shipment()
+    {
+        return $this->belongsTo(Shipment::class, 'shippmintno');
+    }
+
+    public function shipmentType()
+    {
+        return $this->belongsTo(ShipmentType::class, 'shipmtype');
+    }
+
+    public function shipmentStatus()
+    {
+        return $this->belongsTo(ShipmentStatus::class, 'state');
+    }
+
     public function documents()
     {
         return $this->hasMany(ShipmentDocument::class, 'shipment_id');

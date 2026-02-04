@@ -40,6 +40,9 @@ Route::middleware(['auth', 'permission:export shipments'])->group(function () {
 Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
     Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
     Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
+    Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
+    Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
+    Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
     
     // Shipping Lines
     Route::resource('/admin/shipping-lines', ShippingLineController::class)->names([
@@ -105,6 +108,7 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
     Route::resource('/admin/shipments', \App\Http\Controllers\Admin\ShipmentController::class)->names([
         'index' => 'admin.shipments.index',
         'create' => 'admin.shipments.create',
+        'show' => 'admin.shipments.show',
         'store' => 'admin.shipments.store',
         'edit' => 'admin.shipments.edit',
         'update' => 'admin.shipments.update',
@@ -120,6 +124,10 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
         'update' => 'admin.documents.update',
         'destroy' => 'admin.documents.destroy',
     ]);
+});
+
+Route::middleware(['auth', 'permission:view shipments'])->group(function () {
+    Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
 });
 
 Route::middleware(['auth', 'permission:view customs'])->group(function () {

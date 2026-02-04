@@ -60,4 +60,14 @@ class StoreShipmentRequest extends FormRequest
             'bill_of_lading.*' => ['file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'pillno' => 'رقم البوليصة',
+            'pilno' => 'رقم الحاوية',
+            'operationno' => 'رقم العملية',
+            'shippmintno' => 'اسم الشحنة',
+        ];
+    }
 }
