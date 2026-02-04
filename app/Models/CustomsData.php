@@ -27,6 +27,6 @@ class CustomsData extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'datano', 'datano');
+        return $this->hasMany(ShipmentTransaction::class, 'datano', 'datano');
     }
 }

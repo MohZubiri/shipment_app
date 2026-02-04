@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alarm;
 use App\Models\Departement;
-use App\Models\Shipment;
+use App\Models\ShipmentTransaction;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -13,21 +13,21 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
-        $totalActive = Shipment::query()
+        $totalActive = ShipmentTransaction::query()
             ->whereNull('returndate')
             ->count();
 
-        $pendingRelease = Shipment::query()
+        $pendingRelease = ShipmentTransaction::query()
             ->whereNotNull('dategase')
             ->whereNull('relaydate')
             ->count();
 
-        $nearExpiryCount = Shipment::query()
+        $nearExpiryCount = ShipmentTransaction::query()
             ->whereNotNull('dategase')
             ->whereBetween('stillday', [0, 3])
             ->count();
 
-        $completedToday = Shipment::query()
+        $completedToday = ShipmentTransaction::query()
             ->whereDate('returndate', $today)
             ->count();
 

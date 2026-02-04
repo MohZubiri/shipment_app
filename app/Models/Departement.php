@@ -20,6 +20,6 @@ class Departement extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'departmentno');
+        return $this->hasMany(ShipmentTransaction::class, 'departmentno');
     }
 }

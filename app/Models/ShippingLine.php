@@ -29,6 +29,6 @@ class ShippingLine extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'shippingno');
+        return $this->hasMany(ShipmentTransaction::class, 'shippingno');
     }
 }

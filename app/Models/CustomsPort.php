@@ -24,6 +24,6 @@ class CustomsPort extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'customs_port_id');
+        return $this->hasMany(ShipmentTransaction::class, 'customs_port_id');
     }
 }

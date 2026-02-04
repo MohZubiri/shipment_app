@@ -23,6 +23,6 @@ class Alarm extends Model
 
     public function shipment()
     {
-        return $this->belongsTo(Shipment::class);
+        return $this->belongsTo(ShipmentTransaction::class);
     }
 }

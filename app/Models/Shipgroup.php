@@ -21,6 +21,6 @@ class Shipgroup extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'shipgroupno');
+        return $this->hasMany(ShipmentTransaction::class, 'shipgroupno');
     }
 }

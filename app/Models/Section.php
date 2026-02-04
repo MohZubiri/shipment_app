@@ -20,6 +20,6 @@ class Section extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class, 'sectionno');
+        return $this->hasMany(ShipmentTransaction::class, 'sectionno');
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Shipment;
+use App\Models\ShipmentTransaction;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -16,7 +16,7 @@ class ReportController extends Controller
 
     public function shipmentReport(Request $request)
     {
-        $query = Shipment::with(['shippingLine', 'customsPort', 'department', 'section', 'shipgroup'])
+        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'department', 'section', 'shipgroup'])
             ->latest('sendingdate');
 
         if ($request->has('date_from') && $request->date_from) {
@@ -44,7 +44,7 @@ class ReportController extends Controller
 
     public function shipmentReportPdf(Request $request)
     {
-        $query = Shipment::with(['shippingLine', 'customsPort', 'department', 'section', 'shipgroup'])
+        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'department', 'section', 'shipgroup'])
             ->latest('sendingdate');
 
          if ($request->has('date_from') && $request->date_from) {
