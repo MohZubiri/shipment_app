@@ -126,6 +126,9 @@
                                 <x-dropdown-link :href="route('admin.shipment-stages.index')">
                                     مراحل الشحن
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.warehouses.index')">
+                                    المخازن
+                                </x-dropdown-link>
 
 
                             </x-slot>
@@ -264,9 +267,13 @@
                         :active="request()->routeIs('admin.sections.*')">
                         الشعب
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.shipment-types.index')"
-                        :active="request()->routeIs('admin.shipment-types.*')">
-                        أنواع الشحنات
+                    <x-responsive-nav-link :href="route('admin.shipment-stages.index')"
+                        :active="request()->routeIs('admin.shipment-stages.*')">
+                        مراحل الشحن
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.warehouses.index')"
+                        :active="request()->routeIs('admin.warehouses.*')">
+                        المخازن
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.shipment-statuses.index')"
                         :active="request()->routeIs('admin.shipment-statuses.*')">
