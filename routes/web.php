@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PermissionManagementController;
 use App\Http\Controllers\Admin\RoleManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\ShipmentStageController;
+use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CustomsDataController;
 use App\Http\Controllers\DashboardController;
@@ -80,6 +81,20 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
         'update' => 'admin.shipment-stages.update',
         'destroy' => 'admin.shipment-stages.destroy',
     ])->except(['show']);
+
+    // Warehouses
+    Route::resource('/admin/warehouses', WarehouseController::class)->names([
+        'index' => 'admin.warehouses.index',
+        'create' => 'admin.warehouses.create',
+        'store' => 'admin.warehouses.store',
+        'show' => 'admin.warehouses.show',
+        'edit' => 'admin.warehouses.edit',
+        'update' => 'admin.warehouses.update',
+        'destroy' => 'admin.warehouses.destroy',
+    ]);
+
+    Route::get('/admin/warehouses/by-stage/{stageId}', [WarehouseController::class, 'getWarehousesByStage'])
+        ->name('admin.warehouses.by-stage');
 
     // Ship Groups
     Route::resource('/admin/ship-groups', ShipGroupController::class)->names([

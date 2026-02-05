@@ -26,6 +26,7 @@ class ShipmentStageController extends Controller
         $data = $this->validateData($request);
         $data['is_active'] = $request->boolean('is_active', true);
         $data['needs_containers'] = $request->boolean('needs_containers', false);
+        $data['needs_warehouse'] = $request->boolean('needs_warehouse', false);
         ShipmentStage::create($data);
 
         return redirect()->route('admin.shipment-stages.index')
@@ -44,6 +45,7 @@ class ShipmentStageController extends Controller
         $data = $this->validateData($request, $shipment_stage->id);
         $data['is_active'] = $request->boolean('is_active', false);
         $data['needs_containers'] = $request->boolean('needs_containers', false);
+        $data['needs_warehouse'] = $request->boolean('needs_warehouse', false);
         $shipment_stage->update($data);
 
         return redirect()->route('admin.shipment-stages.index')
@@ -75,6 +77,7 @@ class ShipmentStageController extends Controller
             'description' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
             'needs_containers' => ['sometimes', 'boolean'],
+            'needs_warehouse' => ['sometimes', 'boolean'],
         ]);
     }
 }

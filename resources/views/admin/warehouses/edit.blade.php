@@ -1,0 +1,102 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-semibold text-slate-900">تعديل المخزن</h2>
+                <p class="text-sm text-slate-500">تحديث بيانات المخزن: {{ $warehouse->name }}</p>
+            </div>
+            <a href="{{ route('admin.warehouses.index') }}" class="text-sm text-slate-700 hover:text-slate-900">
+                إلغاء
+            </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
+            <div class="p-6 bg-white border shadow-sm sm:rounded-xl border-slate-100">
+                <form method="POST" action="{{ route('admin.warehouses.update', $warehouse) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="space-y-6">
+                        <!-- Basic Information -->
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <x-input-label for="name" value="اسم المخزن" />
+                                <input type="text" id="name" name="name" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('name', $warehouse->name) }}" required>
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="code" value="كود المخزن" />
+                                <input type="text" id="code" name="code" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('code', $warehouse->code) }}" required>
+                                <x-input-error :messages="$errors->get('code')" class="mt-2" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <x-input-label for="location" value="الموقع" />
+                            <input type="text" id="location" name="location" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('location', $warehouse->location) }}" placeholder="مثال: جدة، المملكة العربية السعودية">
+                            <x-input-error :messages="$errors->get('location')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="address" value="العنوان" />
+                            <textarea id="address" name="address" rows="3" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="العنوان التفصيلي للمخزن">{{ old('address', $warehouse->address) }}</textarea>
+                            <x-input-error :messages="$errors->get('address')" class="mt-2" />
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <x-input-label for="capacity" value="السعة (عدد الحاويات)" />
+                                <input type="number" id="capacity" name="capacity" min="0" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('capacity', $warehouse->capacity) }}" placeholder="الحد الأقصى للحاويات">
+                                <x-input-error :messages="$errors->get('capacity')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="is_active" value="الحالة" />
+                                <div class="mt-2">
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="is_active" value="1" {{ old('is_active', $warehouse->is_active) ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <span class="mr-2 text-sm text-slate-700">نشط</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stages Assignment -->
+                        <div>
+                            <x-input-label for="stages" value="المراحل المرتبطة" />
+                            <div class="mt-2 space-y-2">
+                                @foreach($stages as $stage)
+                                    <label class="inline-flex items-center ml-4">
+                                        <input type="checkbox" name="stages[]" value="{{ $stage->id }}" {{ in_array($stage->id, old('stages', $selectedStages)) ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <span class="mr-2 text-sm text-slate-700">{{ $stage->order }}. {{ $stage->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <x-input-error :messages="$errors->get('stages')" class="mt-2" />
+                        </div>
+
+                        <!-- Notes -->
+                        <div>
+                            <x-input-label for="notes" value="ملاحظات" />
+                            <textarea id="notes" name="notes" rows="3" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="أي ملاحظات إضافية...">{{ old('notes', $warehouse->notes) }}</textarea>
+                            <x-input-error :messages="$errors->get('notes')" class="mt-2" />
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="flex gap-4 justify-end items-center">
+                            <a href="{{ route('admin.warehouses.index') }}" class="px-4 py-2 text-slate-700 hover:text-slate-900">
+                                إلغاء
+                            </a>
+                            <button type="submit" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                                تحديث المخزن
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

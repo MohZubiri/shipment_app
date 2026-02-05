@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipment_stages', function (Blueprint $table) {
+        Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->integer('sort_order')->default(0);
+            $table->string('code')->unique();
+            $table->string('location')->nullable();
+            $table->text('address')->nullable();
+            $table->integer('capacity')->nullable()->comment('Container capacity');
             $table->boolean('is_active')->default(true);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shipment_stages');
+        Schema::dropIfExists('warehouses');
     }
 };

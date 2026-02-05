@@ -20,11 +20,13 @@ class ShipmentStage extends Model
         'description',
         'is_active',
         'needs_containers',
+        'needs_warehouse',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'needs_containers' => 'boolean',
+        'needs_warehouse' => 'boolean',
         'order' => 'integer',
     ];
 
@@ -33,6 +35,11 @@ class ShipmentStage extends Model
     public function trackingRecords()
     {
         return $this->hasMany(ShipmentTracking::class, 'stage_id');
+    }
+
+    public function warehouses()
+    {
+        return $this->belongsToMany(Warehouse::class, 'warehouse_stage', 'stage_id', 'warehouse_id');
     }
 
     public function scopeActive($query)

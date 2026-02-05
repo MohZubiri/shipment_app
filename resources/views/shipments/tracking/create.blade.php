@@ -26,6 +26,7 @@
                                 @foreach($stages as $stage)
                                     <option value="{{ $stage->id }}"
                                         data-needs-containers="{{ $stage->needs_containers ? '1' : '0' }}"
+                                        data-needs-warehouse="{{ $stage->needs_warehouse ? '1' : '0' }}"
                                         {{ $shipment->current_stage_id == $stage->id ? 'selected' : '' }}>
                                         {{ $stage->order }}. {{ $stage->name }}
                                     </option>
@@ -73,6 +74,20 @@
                             </div>
                         </div>
 
+                        <!-- Warehouse Fields -->
+                        <div id="warehouse-fields" class="hidden space-y-4">
+                            <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                                هذه المرحلة تتطلب اختيار مخزن لنقل الحاويات إليه.
+                            </div>
+                            <div>
+                                <x-input-label for="warehouse_id" value="المخزن" />
+                                <select id="warehouse_id" name="warehouse_id" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">اختر المخزن</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('warehouse_id')" class="mt-2" />
+                            </div>
+                        </div>
+
                         <!-- Notes -->
                         <div>
                             <x-input-label for="notes" value="ملاحظات" />
@@ -99,6 +114,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const stageSelect = document.getElementById('stage_id');
             const containerFields = document.getElementById('container-fields');
+            const warehouseFields = document.getElementById('warehouse-fields');
+            const warehouseSelect = document.getElementById('warehouse_id');
             const countInput = document.getElementById('container_count');
             const numbersWrapper = document.getElementById('container-numbers-wrapper');
             const numbersFields = document.getElementById('container-numbers-fields');
@@ -126,15 +143,41 @@
                 }
             };
 
-            const toggleContainerFields = () => {
+            const toggleContainerFields = async () => {
                 const option = stageSelect.selectedOptions[0];
-                const needs = option?.dataset.needsContainers === '1';
-                containerFields.classList.toggle('hidden', !needs);
-                countInput.required = needs;
-                if (needs) {
+                const needsContainers = option?.dataset.needsContainers === '1';
+                const needsWarehouse = option?.dataset.needsWarehouse === '1';
+                
+                containerFields.classList.toggle('hidden', !needsContainers);
+                warehouseFields.classList.toggle('hidden', !needsWarehouse);
+                countInput.required = needsContainers;
+                warehouseSelect.required = needsWarehouse;
+                
+                if (needsWarehouse) {
+                    await loadWarehouses(option.value);
+                }
+                
+                if (needsContainers) {
                     createContainerFields(parseInt(countInput.value) || 0);
                 } else {
                     numbersFields.innerHTML = '';
+                }
+            };
+
+            const loadWarehouses = async (stageId) => {
+                try {
+                    const response = await fetch(`/admin/warehouses/by-stage/${stageId}`);
+                    const warehouses = await response.json();
+                    
+                    warehouseSelect.innerHTML = '<option value="">اختر المخزن</option>';
+                    warehouses.forEach(warehouse => {
+                        const option = document.createElement('option');
+                        option.value = warehouse.id;
+                        option.textContent = `${warehouse.name} (${warehouse.code})`;
+                        warehouseSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading warehouses:', error);
                 }
             };
 

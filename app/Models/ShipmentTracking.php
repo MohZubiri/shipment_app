@@ -14,6 +14,7 @@ class ShipmentTracking extends Model
     protected $fillable = [
         'shipment_transaction_id',
         'stage_id',
+        'warehouse_id',
         'event_date',
         'container_count',
         'container_numbers',
@@ -43,5 +44,10 @@ class ShipmentTracking extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

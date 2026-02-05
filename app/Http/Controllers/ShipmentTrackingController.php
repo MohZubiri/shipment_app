@@ -49,6 +49,7 @@ class ShipmentTrackingController extends Controller
 
         $data = $request->validate([
             'stage_id' => ['required', 'exists:shipment_stages,id'],
+            'warehouse_id' => [$stage->needs_warehouse ? 'required' : 'nullable', 'exists:warehouses,id'],
             'event_date' => ['nullable', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -100,6 +101,7 @@ class ShipmentTrackingController extends Controller
 
         $data = $request->validate([
             'stage_id' => ['required', 'exists:shipment_stages,id'],
+            'warehouse_id' => [$stage->needs_warehouse ? 'required' : 'nullable', 'exists:warehouses,id'],
             'event_date' => ['nullable', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
