@@ -55,13 +55,13 @@
                                 هذه المرحلة تتطلب إدخال بيانات الحاويات (عدد وأرقام الحاويات).
                                 <br>
                                 <strong>إجمالي الحاويات:</strong> {{ $shipment->getTotalContainers() }} |
-                                <strong>المستخدمة:</strong> {{ $shipment->getUsedContainers() }} |
-                                <strong>المتبقي:</strong> {{ $shipment->getRemainingContainers() }}
+                                <strong>المستخدمة:</strong> {{ $shipment->getUsedContainers($shipment->current_stage_id ?? 0) }} |
+                                <strong>المتبقي:</strong> {{ $shipment->getRemainingContainers($shipment->current_stage_id ?? 0) }}
                             </div>
                             <div>
                                 <x-input-label for="container_count" value="عدد الحاويات" />
-                                <input type="number" id="container_count" name="container_count" min="1" max="{{ $shipment->getRemainingContainers() }}" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('container_count') }}">
-                                <p class="mt-1 text-xs text-slate-500">الحد الأقصى: {{ $shipment->getRemainingContainers() }} حاوية</p>
+                                <input type="number" id="container_count" name="container_count" min="1" max="{{ $shipment->getRemainingContainers($shipment->current_stage_id ?? 0) }}" class="block mt-1 w-full rounded-lg shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500" value="{{ old('container_count') }}">
+                                <p class="mt-1 text-xs text-slate-500">الحد الأقصى: {{ $shipment->getRemainingContainers($shipment->current_stage_id ?? 0) }} حاوية</p>
                                 <x-input-error :messages="$errors->get('container_count')" class="mt-2" />
                             </div>
                             <div id="container-numbers-wrapper" class="space-y-2">
