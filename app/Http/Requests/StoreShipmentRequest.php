@@ -24,7 +24,7 @@ class StoreShipmentRequest extends FormRequest
         return [
             'operationno' => ['required', 'integer', 'min:1'],
             'shippmintno' => ['required', 'string', 'max:255'],
-            'shipgroupno' => ['required', 'exists:shipgroup,id'],
+            'shipgroupno' => ['nullable', 'exists:shipgroup,id'],
             'datano' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'pillno' => ['required', 'string', 'max:255'],
             'pakingno' => ['nullable', 'string', 'max:255'],
