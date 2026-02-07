@@ -12,8 +12,7 @@ class WarehouseController extends Controller
 {
     public function index()
     {
-        $warehouses = Warehouse::withCount('stages')
-            ->orderBy('name')
+        $warehouses = Warehouse::orderBy('name')
             ->paginate(20);
 
         return view('admin.warehouses.index', compact('warehouses'));
@@ -24,8 +23,7 @@ class WarehouseController extends Controller
      */
     public function create()
     {
-        $stages = ShipmentStage::active()->ordered()->get();
-        return view('admin.warehouses.create', compact('stages'));
+        return view('admin.warehouses.create');
     }
 
     /**
@@ -41,17 +39,11 @@ class WarehouseController extends Controller
             'capacity' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
             'notes' => 'nullable|string',
-            'stages' => 'nullable|array',
-            'stages.*' => 'exists:shipment_stages,id',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
 
-        $warehouse = Warehouse::create($validated);
-
-        if (!empty($validated['stages'])) {
-            $warehouse->stages()->sync($validated['stages']);
-        }
+        Warehouse::create($validated);
 
         return redirect()->route('admin.warehouses.index')
             ->with('success', 'تم إنشاء المخزن بنجاح');
@@ -71,9 +63,7 @@ class WarehouseController extends Controller
      */
     public function edit(Warehouse $warehouse)
     {
-        $stages = ShipmentStage::active()->ordered()->get();
-        $selectedStages = $warehouse->stages()->pluck('shipment_stages.id')->toArray();
-        return view('admin.warehouses.edit', compact('warehouse', 'stages', 'selectedStages'));
+        return view('admin.warehouses.edit', compact('warehouse'));
     }
 
     public function update(Request $request, Warehouse $warehouse)
@@ -86,14 +76,11 @@ class WarehouseController extends Controller
             'capacity' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
             'notes' => 'nullable|string',
-            'stages' => 'nullable|array',
-            'stages.*' => 'exists:shipment_stages,id',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
 
         $warehouse->update($validated);
-        $warehouse->stages()->sync($validated['stages'] ?? []);
 
         return redirect()->route('admin.warehouses.index')
             ->with('success', 'تم تحديث المخزن بنجاح');
@@ -109,10 +96,13 @@ class WarehouseController extends Controller
 
     public function getWarehousesByStage($stageId)
     {
+        $stage = ShipmentStage::find($stageId);
+        if (!$stage || !$stage->needs_warehouse) {
+            return response()->json([]);
+        }
+
         $warehouses = Warehouse::active()
-            ->whereHas('stages', function($query) use ($stageId) {
-                $query->where('shipment_stages.id', $stageId);
-            })
+            ->orderBy('name')
             ->get(['id', 'name', 'code']);
 
         return response()->json($warehouses);

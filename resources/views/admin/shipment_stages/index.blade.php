@@ -30,6 +30,7 @@
                             <th class="px-4 py-3">الترتيب</th>
                             <th class="px-4 py-3">اللون</th>
                             <th class="px-4 py-3">يتطلب حاويات</th>
+                            <th class="px-4 py-3">يتطلب مخزن</th>
                             <th class="px-4 py-3">الحالة</th>
                             <th class="px-4 py-3 text-left">إجراءات</th>
                         </tr>
@@ -57,6 +58,11 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full {{ $stage->needs_warehouse ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-500' }}">
+                                        {{ $stage->needs_warehouse ? 'نعم' : 'لا' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
                                     <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full {{ $stage->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
                                         {{ $stage->is_active ? 'نشط' : 'متوقف' }}
                                     </span>
@@ -75,7 +81,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-6 text-center text-slate-500">لا توجد مراحل مسجلة بعد.</td>
+                                <td colspan="9" class="px-4 py-6 text-center text-slate-500">لا توجد مراحل مسجلة بعد.</td>
                             </tr>
                         @endforelse
                     </tbody>

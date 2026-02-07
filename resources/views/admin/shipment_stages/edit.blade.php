@@ -72,6 +72,12 @@
                         <label for="needs_containers" class="text-sm text-slate-700">يتطلب إدخال الحاويات (عدد وأرقام)</label>
                     </div>
 
+                    <div class="flex items-center gap-2">
+                        <input type="hidden" name="needs_warehouse" value="0">
+                        <input id="needs_warehouse" name="needs_warehouse" type="checkbox" value="1" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" {{ old('needs_warehouse', $stage->needs_warehouse) ? 'checked' : '' }}>
+                        <label for="needs_warehouse" class="text-sm text-slate-700">يتطلب اختيار مخزن</label>
+                    </div>
+
                     <div class="flex items-center justify-end gap-4">
                         <a href="{{ route('admin.shipment-stages.index') }}" class="text-sm text-slate-600 hover:text-slate-800">إلغاء</a>
                         <x-primary-button>تحديث المرحلة</x-primary-button>

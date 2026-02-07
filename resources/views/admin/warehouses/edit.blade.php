@@ -64,20 +64,6 @@
                             </div>
                         </div>
 
-                        <!-- Stages Assignment -->
-                        <div>
-                            <x-input-label for="stages" value="المراحل المرتبطة" />
-                            <div class="mt-2 space-y-2">
-                                @foreach($stages as $stage)
-                                    <label class="inline-flex items-center ml-4">
-                                        <input type="checkbox" name="stages[]" value="{{ $stage->id }}" {{ in_array($stage->id, old('stages', $selectedStages)) ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        <span class="mr-2 text-sm text-slate-700">{{ $stage->order }}. {{ $stage->name }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                            <x-input-error :messages="$errors->get('stages')" class="mt-2" />
-                        </div>
-
                         <!-- Notes -->
                         <div>
                             <x-input-label for="notes" value="ملاحظات" />

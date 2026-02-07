@@ -37,9 +37,6 @@
                                     السعة
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                                    المراحل
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                                     الحالة
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -68,9 +65,6 @@
                                         {{ $warehouse->capacity ?? 'غير محدد' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-slate-900">{{ $warehouse->stages_count }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
                                         @if($warehouse->is_active)
                                             <span class="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full">
                                                 نشط
@@ -97,9 +91,9 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center">
+                        @empty
+                            <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center">
                                         <div class="text-slate-500">
                                             <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
