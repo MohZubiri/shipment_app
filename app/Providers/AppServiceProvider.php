@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Schema::defaultStringLength(191); 
         ShipmentTransaction::observe(ShipmentTransactionObserver::class);
         Paginator::useTailwind();
     }
