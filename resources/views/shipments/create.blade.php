@@ -197,7 +197,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="dategase">تاريخ الوصول</label>
+                            <label class="block text-sm font-medium text-slate-700" for="dategase">تاريخ وصول الشحنة  </label>
                             <input id="dategase" name="dategase" type="date" value="{{ old('dategase', $shipment?->dategase?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
@@ -285,11 +285,6 @@
                                 required class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم البوليصة">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="pilno">رقم الحاوية</label>
-                            <input id="pilno" name="pilno" type="text" value="{{ old('pilno', $shipment?->pilno ?? '') }}"
-                                required class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم الحاوية">
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-slate-700" for="container_invoice_number">رقم الفاتورة</label>
                             <input id="container_invoice_number" type="text" x-model="containerMeta.invoice_number"
                                 class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم الفاتورة">
@@ -348,12 +343,12 @@
                     </div>
                     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="sendingdate">تاريخ ارسل الوثائق</label>
+                            <label class="block text-sm font-medium text-slate-700" for="sendingdate">تاريخ إرسل المستندات</label>
                             <input id="sendingdate" name="sendingdate" type="date" value="{{ old('sendingdate', $shipment?->sendingdate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="officedate">تاريخ  استلام المكتب للوثائق</label>
+                            <label class="block text-sm font-medium text-slate-700" for="officedate">تاريخ  استلام المكتب المستندات</label>
                             <input id="officedate" name="officedate" type="date" value="{{ old('officedate', $shipment?->officedate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
@@ -367,16 +362,17 @@
                             <input id="workername" name="workername" type="text" value="{{ old('workername', $shipment?->workername ?? '') }}"
                                 class="mt-2 w-full rounded-md border-slate-300" placeholder="اسم الموظف">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700" for="relayname">الموظف المستلم للوثائق من المخلص </label>
-                            <input id="relayname" name="relayname" type="text" value="{{ old('relayname', $shipment?->relayname ?? '') }}"
-                                class="mt-2 w-full rounded-md border-slate-300" placeholder="اسم الموظف">
-                        </div>
-                       <div>
-                            <label class="block text-sm font-medium text-slate-700" for="returndate">تاريخ ارجاع الوثائق من المخلص</label>
+                          <div>
+                            <label class="block text-sm font-medium text-slate-700" for="returndate">تاريخ تسليم التصفية </label>
                             <input id="returndate" name="returndate" type="date" value="{{ old('returndate', $shipment?->returndate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700" for="relayname">الموظف المستلم للتصفية  </label>
+                            <input id="relayname" name="relayname" type="text" value="{{ old('relayname', $shipment?->relayname ?? '') }}"
+                                class="mt-2 w-full rounded-md border-slate-300" placeholder="اسم الموظف">
+                        </div>
+                     
                     </div>
                 </section>
 

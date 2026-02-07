@@ -28,7 +28,7 @@ class StoreShipmentRequest extends FormRequest
             'datano' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'pillno' => ['required', 'string', 'max:255'],
             'pakingno' => ['nullable', 'string', 'max:255'],
-            'pilno' => ['required', 'string', 'max:255'],
+            'pilno' => ['nullable', 'string', 'max:255'],
             'orginalno' => ['nullable', 'string', 'max:255'],
             'pillno2' => ['nullable', 'string', 'max:255'],
             'pakingno2' => ['nullable', 'string', 'max:255'],
@@ -59,6 +59,14 @@ class StoreShipmentRequest extends FormRequest
             'bill_of_lading' => ['nullable', 'array'],
             'bill_of_lading.*' => ['file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $datano = $this->input('datano');
+        if (is_string($datano) && trim($datano) === '') {
+            $this->merge(['datano' => null]);
+        }
     }
 
     public function attributes(): array

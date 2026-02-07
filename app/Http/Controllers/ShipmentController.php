@@ -105,6 +105,9 @@ class ShipmentController extends Controller
     public function store(StoreShipmentRequest $request)
     {
         $data = $request->validated();
+        if (!array_key_exists('pilno', $data)) {
+            $data['pilno'] = '';
+        }
         unset($data['bill_of_lading']);
         unset($data['containers']);
         unset($data['attached_documents']);
