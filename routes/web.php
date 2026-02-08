@@ -13,9 +13,9 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CustomsDataController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandShippingController;
 use App\Http\Controllers\LocalCustomsVehicleController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ShippingReportController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\ShipmentTrackingController;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +52,7 @@ Route::middleware(['auth', 'permission:view shipments'])->group(function () {
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::get('/shipments/documents/{document}/download', [ShipmentController::class, 'downloadDocument'])
         ->name('shipments.documents.download');
-    Route::get('/road-shipments', [ShippingReportController::class, 'index'])->name('road-shipments.index');
+    Route::get('/road-shipments', [LandShippingController::class, 'index'])->name('road-shipments.index');
     Route::get('/local-shipments', [LocalCustomsVehicleController::class, 'index'])->name('local-shipments.index');
     Route::get('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'index'])->name('shipments.tracking.index');
     Route::get('/shipments/{shipment}/tracking/create', [ShipmentTrackingController::class, 'create'])->name('shipments.tracking.create');
@@ -68,11 +68,11 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
     Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
     Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
 
-    Route::get('/road-shipments/create', [ShippingReportController::class, 'create'])->name('road-shipments.create');
-    Route::post('/road-shipments', [ShippingReportController::class, 'store'])->name('road-shipments.store');
-    Route::get('/road-shipments/{shippingReport}/edit', [ShippingReportController::class, 'edit'])->name('road-shipments.edit');
-    Route::put('/road-shipments/{shippingReport}', [ShippingReportController::class, 'update'])->name('road-shipments.update');
-    Route::delete('/road-shipments/{shippingReport}', [ShippingReportController::class, 'destroy'])->name('road-shipments.destroy');
+    Route::get('/road-shipments/create', [LandShippingController::class, 'create'])->name('road-shipments.create');
+    Route::post('/road-shipments', [LandShippingController::class, 'store'])->name('road-shipments.store');
+    Route::get('/road-shipments/{landShipping}/edit', [LandShippingController::class, 'edit'])->name('road-shipments.edit');
+    Route::put('/road-shipments/{landShipping}', [LandShippingController::class, 'update'])->name('road-shipments.update');
+    Route::delete('/road-shipments/{landShipping}', [LandShippingController::class, 'destroy'])->name('road-shipments.destroy');
 
     Route::get('/local-shipments/create', [LocalCustomsVehicleController::class, 'create'])->name('local-shipments.create');
     Route::post('/local-shipments', [LocalCustomsVehicleController::class, 'store'])->name('local-shipments.store');

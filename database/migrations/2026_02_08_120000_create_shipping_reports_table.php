@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipping_reports', function (Blueprint $table) {
+        Schema::create('land_shipping', function (Blueprint $table) {
             $table->id();
             $table->string('operation_number', 50);
             $table->string('locomotive_number', 50)->nullable();

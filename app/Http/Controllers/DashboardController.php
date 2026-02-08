@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Alarm;
 use App\Models\Departement;
+use App\Models\LandShipping;
 use App\Models\LocalCustomsVehicle;
-use App\Models\ShippingReport;
 use App\Models\ShipmentStage;
 use App\Models\ShipmentTransaction;
 use Carbon\Carbon;
@@ -54,7 +54,7 @@ class DashboardController extends Controller
         $maxDepartmentCount = $byDepartment->max('shipments_count') ?: 1;
 
         $seaShipmentsCount = ShipmentTransaction::query()->count();
-        $internationalRoadCount = ShippingReport::query()->count();
+        $internationalRoadCount = LandShipping::query()->count();
         $localRoadCount = LocalCustomsVehicle::query()->count();
 
         return view('dashboard', [

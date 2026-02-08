@@ -5,7 +5,7 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('road-shipments.update', $shippingReport) }}"
+            <form method="POST" action="{{ route('road-shipments.update', $landShipping) }}"
                 class="bg-white shadow-sm sm:rounded-xl p-6 space-y-6 border border-slate-100">
                 @csrf
                 @method('PUT')
@@ -24,61 +24,61 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="operation_number">رقم العملية</label>
                         <input id="operation_number" name="operation_number" type="text"
-                            value="{{ old('operation_number', $shippingReport->operation_number) }}" required
+                            value="{{ old('operation_number', $landShipping->operation_number) }}" required
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="locomotive_number">رقم القاطرة</label>
                         <input id="locomotive_number" name="locomotive_number" type="text"
-                            value="{{ old('locomotive_number', $shippingReport->locomotive_number) }}"
+                            value="{{ old('locomotive_number', $landShipping->locomotive_number) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="shipment_name">اسم الشحنة</label>
                         <input id="shipment_name" name="shipment_name" type="text"
-                            value="{{ old('shipment_name', $shippingReport->shipment_name) }}"
+                            value="{{ old('shipment_name', $landShipping->shipment_name) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="declaration_number">رقم البيان</label>
                         <input id="declaration_number" name="declaration_number" type="text"
-                            value="{{ old('declaration_number', $shippingReport->declaration_number) }}"
+                            value="{{ old('declaration_number', $landShipping->declaration_number) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="arrival_date">تاريخ الوصول</label>
                         <input id="arrival_date" name="arrival_date" type="date"
-                            value="{{ old('arrival_date', $shippingReport->arrival_date?->format('Y-m-d')) }}"
+                            value="{{ old('arrival_date', $landShipping->arrival_date?->format('Y-m-d')) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="exit_date">تاريخ الخروج</label>
                         <input id="exit_date" name="exit_date" type="date"
-                            value="{{ old('exit_date', $shippingReport->exit_date?->format('Y-m-d')) }}"
+                            value="{{ old('exit_date', $landShipping->exit_date?->format('Y-m-d')) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="docking_days">أيام الربط</label>
                         <input id="docking_days" name="docking_days" type="number" min="0"
-                            value="{{ old('docking_days', $shippingReport->docking_days) }}"
+                            value="{{ old('docking_days', $landShipping->docking_days) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="documents_sent_date">تاريخ إرسال المستندات</label>
                         <input id="documents_sent_date" name="documents_sent_date" type="date"
-                            value="{{ old('documents_sent_date', $shippingReport->documents_sent_date?->format('Y-m-d')) }}"
+                            value="{{ old('documents_sent_date', $landShipping->documents_sent_date?->format('Y-m-d')) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="documents_type">نوع المستندات</label>
                         <input id="documents_type" name="documents_type" type="text"
-                            value="{{ old('documents_type', $shippingReport->documents_type) }}"
+                            value="{{ old('documents_type', $landShipping->documents_type) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="warehouse_arrival_date">تاريخ وصول المخزن</label>
                         <input id="warehouse_arrival_date" name="warehouse_arrival_date" type="date"
-                            value="{{ old('warehouse_arrival_date', $shippingReport->warehouse_arrival_date?->format('Y-m-d')) }}"
+                            value="{{ old('warehouse_arrival_date', $landShipping->warehouse_arrival_date?->format('Y-m-d')) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                 </div>
