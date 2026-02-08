@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreShipmentRequest;
+use App\Models\CustomsPort;
 use App\Models\Departement;
 use App\Models\Section;
 use App\Models\ShipmentTransaction;
@@ -40,6 +41,7 @@ class ShipmentController extends Controller
         return view('shipments.index', [
             'shipments' => $shipments,
             'departments' => Departement::query()->orderBy('name')->get(),
+            'ports' => CustomsPort::query()->orderBy('name')->get(),
             'sections' => Section::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
         ]);
@@ -231,6 +233,7 @@ class ShipmentController extends Controller
             fputcsv($handle, [
                 'ID',
                 'Operation No',
+                'Shipment Name',
                 'Bill No',
                 'Container No',
                 'Department',
@@ -246,6 +249,7 @@ class ShipmentController extends Controller
                 fputcsv($handle, [
                     $shipment->id,
                     $shipment->operationno,
+                    $shipment->shippmintno,
                     $shipment->pillno,
                     $shipment->pilno,
                     $shipment->department?->name,
@@ -271,7 +275,8 @@ class ShipmentController extends Controller
             $query->where(function (Builder $builder) use ($search) {
                 $builder->where('pillno', 'like', "%{$search}%")
                     ->orWhere('pilno', 'like', "%{$search}%")
-                    ->orWhere('orginalno', 'like', "%{$search}%");
+                    ->orWhere('orginalno', 'like', "%{$search}%")
+                    ->orWhere('shippmintno', 'like', "%{$search}%");
 
                 if (is_numeric($search)) {
                     $builder->orWhere('operationno', (int) $search);
@@ -281,8 +286,10 @@ class ShipmentController extends Controller
         }
 
         $query->when($request->filled('departmentno'), fn (Builder $builder) => $builder->where('departmentno', $request->departmentno));
+        $query->when($request->filled('customs_port_id'), fn (Builder $builder) => $builder->where('customs_port_id', $request->customs_port_id));
         $query->when($request->filled('sectionno'), fn (Builder $builder) => $builder->where('sectionno', $request->sectionno));
         $query->when($request->filled('shippingno'), fn (Builder $builder) => $builder->where('shippingno', $request->shippingno));
+        $query->when($request->filled('dectype'), fn (Builder $builder) => $builder->where('dectype', $request->dectype));
 
         if ($request->filled('dategase_from')) {
             $query->whereDate('dategase', '>=', $request->dategase_from);

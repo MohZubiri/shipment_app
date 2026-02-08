@@ -82,7 +82,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $shipment->operationno }}</td>
-                    <td>{{ $shipment->shipmtype }}</td>
+                    <td>{{ $shipment->shippmintno ?? '-' }}</td>
                     <td>{{ $shipment->pilno }}</td>
                     <td>{{ $shipment->datano }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>

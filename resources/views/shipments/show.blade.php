@@ -56,6 +56,10 @@
                         <p class="font-semibold text-slate-900">{{ $shipment->datano ?? '-' }}</p>
                     </div>
                     <div>
+                        <p class="text-slate-500">حالة البيان</p>
+                        <p class="font-semibold text-slate-900">{{ $shipment->dectype ?? '-' }}</p>
+                    </div>
+                    <div>
                         <p class="text-slate-500">مجموعة الشحن</p>
                         <p class="font-semibold text-slate-900">{{ $shipment->shipgroup?->name ?? '-' }}</p>
                     </div>

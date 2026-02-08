@@ -35,6 +35,10 @@ class ReportController extends Controller
             $query->where('customs_port_id', $request->customs_port_id);
         }
 
+        if ($request->filled('shipment_name')) {
+            $query->where('shippmintno', 'like', '%' . $request->shipment_name . '%');
+        }
+
         $shipments = $query->get();
         $departments = \App\Models\Departement::all();
         $ports = \App\Models\CustomsPort::all();
@@ -61,6 +65,10 @@ class ReportController extends Controller
 
         if ($request->has('customs_port_id') && $request->customs_port_id) {
             $query->where('customs_port_id', $request->customs_port_id);
+        }
+
+        if ($request->filled('shipment_name')) {
+            $query->where('shippmintno', 'like', '%' . $request->shipment_name . '%');
         }
 
         $shipments = $query->get();

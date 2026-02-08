@@ -31,11 +31,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.6-4.15a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </span>
-                        <input id="search" name="search" type="text" value="{{ request('search') }}" class="w-full rounded-md border-slate-300 pr-10 focus:border-blue-500 focus:ring-blue-500" placeholder="رقم العملية، البوليصة، الحاوية">
+                        <input id="search" name="search" type="text" value="{{ request('search') }}" class="w-full rounded-md border-slate-300 pr-10 focus:border-blue-500 focus:ring-blue-500" placeholder="رقم العملية، اسم الشحنة، البوليصة، الحاوية">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700" for="departmentno">المنفذ</label>
+                    <label class="block text-sm font-medium text-slate-700" for="customs_port_id">المنفذ</label>
+                    <select id="customs_port_id" name="customs_port_id" class="mt-2 w-full rounded-md border-slate-300">
+                        <option value="">الكل</option>
+                        @foreach($ports as $port)
+                            <option value="{{ $port->id }}" @selected(request('customs_port_id') == $port->id)>{{ $port->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700" for="departmentno">القسم</label>
                     <select id="departmentno" name="departmentno" class="mt-2 w-full rounded-md border-slate-300">
                         <option value="">الكل</option>
                         @foreach($departments as $department)
@@ -44,7 +53,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
+                    <label class="block text-sm font-medium text-slate-700" for="sectionno">الشعبة</label>
                     <select id="sectionno" name="sectionno" class="mt-2 w-full rounded-md border-slate-300">
                         <option value="">الكل</option>
                         @foreach($sections as $section)
@@ -59,6 +68,14 @@
                         @foreach($shippingLines as $line)
                             <option value="{{ $line->id }}" @selected(request('shippingno') == $line->id)>{{ $line->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700" for="dectype">حالة البيان</label>
+                    <select id="dectype" name="dectype" class="mt-2 w-full rounded-md border-slate-300">
+                        <option value="">الكل</option>
+                        <option value="ضمان" @selected(request('dectype') === 'ضمان')>ضمان</option>
+                        <option value="سداد" @selected(request('dectype') === 'سداد')>سداد</option>
                     </select>
                 </div>
                 <div>
@@ -89,10 +106,13 @@
                         <thead>
                         <tr class="text-slate-500 border-b">
                         <th class="py-2">العملية</th>
+                        <th class="py-2">اسم الشحنة</th>
                         <th class="py-2">البوليصة</th>
-                        <th class="py-2">الحاوية</th>
+                        <th class="py-2">عدد الحاويات</th>
                         <th class="py-2">البيان الجمركي</th>
+                        <th class="py-2">حالة البيان</th>
                         <th class="py-2">المنفذ</th>
+                        <th class="py-2">القسم</th>
                         <th class="py-2">الخط الملاحي</th>
                         <th class="py-2">الوصول</th>
                         <th class="py-2">نهاية السماح</th>
@@ -118,13 +138,41 @@
                                 $statusLabel = 'واصلة';
                                 $statusClass = 'bg-blue-100 text-blue-700';
                             }
+
+                            $containerCounts = $shipment->containers
+                                ->filter(fn ($container) => $container->container_size && $container->container_count)
+                                ->groupBy('container_size')
+                                ->map(fn ($group) => $group->sum('container_count'));
+
+                            if ($containerCounts->isEmpty()) {
+                                $containerCounts = collect();
+                                if (($shipment->park40 ?? 0) > 0) {
+                                    $containerCounts->put('40', $shipment->park40);
+                                }
+                                if (($shipment->park20 ?? 0) > 0) {
+                                    $containerCounts->put('20', $shipment->park20);
+                                }
+                            }
+
+                            $preferredOrder = ['40', '40HC', '20'];
+                            $orderedCounts = collect();
+                            foreach ($preferredOrder as $size) {
+                                if ($containerCounts->has($size)) {
+                                    $orderedCounts->put($size, $containerCounts->get($size));
+                                }
+                            }
+                            $orderedCounts = $orderedCounts->merge($containerCounts->diffKeys($orderedCounts));
+                            $containerSummary = $orderedCounts->map(fn ($count, $size) => "{$count}-{$size}")->implode(' ');
                         @endphp
                         <tr class="border-b last:border-0">
                             <td class="py-2">{{ $shipment->operationno }}</td>
+                            <td class="py-2">{{ $shipment->shippmintno ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->pillno }}</td>
-                            <td class="py-2">{{ $shipment->pilno }}</td>
+                            <td class="py-2">{{ $containerSummary !== '' ? $containerSummary : '-' }}</td>
                             <td class="py-2">{{ $shipment->datano ?? '-' }}</td>
-                            <td class="py-2">{{ $shipment->department?->name }}</td>
+                            <td class="py-2">{{ $shipment->dectype ?? '-' }}</td>
+                            <td class="py-2">{{ $shipment->customsPort?->name ?? '-' }}</td>
+                            <td class="py-2">{{ $shipment->department?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->endallowdate?->format('Y-m-d') ?? '-' }}</td>
@@ -178,7 +226,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="12" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
+                            <td colspan="15" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
                         </tr>
                     @endforelse
                     </tbody>

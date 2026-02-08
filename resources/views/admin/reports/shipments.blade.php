@@ -53,6 +53,11 @@
                         </select>
                     </div>
                     <div>
+                        <x-input-label for="shipment_name" :value="__('اسم الشحنة')" class="mb-1" />
+                        <x-text-input id="shipment_name" class="block w-full" type="text" name="shipment_name"
+                            :value="request('shipment_name')" />
+                    </div>
+                    <div>
                         <x-input-label for="date_from" :value="__('من تاريخ')" class="mb-1" />
                         <x-text-input id="date_from" class="block w-full" type="date" name="date_from"
                             :value="request('date_from')" />
@@ -68,7 +73,7 @@
                             {{ __('تصفية') }}
                         </button>
                     </div>
-                    @if(request()->has('date_from') || request()->has('date_to'))
+                    @if(request()->filled('date_from') || request()->filled('date_to') || request()->filled('department_id') || request()->filled('customs_port_id') || request()->filled('shipment_name'))
                         <div>
                             <a href="{{ route('admin.reports.shipments') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 h-[42px]">
@@ -116,8 +121,7 @@
                             <tr class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->shipmtype }}</td>
-                                <!-- Check if shipmtype is name or type -->
+                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->shippmintno ?? '-' }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $shipment->pilno }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
                                 <td class="px-2 py-2 border border-gray-300">

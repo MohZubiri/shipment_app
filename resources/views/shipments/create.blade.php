@@ -136,9 +136,17 @@
                             </div>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-slate-700" for="dectype">حالة البيان</label>
+                            <select id="dectype" name="dectype" class="mt-2 w-full rounded-md border-slate-300">
+                                <option value="">اختر الحالة</option>
+                                <option value="ضمان" @selected(old('dectype', $shipment?->dectype ?? '') === 'ضمان')>ضمان</option>
+                                <option value="سداد" @selected(old('dectype', $shipment?->dectype ?? '') === 'سداد')>سداد</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700" for="shipgroupno">مجموعة
                                 الشحن</label>
-                            <select id="shipgroupno" name="shipgroupno" required
+                            <select id="shipgroupno" name="shipgroupno" 
                                 class="mt-2 w-full rounded-md border-slate-300">
                                 <option value="">اختر المجموعة</option>
                                 @foreach($shipgroups as $shipgroup)
@@ -173,7 +181,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
+                            <label class="block text-sm font-medium text-slate-700" for="sectionno">الشعبة</label>
                             <select id="sectionno" name="sectionno"
                                 class="mt-2 w-full rounded-md border-slate-300">
                                 <option value="">اختر الشعبة</option>
