@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alarm;
 use App\Models\Departement;
+use App\Models\ShipmentStage;
 use App\Models\ShipmentTransaction;
 use Carbon\Carbon;
 
@@ -17,10 +18,14 @@ class DashboardController extends Controller
             ->whereNull('returndate')
             ->count();
 
-        $pendingRelease = ShipmentTransaction::query()
-            ->whereNotNull('dategase')
-            ->whereNull('relaydate')
-            ->count();
+        $portArrivalStageId = ShipmentStage::query()
+            ->where('code', 'port_arrival')
+            ->orWhere('name', 'وصول الميناء')
+            ->value('id');
+
+        $pendingRelease = $portArrivalStageId
+            ? ShipmentTransaction::query()->where('current_stage_id', $portArrivalStageId)->count()
+            : 0;
 
         $nearExpiryCount = ShipmentTransaction::query()
             ->whereNotNull('dategase')

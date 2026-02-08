@@ -170,7 +170,7 @@
                                     $orderedCounts->put($size, $containerCounts->get($size));
                                 }
                             }
-                            $orderedCounts = $orderedCounts->merge($containerCounts->diffKeys($orderedCounts));
+                            $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
                             $containerSummary = $orderedCounts->map(fn ($count, $size) => "{$count}-{$size}")->implode(' ');
                         @endphp
                         <tr class="border-b last:border-0">
