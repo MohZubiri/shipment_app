@@ -21,7 +21,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-12xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <form method="GET" action="{{ route('shipments.index') }}" class="bg-white shadow-sm sm:rounded-xl p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 border border-slate-100">
                 @php
                     $customsStateValue = request('customs_state', request('dectype'));
@@ -210,22 +210,42 @@
                                 <div class="flex items-center gap-2">
                                     @can('view shipments')
                                         <a href="{{ route('shipments.show', $shipment) }}"
-                                            class="px-3 py-1.5 text-xs rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200">
-                                            استعراض
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            title="استعراض" aria-label="استعراض">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span class="sr-only">استعراض</span>
                                         </a>
                                     @endcan
                                     @can('manage shipments')
                                         <a href="{{ route('shipments.edit', $shipment) }}"
-                                            class="px-3 py-1.5 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700">
-                                            تعديل
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                            title="تعديل" aria-label="تعديل">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            <span class="sr-only">تعديل</span>
                                         </a>
                                         <form method="POST" action="{{ route('shipments.destroy', $shipment) }}"
                                             onsubmit="return confirm('هل أنت متأكد من حذف الشحنة؟');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="px-3 py-1.5 text-xs rounded-md bg-red-600 text-white hover:bg-red-700">
-                                                حذف
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-rose-50 text-rose-600 hover:bg-rose-100"
+                                                title="حذف" aria-label="حذف">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                <span class="sr-only">حذف</span>
                                             </button>
                                         </form>
                                     @endcan
