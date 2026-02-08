@@ -19,6 +19,12 @@
                         <x-nav-link :href="route('shipments.index')" :active="request()->routeIs('shipments.index')">
                             قائمة الشحنات
                         </x-nav-link>
+                        <x-nav-link :href="route('road-shipments.index')" :active="request()->routeIs('road-shipments.*')">
+                            الشحن الدولي البري
+                        </x-nav-link>
+                        <x-nav-link :href="route('local-shipments.index')" :active="request()->routeIs('local-shipments.*')">
+                            الشحن المحلي البري
+                        </x-nav-link>
                     @endcan
                     @can('manage shipments')
                         <x-nav-link :href="route('shipments.create')" :active="request()->routeIs('shipments.create')">
@@ -199,6 +205,14 @@
                         <x-responsive-nav-link :href="route('shipments.index')"
                             :active="request()->routeIs('shipments.index')">
                             قائمة الشحنات
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('road-shipments.index')"
+                            :active="request()->routeIs('road-shipments.*')">
+                            الشحن الدولي البري
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('local-shipments.index')"
+                            :active="request()->routeIs('local-shipments.*')">
+                            الشحن المحلي البري
                         </x-responsive-nav-link>
                     @endcan
                     @can('manage shipments')

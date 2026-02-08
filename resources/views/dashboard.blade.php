@@ -68,6 +68,41 @@
                 </div>
             </div>
 
+            <div class="p-6 bg-white border shadow-sm sm:rounded-xl border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900">قوائم الشحنات</h3>
+                        <p class="text-sm text-slate-500">تنقل سريع بين أنواع الشحن</p>
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <a href="{{ route('shipments.index') }}"
+                        class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50">
+                        <div>
+                            <p class="text-sm text-slate-500">الشحن الدولي البحري</p>
+                            <p class="text-lg font-semibold text-slate-900">{{ $seaShipmentsCount }}</p>
+                        </div>
+                        <span class="text-xs text-slate-400">قائمة</span>
+                    </a>
+                    <a href="{{ route('road-shipments.index') }}"
+                        class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50">
+                        <div>
+                            <p class="text-sm text-slate-500">الشحن الدولي البري</p>
+                            <p class="text-lg font-semibold text-slate-900">{{ $internationalRoadCount }}</p>
+                        </div>
+                        <span class="text-xs text-slate-400">قائمة</span>
+                    </a>
+                    <a href="{{ route('local-shipments.index') }}"
+                        class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50">
+                        <div>
+                            <p class="text-sm text-slate-500">الشحن المحلي البري</p>
+                            <p class="text-lg font-semibold text-slate-900">{{ $localRoadCount }}</p>
+                        </div>
+                        <span class="text-xs text-slate-400">قائمة</span>
+                    </a>
+                </div>
+            </div>
+
             <div class="grid gap-6 lg:grid-cols-3">
                 <div class="p-6 bg-white border shadow-sm sm:rounded-xl border-slate-100 lg:col-span-2">
                     <div class="flex justify-between items-center mb-6">
