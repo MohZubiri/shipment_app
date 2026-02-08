@@ -8,7 +8,7 @@
             <div class="flex items-center gap-3">
                 @can('export shipments')
                     <a href="{{ route('shipments.export', request()->query()) }}" class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50">
-                        تصدير CSV
+                        تصدير Excel
                     </a>
                 @endcan
                 @can('manage shipments')
@@ -119,7 +119,7 @@
                         <th class="py-2">الخط الملاحي</th>
                         <th class="py-2">الوصول</th>
                         <th class="py-2">نهاية السماح</th>
-                        <th class="py-2">الحالة</th>
+                        <th class="py-2">مرحلة الشحنة</th>
                         <th class="py-2">الأيام المتبقية</th>
                         <th class="py-2">المستندات</th>
                         <th class="py-2">الإجراءات</th>
@@ -128,25 +128,13 @@
                     <tbody>
                     @forelse($shipments as $shipment)
                         @php
-                            $statusLabel = 'بانتظار';
-                            $statusClass = 'bg-amber-100 text-amber-700';
-
-                            if ($shipment->returndate) {
-                                $statusLabel = 'مكتملة';
-                                $statusClass = 'bg-emerald-100 text-emerald-700';
-                            } elseif ($shipment->stillday < 0) {
-                                $statusLabel = 'متأخرة';
-                                $statusClass = 'bg-rose-100 text-rose-700';
-                            } elseif ($shipment->dategase) {
-                                $statusLabel = 'واصلة';
-                                $statusClass = 'bg-blue-100 text-blue-700';
-                            }
-
                             $customsStateLabel = match ($shipment->customsData?->state) {
                                 1 => 'ضمان',
                                 2 => 'سداد',
                                 default => '-',
                             };
+
+                            $stageLabel = $shipment->currentStage?->name ?? 'غير محددة';
 
                             $containerCounts = $shipment->containers
                                 ->filter(fn ($container) => $container->container_size && $container->container_count)
@@ -186,8 +174,8 @@
                             <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->endallowdate?->format('Y-m-d') ?? '-' }}</td>
                             <td class="py-2">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold {{ $statusClass }}">
-                                    {{ $statusLabel }}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                                    {{ $stageLabel }}
                                 </span>
                             </td>
                             <td class="py-2">
@@ -197,7 +185,7 @@
                             </td>
                             <td class="py-2">
                                 @forelse($shipment->documents as $document)
-                                    <a class="text-blue-600 hover:underline" href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($document->path) }}" target="_blank">
+                                    <a class="text-blue-600 hover:underline" href="{{ route('shipments.documents.download', $document) }}" download>
                                         {{ $document->original_name }}
                                     </a>
                                     @if(!$loop->last)

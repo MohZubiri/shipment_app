@@ -201,8 +201,7 @@
                 <div class="space-y-2 text-sm">
                     @forelse($shipment->documents as $document)
                         <a class="text-blue-600 hover:underline"
-                            href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($document->path) }}"
-                            target="_blank">
+                            href="{{ route('shipments.documents.download', $document) }}" download>
                             {{ $document->original_name }}
                         </a>
                     @empty

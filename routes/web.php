@@ -48,6 +48,8 @@ Route::get('/shipments/export', [ShipmentController::class, 'export'])
 Route::middleware(['auth', 'permission:view shipments'])->group(function () {
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+    Route::get('/shipments/documents/{document}/download', [ShipmentController::class, 'downloadDocument'])
+        ->name('shipments.documents.download');
     Route::get('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'index'])->name('shipments.tracking.index');
     Route::get('/shipments/{shipment}/tracking/create', [ShipmentTrackingController::class, 'create'])->name('shipments.tracking.create');
     Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])->name('shipments.tracking.store');

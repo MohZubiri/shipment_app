@@ -12,6 +12,7 @@ use App\Models\Shipgroup;
 use App\Models\ShippingLine;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ShipmentController extends Controller
 {
@@ -28,6 +29,7 @@ class ShipmentController extends Controller
                 'shipment',
                 'shipmentType',
                 'shipmentStatus',
+                'currentStage',
                 'containers',
                 'documents',
             ]);
@@ -225,8 +227,8 @@ class ShipmentController extends Controller
         $shipments = $query->orderByDesc('id')->get();
 
         $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="shipments.csv"',
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename="shipments.xls"',
         ];
 
         $callback = function () use ($shipments) {
@@ -245,7 +247,7 @@ class ShipmentController extends Controller
                 'End Allow Date',
                 'Still Days',
                 'Created At',
-            ]);
+            ], "\t");
 
             foreach ($shipments as $shipment) {
                 fputcsv($handle, [
@@ -261,13 +263,24 @@ class ShipmentController extends Controller
                     $shipment->endallowdate?->format('Y-m-d'),
                     $shipment->stillday,
                     $shipment->created_at?->format('Y-m-d H:i'),
-                ]);
+                ], "\t");
             }
 
             fclose($handle);
         };
 
-        return response()->streamDownload($callback, 'shipments.csv', $headers);
+        return response()->streamDownload($callback, 'shipments.xls', $headers);
+    }
+
+    public function downloadDocument(ShipmentDocument $document)
+    {
+        if (!$document->path || !Storage::disk('public')->exists($document->path)) {
+            abort(404);
+        }
+
+        $filename = $document->original_name ?: basename($document->path);
+
+        return Storage::disk('public')->download($document->path, $filename);
     }
 
     private function applyFilters(Builder $query, Request $request): void
