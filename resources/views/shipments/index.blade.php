@@ -136,6 +136,17 @@
 
                             $stageLabel = $shipment->currentStage?->name ?? 'غير محددة';
 
+                            $today = \Carbon\Carbon::today();
+                            $computedEndAllowDate = $shipment->endallowdate;
+                            $computedStillday = 0;
+                            $allowanceDays = $shipment->shippingLine?->time;
+                            if ($shipment->dategase && $allowanceDays) {
+                                $computedEndAllowDate = \Carbon\Carbon::parse($shipment->dategase)->addDays((int) $allowanceDays);
+                                $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                            } elseif ($computedEndAllowDate) {
+                                $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                            }
+
                             $containerCounts = $shipment->containers
                                 ->filter(fn ($container) => $container->container_size && $container->container_count)
                                 ->groupBy('container_size')
@@ -172,15 +183,15 @@
                             <td class="py-2">{{ $shipment->department?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
-                            <td class="py-2">{{ $shipment->endallowdate?->format('Y-m-d') ?? '-' }}</td>
+                            <td class="py-2">{{ $computedEndAllowDate?->format('Y-m-d') ?? '-' }}</td>
                             <td class="py-2">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
                                     {{ $stageLabel }}
                                 </span>
                             </td>
                             <td class="py-2">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs {{ $shipment->stillday < 0 ? 'bg-red-100 text-red-700' : ($shipment->stillday <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700') }}">
-                                    {{ $shipment->stillday }}
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs {{ $computedStillday < 0 ? 'bg-red-100 text-red-700' : ($computedStillday <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700') }}">
+                                    {{ $computedStillday }}
                                 </span>
                             </td>
                             <td class="py-2">
