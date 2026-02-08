@@ -42,6 +42,13 @@
                     <h3 class="text-lg font-semibold text-slate-900">البيانات الأساسية</h3>
                     <span class="text-xs text-slate-400">Step 1</span>
                 </div>
+                @php
+                    $customsStateLabel = match ($shipment->customsData?->state) {
+                        1 => 'ضمان',
+                        2 => 'سداد',
+                        default => '-',
+                    };
+                @endphp
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">
                     <div>
                         <p class="text-slate-500">رقم العملية</p>
@@ -57,7 +64,7 @@
                     </div>
                     <div>
                         <p class="text-slate-500">حالة البيان</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->dectype ?? '-' }}</p>
+                        <p class="font-semibold text-slate-900">{{ $customsStateLabel }}</p>
                     </div>
                     <div>
                         <p class="text-slate-500">مجموعة الشحن</p>

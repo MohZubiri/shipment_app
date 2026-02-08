@@ -23,6 +23,9 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <form method="GET" action="{{ route('shipments.index') }}" class="bg-white shadow-sm sm:rounded-xl p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 border border-slate-100">
+                @php
+                    $customsStateValue = request('customs_state', request('dectype'));
+                @endphp
                 <div class="lg:col-span-2">
                     <label class="block text-sm font-medium text-slate-700" for="search">بحث ذكي</label>
                     <div class="mt-2 relative">
@@ -71,11 +74,11 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700" for="dectype">حالة البيان</label>
-                    <select id="dectype" name="dectype" class="mt-2 w-full rounded-md border-slate-300">
+                    <label class="block text-sm font-medium text-slate-700" for="customs_state">حالة البيان</label>
+                    <select id="customs_state" name="customs_state" class="mt-2 w-full rounded-md border-slate-300">
                         <option value="">الكل</option>
-                        <option value="ضمان" @selected(request('dectype') === 'ضمان')>ضمان</option>
-                        <option value="سداد" @selected(request('dectype') === 'سداد')>سداد</option>
+                        <option value="1" @selected((string) $customsStateValue === '1' || $customsStateValue === 'ضمان')>ضمان</option>
+                        <option value="2" @selected((string) $customsStateValue === '2' || $customsStateValue === 'سداد')>سداد</option>
                     </select>
                 </div>
                 <div>
@@ -139,6 +142,12 @@
                                 $statusClass = 'bg-blue-100 text-blue-700';
                             }
 
+                            $customsStateLabel = match ($shipment->customsData?->state) {
+                                1 => 'ضمان',
+                                2 => 'سداد',
+                                default => '-',
+                            };
+
                             $containerCounts = $shipment->containers
                                 ->filter(fn ($container) => $container->container_size && $container->container_count)
                                 ->groupBy('container_size')
@@ -170,7 +179,7 @@
                             <td class="py-2">{{ $shipment->pillno }}</td>
                             <td class="py-2">{{ $containerSummary !== '' ? $containerSummary : '-' }}</td>
                             <td class="py-2">{{ $shipment->datano ?? '-' }}</td>
-                            <td class="py-2">{{ $shipment->dectype ?? '-' }}</td>
+                            <td class="py-2">{{ $customsStateLabel }}</td>
                             <td class="py-2">{{ $shipment->customsPort?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->department?->name ?? '-' }}</td>
                             <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>

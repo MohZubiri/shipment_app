@@ -23,6 +23,7 @@ class ShipmentController extends Controller
                 'section',
                 'shipgroup',
                 'shippingLine',
+                'customsData',
                 'customsPort',
                 'shipment',
                 'shipmentType',
@@ -71,6 +72,7 @@ class ShipmentController extends Controller
             'shipgroup',
             'shippingLine',
             'customsPort',
+            'customsData',
             'shipment',
             'shipmentType',
             'shipmentStatus',
@@ -289,7 +291,15 @@ class ShipmentController extends Controller
         $query->when($request->filled('customs_port_id'), fn (Builder $builder) => $builder->where('customs_port_id', $request->customs_port_id));
         $query->when($request->filled('sectionno'), fn (Builder $builder) => $builder->where('sectionno', $request->sectionno));
         $query->when($request->filled('shippingno'), fn (Builder $builder) => $builder->where('shippingno', $request->shippingno));
-        $query->when($request->filled('dectype'), fn (Builder $builder) => $builder->where('dectype', $request->dectype));
+        $customsState = $request->get('customs_state', $request->get('dectype'));
+        if ($customsState !== null && $customsState !== '') {
+            if ($customsState === 'ضمان') {
+                $customsState = 1;
+            } elseif ($customsState === 'سداد') {
+                $customsState = 2;
+            }
+            $query->whereHas('customsData', fn (Builder $builder) => $builder->where('state', $customsState));
+        }
 
         if ($request->filled('dategase_from')) {
             $query->whereDate('dategase', '>=', $request->dategase_from);

@@ -53,12 +53,19 @@
                     </thead>
                     <tbody>
                     @forelse($dataRows as $row)
+                        @php
+                            $stateLabel = match ($row->state) {
+                                1 => 'ضمان',
+                                2 => 'سداد',
+                                default => 'غير محددة',
+                            };
+                        @endphp
                         <tr class="border-b last:border-0">
                             <td class="py-2 font-semibold text-slate-800">{{ $row->datano }}</td>
                             <td class="py-2">{{ $row->datacreate?->format('Y-m-d') }}</td>
                             <td class="py-2">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $row->state ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600' }}">
-                                    {{ $row->state ?? 'غير محددة' }}
+                                    {{ $stateLabel }}
                                 </span>
                             </td>
                             <td class="py-2">{{ $row->shipments_count }}</td>

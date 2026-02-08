@@ -43,7 +43,7 @@ class CustomsDataController extends Controller
         $data = $request->validate([
             'datano' => ['required', 'integer', 'min:1', 'unique:data,datano'],
             'datacreate' => ['required', 'date'],
-            'state' => ['nullable', 'integer'],
+            'state' => ['nullable', 'integer', Rule::in([1, 2])],
         ]);
 
         CustomsData::create($data);
@@ -61,7 +61,7 @@ class CustomsDataController extends Controller
         $data = $request->validate([
             'datano' => ['required', 'integer', 'min:1', Rule::unique('data', 'datano')->ignore($customsData->id)],
             'datacreate' => ['required', 'date'],
-            'state' => ['nullable', 'integer'],
+            'state' => ['nullable', 'integer', Rule::in([1, 2])],
         ]);
 
         $customsData->update($data);

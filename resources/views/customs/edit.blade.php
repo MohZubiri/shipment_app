@@ -30,8 +30,12 @@
                         <input id="datacreate" name="datacreate" type="date" value="{{ old('datacreate', $customsData->datacreate?->format('Y-m-d')) }}" required class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700" for="state">الحالة</label>
-                        <input id="state" name="state" type="number" value="{{ old('state', $customsData->state) }}" class="mt-2 w-full rounded-md border-slate-300">
+                        <label class="block text-sm font-medium text-slate-700" for="state">حالة البيان</label>
+                        <select id="state" name="state" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر الحالة</option>
+                            <option value="1" @selected((string) old('state', $customsData->state) === '1')>ضمان</option>
+                            <option value="2" @selected((string) old('state', $customsData->state) === '2')>سداد</option>
+                        </select>
                     </div>
                 </div>
 
