@@ -18,6 +18,7 @@ class ShipmentStage extends Model
         'icon',
         'color',
         'description',
+        'applies_to',
         'is_active',
         'needs_containers',
         'needs_warehouse',
@@ -50,5 +51,10 @@ class ShipmentStage extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('order');
+    }
+
+    public function scopeForTransport($query, string $type)
+    {
+        return $query->whereIn('applies_to', [$type, 'both']);
     }
 }

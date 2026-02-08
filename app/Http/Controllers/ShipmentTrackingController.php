@@ -13,7 +13,7 @@ class ShipmentTrackingController extends Controller
     {
         $shipment->load(['trackingRecords.stage', 'trackingRecords.createdBy', 'currentStage']);
 
-        $stages = ShipmentStage::active()->ordered()->get();
+        $stages = ShipmentStage::active()->ordered()->forTransport('sea')->get();
 
         return view('shipments.tracking.index', [
             'shipment' => $shipment,
@@ -23,7 +23,7 @@ class ShipmentTrackingController extends Controller
 
     public function create(ShipmentTransaction $shipment)
     {
-        $stages = ShipmentStage::active()->ordered()->get();
+        $stages = ShipmentStage::active()->ordered()->forTransport('sea')->get();
 
         return view('shipments.tracking.create', [
             'shipment' => $shipment,
@@ -34,6 +34,11 @@ class ShipmentTrackingController extends Controller
     public function store(Request $request, ShipmentTransaction $shipment)
     {
         $stage = ShipmentStage::findOrFail($request->input('stage_id'));
+        if (!in_array($stage->applies_to, ['sea', 'both'], true)) {
+            return back()
+                ->withInput()
+                ->withErrors(['stage_id' => 'هذه المرحلة غير متاحة للشحن البحري.']);
+        }
 
         // التحقق من عدم تكرار المرحلة في نفس اليوم
         $existingRecord = $shipment->trackingRecords()
@@ -86,7 +91,7 @@ class ShipmentTrackingController extends Controller
 
     public function edit(ShipmentTransaction $shipment, ShipmentTracking $tracking)
     {
-        $stages = ShipmentStage::active()->ordered()->get();
+        $stages = ShipmentStage::active()->ordered()->forTransport('sea')->get();
 
         return view('shipments.tracking.edit', [
             'shipment' => $shipment,
@@ -98,6 +103,11 @@ class ShipmentTrackingController extends Controller
     public function update(Request $request, ShipmentTransaction $shipment, ShipmentTracking $tracking)
     {
         $stage = ShipmentStage::findOrFail($request->input('stage_id'));
+        if (!in_array($stage->applies_to, ['sea', 'both'], true)) {
+            return back()
+                ->withInput()
+                ->withErrors(['stage_id' => 'هذه المرحلة غير متاحة للشحن البحري.']);
+        }
 
         $data = $request->validate([
             'stage_id' => ['required', 'exists:shipment_stages,id'],

@@ -28,7 +28,7 @@ class SectionController extends Controller
         Section::create($validated);
 
         return redirect()->route('admin.sections.index')
-            ->with('status', 'تم إضافة الشعبة بنجاح');
+            ->with('status', 'تم إضافة القسم بنجاح');
     }
 
     public function edit(Section $section)
@@ -45,7 +45,7 @@ class SectionController extends Controller
         $section->update($validated);
 
         return redirect()->route('admin.sections.index')
-            ->with('status', 'تم تحديث الشعبة بنجاح');
+            ->with('status', 'تم تحديث القسم بنجاح');
     }
 
     public function destroy(Section $section)
@@ -53,6 +53,6 @@ class SectionController extends Controller
         $section->delete();
 
         return redirect()->route('admin.sections.index')
-            ->with('status', 'تم حذف الشعبة بنجاح');
+            ->with('status', 'تم حذف القسم بنجاح');
     }
 }

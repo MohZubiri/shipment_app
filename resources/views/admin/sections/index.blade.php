@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('إدارة الشعب') }}
+                {{ __('إدارة الأقسام') }}
             </h2>
             <a href="{{ route('admin.sections.create') }}"
                 class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -10,7 +10,7 @@
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                {{ __('إضافة شعبة جديدة') }}
+                {{ __('إضافة قسم جديد') }}
             </a>
         </div>
     </x-slot>
@@ -61,7 +61,7 @@
                                                 <span class="sr-only">تعديل</span>
                                             </a>
                                             <form method="POST" action="{{ route('admin.sections.destroy', $section) }}"
-                                                onsubmit="return confirm('هل أنت متأكد من حذف هذه الشعبة؟ لا يمكن التراجع عن هذا الإجراء.')"
+                                                onsubmit="return confirm('هل أنت متأكد من حذف هذا القسم؟ لا يمكن التراجع عن هذا الإجراء.')"
                                                 class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
@@ -89,8 +89,8 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                             </svg>
-                                            <p class="text-base font-medium">لا يوجد شعب مضافة بعد</p>
-                                            <p class="text-sm mt-1">ابدأ بإضافة شعبة جديدة لتظهر في هذه القائمة</p>
+                                            <p class="text-base font-medium">لا توجد أقسام مضافة بعد</p>
+                                            <p class="text-sm mt-1">ابدأ بإضافة قسم جديد لتظهر في هذه القائمة</p>
                                         </div>
                                     </td>
                                 </tr>

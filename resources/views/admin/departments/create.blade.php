@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('إضافة قسم جديد') }}
+                {{ __('إضافة شركة جديدة') }}
             </h2>
         </div>
     </x-slot>
@@ -18,7 +18,7 @@
                         <div>
                             <x-input-label for="name" :value="__('الاسم')" class="mb-1" />
                             <x-text-input id="name" class="block w-full" type="text" name="name" :value="old('name')"
-                                required autofocus placeholder="اسم القسم" />
+                                required autofocus placeholder="اسم الشركة" />
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                         </div>
 

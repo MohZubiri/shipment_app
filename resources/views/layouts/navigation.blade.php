@@ -16,15 +16,36 @@
                         لوحة التحكم
                     </x-nav-link>
                     @can('view shipments')
-                        <x-nav-link :href="route('shipments.index')" :active="request()->routeIs('shipments.index')">
-                            قائمة الشحنات
-                        </x-nav-link>
-                        <x-nav-link :href="route('road-shipments.index')" :active="request()->routeIs('road-shipments.*')">
-                            الشحن الدولي البري
-                        </x-nav-link>
-                        <x-nav-link :href="route('local-shipments.index')" :active="request()->routeIs('local-shipments.*')">
-                            الشحن المحلي البري
-                        </x-nav-link>
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <x-dropdown align="right" width="48">
+                                <x-slot name="trigger">
+                                    <button
+                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 bg-white rounded-md border border-transparent transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                                        <div>الشحنات</div>
+                                        <div class="ms-1">
+                                            <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <x-dropdown-link :href="route('shipments.index')">
+                                        الشحن الدولي البحري
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('road-shipments.index')">
+                                        الشحن الدولي البري
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('local-shipments.index')">
+                                        الشحن المحلي البري
+                                    </x-dropdown-link>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
                     @endcan
                     @can('manage shipments')
                         <x-nav-link :href="route('shipments.create')" :active="request()->routeIs('shipments.create')">
@@ -111,10 +132,10 @@
                                     مجموعات الشحن
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.departments.index')">
-                                    الأقسام
+                                    الشركات
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.sections.index')">
-                                    الشعب
+                                    الأقسام
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.shipment-types.index')">
                                     أنواع الشحنات
@@ -202,9 +223,11 @@
                         لوحة التحكم
                     </x-responsive-nav-link>
                     @can('view shipments')
+                        <div class="my-2 border-t border-gray-200"></div>
+                        <div class="px-4 py-2 text-xs text-gray-400">الشحنات</div>
                         <x-responsive-nav-link :href="route('shipments.index')"
                             :active="request()->routeIs('shipments.index')">
-                            قائمة الشحنات
+                            الشحن الدولي البحري
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('road-shipments.index')"
                             :active="request()->routeIs('road-shipments.*')">
@@ -275,11 +298,11 @@
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.departments.index')"
                         :active="request()->routeIs('admin.departments.*')">
-                        الأقسام
+                        الشركات
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.sections.index')"
                         :active="request()->routeIs('admin.sections.*')">
-                        الشعب
+                        الأقسام
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.shipment-stages.index')"
                         :active="request()->routeIs('admin.shipment-stages.*')">

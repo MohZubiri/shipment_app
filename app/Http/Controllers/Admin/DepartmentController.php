@@ -28,7 +28,7 @@ class DepartmentController extends Controller
         Departement::create($validated);
 
         return redirect()->route('admin.departments.index')
-            ->with('status', 'تم إضافة القسم بنجاح');
+            ->with('status', 'تم إضافة الشركة بنجاح');
     }
 
     public function edit(Departement $department)
@@ -45,7 +45,7 @@ class DepartmentController extends Controller
         $department->update($validated);
 
         return redirect()->route('admin.departments.index')
-            ->with('status', 'تم تحديث القسم بنجاح');
+            ->with('status', 'تم تحديث الشركة بنجاح');
     }
 
     public function destroy(Departement $department)
@@ -53,6 +53,6 @@ class DepartmentController extends Controller
         $department->delete();
 
         return redirect()->route('admin.departments.index')
-            ->with('status', 'تم حذف القسم بنجاح');
+            ->with('status', 'تم حذف الشركة بنجاح');
     }
 }

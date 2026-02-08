@@ -27,6 +27,7 @@
                             <th class="px-4 py-3">#</th>
                             <th class="px-4 py-3">الاسم</th>
                             <th class="px-4 py-3">الكود</th>
+                            <th class="px-4 py-3">النوع</th>
                             <th class="px-4 py-3">الترتيب</th>
                             <th class="px-4 py-3">اللون</th>
                             <th class="px-4 py-3">يتطلب حاويات</th>
@@ -41,6 +42,18 @@
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $stage->id }}</td>
                                 <td class="px-4 py-3 text-slate-900">{{ $stage->name }}</td>
                                 <td class="px-4 py-3 text-slate-500">{{ $stage->code }}</td>
+                                <td class="px-4 py-3 text-slate-500">
+                                    @php
+                                        $stageTypeLabel = match ($stage->applies_to) {
+                                            'sea' => 'بحري',
+                                            'land' => 'بري',
+                                            default => 'كلاهما',
+                                        };
+                                    @endphp
+                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">
+                                        {{ $stageTypeLabel }}
+                                    </span>
+                                </td>
                                 <td class="px-4 py-3 text-slate-500">{{ $stage->order }}</td>
                                 <td class="px-4 py-3">
                                     @if($stage->color)
@@ -98,7 +111,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-4 py-6 text-center text-slate-500">لا توجد مراحل مسجلة بعد.</td>
+                                <td colspan="10" class="px-4 py-6 text-center text-slate-500">لا توجد مراحل مسجلة بعد.</td>
                             </tr>
                         @endforelse
                     </tbody>

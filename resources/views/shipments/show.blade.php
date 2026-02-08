@@ -75,11 +75,11 @@
                         <p class="font-semibold text-slate-900">{{ $shipment->customsPort?->name ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-slate-500">القسم</p>
+                        <p class="text-slate-500">الشركة</p>
                         <p class="font-semibold text-slate-900">{{ $shipment->department?->name ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-slate-500">القسم الفرعي</p>
+                        <p class="text-slate-500">القسم</p>
                         <p class="font-semibold text-slate-900">{{ $shipment->section?->name ?? '-' }}</p>
                     </div>
                     <div>

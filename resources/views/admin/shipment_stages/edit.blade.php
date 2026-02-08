@@ -42,6 +42,16 @@
                         </div>
 
                         <div>
+                            <x-input-label for="applies_to" value="نوع المرحلة" />
+                            <select id="applies_to" name="applies_to" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="both" {{ old('applies_to', $stage->applies_to) === 'both' ? 'selected' : '' }}>كلاهما</option>
+                                <option value="sea" {{ old('applies_to', $stage->applies_to) === 'sea' ? 'selected' : '' }}>بحري</option>
+                                <option value="land" {{ old('applies_to', $stage->applies_to) === 'land' ? 'selected' : '' }}>بري</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('applies_to')" class="mt-2" />
+                        </div>
+
+                        <div>
                             <x-input-label for="icon" value="الأيقونة (اختياري)" />
                             <x-text-input id="icon" name="icon" type="text" class="mt-1 block w-full" value="{{ old('icon', $stage->icon) }}" />
                             <x-input-error :messages="$errors->get('icon')" class="mt-2" />

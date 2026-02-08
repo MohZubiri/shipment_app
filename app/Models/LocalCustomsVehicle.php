@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Departement;
+use App\Models\Section;
 
 class LocalCustomsVehicle extends Model
 {
@@ -25,6 +27,8 @@ class LocalCustomsVehicle extends Model
         'notes',
         'created_by',
         'is_active',
+        'company_id',
+        'section_id',
     ];
 
     protected $casts = [
@@ -33,4 +37,14 @@ class LocalCustomsVehicle extends Model
         'exit_date_from_manufacture' => 'date',
         'is_active' => 'boolean',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Departement::class, 'company_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Section::class, 'section_id');
+    }
 }

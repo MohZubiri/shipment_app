@@ -39,6 +39,7 @@ class StoreShipmentRequest extends FormRequest
             'shipmtype' => ['required', 'integer', 'min:0'],
             'departmentno' => ['required', 'exists:departement,id'],
             'sectionno' => ['nullable', 'exists:section,id'],
+            'customs_port_id' => ['required', 'exists:customs_port,id'],
             'sendingdate' => ['nullable', 'date'],
             'officedate' => ['nullable', 'date'],
             'workerdate' => ['nullable', 'date'],
@@ -76,6 +77,7 @@ class StoreShipmentRequest extends FormRequest
             'pilno' => 'رقم الحاوية',
             'operationno' => 'رقم العملية',
             'shippmintno' => 'اسم الشحنة',
+            'customs_port_id' => 'المنفذ',
         ];
     }
 }

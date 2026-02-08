@@ -47,7 +47,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700" for="departmentno">القسم</label>
+                    <label class="block text-sm font-medium text-slate-700" for="departmentno">الشركة</label>
                     <select id="departmentno" name="departmentno" class="mt-2 w-full rounded-md border-slate-300">
                         <option value="">الكل</option>
                         @foreach($departments as $department)
@@ -56,7 +56,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700" for="sectionno">الشعبة</label>
+                    <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
                     <select id="sectionno" name="sectionno" class="mt-2 w-full rounded-md border-slate-300">
                         <option value="">الكل</option>
                         @foreach($sections as $section)
@@ -115,7 +115,7 @@
                         <th class="py-2">البيان الجمركي</th>
                         <th class="py-2">حالة البيان</th>
                         <th class="py-2">المنفذ</th>
-                        <th class="py-2">القسم</th>
+                        <th class="py-2">الشركة</th>
                         <th class="py-2">الخط الملاحي</th>
                         <th class="py-2">الوصول</th>
                         <th class="py-2">نهاية السماح</th>

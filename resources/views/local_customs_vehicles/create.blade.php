@@ -31,6 +31,24 @@
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
+                        <select id="company_id" name="company_id" required class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر الشركة</option>
+                            @foreach($companies as $company)
+                                <option value="{{ $company->id }}" @selected(old('company_id') == $company->id)>{{ $company->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700" for="section_id">القسم</label>
+                        <select id="section_id" name="section_id" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختياري</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}" @selected(old('section_id') == $department->id)>{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-slate-700" for="user_name">اسم المستخدم</label>
                         <input id="user_name" name="user_name" type="text" value="{{ old('user_name') }}"
                             class="mt-2 w-full rounded-md border-slate-300">

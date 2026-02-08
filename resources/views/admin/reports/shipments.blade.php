@@ -41,7 +41,7 @@
                         </select>
                     </div>
                     <div>
-                        <x-input-label for="department_id" :value="__('القسم')" class="mb-1" />
+                        <x-input-label for="department_id" :value="__('الشركة')" class="mb-1" />
                         <select id="department_id" name="department_id"
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full">
                             <option value="">{{ __('الكل') }}</option>
@@ -87,7 +87,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 overflow-x-auto">
                 <div class="p-6 text-center">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">
-                        التقرير اليومي لشركة التكامل الدولية قسم
+                        التقرير اليومي لشركة التكامل الدولية شركة
                         {{ request('department_id') ? $departments->where('id', request('department_id'))->first()->name ?? 'العصائر' : 'العصائر' }}
                         لدى منفذ
                     </h3>

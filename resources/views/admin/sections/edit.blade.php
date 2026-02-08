@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('تعديل شعبة') }}: {{ $section->name }}
+                {{ __('تعديل قسم') }}: {{ $section->name }}
             </h2>
         </div>
     </x-slot>

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CustomsDataController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandShippingController;
+use App\Http\Controllers\LandShippingTrackingController;
 use App\Http\Controllers\LocalCustomsVehicleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShipmentController;
@@ -53,7 +54,15 @@ Route::middleware(['auth', 'permission:view shipments'])->group(function () {
     Route::get('/shipments/documents/{document}/download', [ShipmentController::class, 'downloadDocument'])
         ->name('shipments.documents.download');
     Route::get('/road-shipments', [LandShippingController::class, 'index'])->name('road-shipments.index');
+    Route::get('/road-shipments/documents/{document}/download', [LandShippingController::class, 'downloadDocument'])
+        ->name('road-shipments.documents.download');
     Route::get('/local-shipments', [LocalCustomsVehicleController::class, 'index'])->name('local-shipments.index');
+    Route::get('/road-shipments/{landShipping}/tracking', [LandShippingTrackingController::class, 'index'])->name('road-shipments.tracking.index');
+    Route::get('/road-shipments/{landShipping}/tracking/create', [LandShippingTrackingController::class, 'create'])->name('road-shipments.tracking.create');
+    Route::post('/road-shipments/{landShipping}/tracking', [LandShippingTrackingController::class, 'store'])->name('road-shipments.tracking.store');
+    Route::get('/road-shipments/{landShipping}/tracking/{tracking}/edit', [LandShippingTrackingController::class, 'edit'])->name('road-shipments.tracking.edit');
+    Route::put('/road-shipments/{landShipping}/tracking/{tracking}', [LandShippingTrackingController::class, 'update'])->name('road-shipments.tracking.update');
+    Route::delete('/road-shipments/{landShipping}/tracking/{tracking}', [LandShippingTrackingController::class, 'destroy'])->name('road-shipments.tracking.destroy');
     Route::get('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'index'])->name('shipments.tracking.index');
     Route::get('/shipments/{shipment}/tracking/create', [ShipmentTrackingController::class, 'create'])->name('shipments.tracking.create');
     Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])->name('shipments.tracking.store');

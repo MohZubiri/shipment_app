@@ -30,6 +30,24 @@
                         class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم التسلسل، اللوحة، اسم المستخدم">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
+                    <select id="company_id" name="company_id" class="mt-2 w-full rounded-md border-slate-300">
+                        <option value="">الكل</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" @selected(request('company_id') == $company->id)>{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700" for="section_id">القسم</label>
+                    <select id="section_id" name="section_id" class="mt-2 w-full rounded-md border-slate-300">
+                        <option value="">الكل</option>
+                        @foreach($departments as $department)
+                            <option value="{{ $department->id }}" @selected(request('section_id') == $department->id)>{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700" for="date_from">تاريخ الوصول من</label>
                     <input id="date_from" name="date_from" type="date" value="{{ request('date_from') }}"
                         class="mt-2 w-full rounded-md border-slate-300">
@@ -52,6 +70,8 @@
                         <th class="py-2">رقم التسلسل</th>
                         <th class="py-2">رقم اللوحة</th>
                         <th class="py-2">اسم المستخدم</th>
+                        <th class="py-2">الشركة</th>
+                        <th class="py-2">القسم</th>
                         <th class="py-2">تاريخ الوصول</th>
                         <th class="py-2">الوجهة</th>
                         <th class="py-2">نوع البضاعة</th>
@@ -65,6 +85,8 @@
                             <td class="py-2 font-semibold text-slate-800">{{ $vehicle->serial_number }}</td>
                             <td class="py-2">{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
                             <td class="py-2">{{ $vehicle->user_name ?? '-' }}</td>
+                            <td class="py-2">{{ $vehicle->company?->name ?? '-' }}</td>
+                            <td class="py-2">{{ $vehicle->department?->name ?? '-' }}</td>
                             <td class="py-2">{{ $vehicle->arrival_date_from_branch?->format('Y-m-d') ?? '-' }}</td>
                             <td class="py-2">{{ $vehicle->destination ?? '-' }}</td>
                             <td class="py-2">{{ $vehicle->cargo_type ?? '-' }}</td>
@@ -107,7 +129,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
+                            <td colspan="10" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
                         </tr>
                     @endforelse
                     </tbody>

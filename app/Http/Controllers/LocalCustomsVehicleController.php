@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Departement;
 use App\Models\LocalCustomsVehicle;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +12,7 @@ class LocalCustomsVehicleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = LocalCustomsVehicle::query();
+        $query = LocalCustomsVehicle::query()->with(['company', 'department']);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));
@@ -32,14 +34,28 @@ class LocalCustomsVehicleController extends Controller
             $query->whereDate('arrival_date_from_branch', '<=', $request->date_to);
         }
 
+        if ($request->filled('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->filled('section_id')) {
+            $query->where('section_id', $request->section_id);
+        }
+
         $vehicles = $query->orderByDesc('id')->paginate(15)->withQueryString();
 
-        return view('local_customs_vehicles.index', compact('vehicles'));
+        $companies = Departement::query()->orderBy('name')->get();
+        $departments = Section::query()->orderBy('name')->get();
+
+        return view('local_customs_vehicles.index', compact('vehicles', 'companies', 'departments'));
     }
 
     public function create()
     {
-        return view('local_customs_vehicles.create');
+        return view('local_customs_vehicles.create', [
+            'companies' => Departement::query()->orderBy('name')->get(),
+            'departments' => Section::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request)
@@ -59,6 +75,8 @@ class LocalCustomsVehicleController extends Controller
             'exit_date_from_manufacture' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
+            'company_id' => ['required', 'exists:departement,id'],
+            'section_id' => ['nullable', 'exists:section,id'],
         ]);
 
         $data['created_by'] = Auth::user()?->name;
@@ -73,7 +91,11 @@ class LocalCustomsVehicleController extends Controller
 
     public function edit(LocalCustomsVehicle $localCustomsVehicle)
     {
-        return view('local_customs_vehicles.edit', compact('localCustomsVehicle'));
+        return view('local_customs_vehicles.edit', [
+            'localCustomsVehicle' => $localCustomsVehicle,
+            'companies' => Departement::query()->orderBy('name')->get(),
+            'departments' => Section::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function update(Request $request, LocalCustomsVehicle $localCustomsVehicle)
@@ -93,6 +115,8 @@ class LocalCustomsVehicleController extends Controller
             'exit_date_from_manufacture' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
+            'company_id' => ['required', 'exists:departement,id'],
+            'section_id' => ['nullable', 'exists:section,id'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active');

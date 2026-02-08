@@ -161,10 +161,10 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="departmentno">القسم</label>
+                            <label class="block text-sm font-medium text-slate-700" for="departmentno">الشركة</label>
                             <select id="departmentno" name="departmentno" required
                                 class="mt-2 w-full rounded-md border-slate-300">
-                                <option value="">اختر القسم</option>
+                                <option value="">اختر الشركة</option>
                                 @foreach($departments as $department)
                                     <option value="{{ $department->id }}" @selected(old('departmentno', $shipment?->departmentno ?? '') == $department->id)>
                                         {{ $department->name }}
@@ -173,10 +173,10 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="sectionno">الشعبة</label>
+                            <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
                             <select id="sectionno" name="sectionno"
                                 class="mt-2 w-full rounded-md border-slate-300">
-                                <option value="">اختر الشعبة</option>
+                                <option value="">اختر القسم</option>
                                 @foreach($sections as $section)
                                     <option value="{{ $section->id }}" @selected(old('sectionno', $shipment?->sectionno ?? '') == $section->id)>
                                         {{ $section->name }}

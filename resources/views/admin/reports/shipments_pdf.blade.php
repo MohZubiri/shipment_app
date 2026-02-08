@@ -48,7 +48,7 @@
 
     <div class="header">
         <h2>
-            التقرير اليومي لشركة التكامل الدولية قسم
+            التقرير اليومي لشركة التكامل الدولية شركة
             {{ $selectedDepartment ? $selectedDepartment->name : 'العصائر' }}
             لدى منفذ
         </h2>

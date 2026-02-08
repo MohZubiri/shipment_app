@@ -24,6 +24,7 @@ class ShipmentStageController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateData($request);
+        $data['applies_to'] = $request->input('applies_to', 'both');
         $data['is_active'] = $request->boolean('is_active', true);
         $data['needs_containers'] = $request->boolean('needs_containers', false);
         $data['needs_warehouse'] = $request->boolean('needs_warehouse', false);
@@ -43,6 +44,7 @@ class ShipmentStageController extends Controller
     public function update(Request $request, ShipmentStage $shipment_stage)
     {
         $data = $this->validateData($request, $shipment_stage->id);
+        $data['applies_to'] = $request->input('applies_to', 'both');
         $data['is_active'] = $request->boolean('is_active', false);
         $data['needs_containers'] = $request->boolean('needs_containers', false);
         $data['needs_warehouse'] = $request->boolean('needs_warehouse', false);
@@ -75,6 +77,7 @@ class ShipmentStageController extends Controller
             'icon' => ['nullable', 'string', 'max:255'],
             'color' => ['nullable', 'string', 'max:30'],
             'description' => ['nullable', 'string'],
+            'applies_to' => ['required', 'in:sea,land,both'],
             'is_active' => ['sometimes', 'boolean'],
             'needs_containers' => ['sometimes', 'boolean'],
             'needs_warehouse' => ['sometimes', 'boolean'],
