@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Departement;
+use App\Models\Company;
 use App\Models\LocalCustomsVehicle;
-use App\Models\Section;
+use App\Models\Departement;
+use App\Models\Warehouse;
+use App\Models\CustomsPort;
+use App\Models\LocalShipmentCustoms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,13 +15,13 @@ class LocalCustomsVehicleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = LocalCustomsVehicle::query()->with(['company', 'department']);
+        $query = LocalCustomsVehicle::query()->with(['company', 'department', 'warehouse']);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));
             $query->where(function ($builder) use ($search) {
                 $builder->where('vehicle_plate_number', 'like', "%{$search}%")
-                    ->orWhere('user_name', 'like', "%{$search}%");
+                    ->orWhere('driver_name', 'like', "%{$search}%");
 
                 if (is_numeric($search)) {
                     $builder->orWhere('serial_number', (int) $search);
@@ -38,14 +41,14 @@ class LocalCustomsVehicleController extends Controller
             $query->where('company_id', $request->company_id);
         }
 
-        if ($request->filled('section_id')) {
-            $query->where('section_id', $request->section_id);
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         $vehicles = $query->orderByDesc('id')->paginate(15)->withQueryString();
 
-        $companies = Departement::query()->orderBy('name')->get();
-        $departments = Section::query()->orderBy('name')->get();
+        $companies = Company::query()->orderBy('name')->get();
+        $departments = Departement::query()->orderBy('name')->get();
 
         return view('local_customs_vehicles.index', compact('vehicles', 'companies', 'departments'));
     }
@@ -53,8 +56,10 @@ class LocalCustomsVehicleController extends Controller
     public function create()
     {
         return view('local_customs_vehicles.create', [
-            'companies' => Departement::query()->orderBy('name')->get(),
-            'departments' => Section::query()->orderBy('name')->get(),
+            'companies' => Company::query()->orderBy('name')->get(),
+            'departments' => Departement::query()->orderBy('name')->get(),
+            'warehouses' => Warehouse::query()->orderBy('name')->get(),
+            'customsPorts' => CustomsPort::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -75,14 +80,34 @@ class LocalCustomsVehicleController extends Controller
             'exit_date_from_manufacture' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
-            'company_id' => ['required', 'exists:departement,id'],
-            'section_id' => ['nullable', 'exists:section,id'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'department_id' => ['nullable', 'exists:departements,id'],
+            'driver_name' => ['nullable', 'string', 'max:200'],
+            'driver_phone' => ['nullable', 'string', 'max:50'],
+            'factory_departure_date' => ['nullable', 'date'],
+            'warehouse_arrival_date' => ['nullable', 'date'],
+            'warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'checkpoints' => ['nullable', 'array'],
+            'checkpoints.*.customs_port_id' => ['required', 'exists:customs_port,id'],
+            'checkpoints.*.entry_date' => ['nullable', 'date'],
+            'checkpoints.*.entry_time' => ['nullable', 'date_format:H:i'],
+            'checkpoints.*.exit_date' => ['nullable', 'date'],
+            'checkpoints.*.exit_time' => ['nullable', 'date_format:H:i'],
         ]);
+
+        $checkpoints = $data['checkpoints'] ?? [];
+        unset($data['checkpoints']);
 
         $data['created_by'] = Auth::user()?->name;
         $data['is_active'] = $request->boolean('is_active');
 
-        LocalCustomsVehicle::create($data);
+        $localCustomsVehicle = LocalCustomsVehicle::create($data);
+
+        foreach ($checkpoints as $checkpoint) {
+            if (!empty($checkpoint['customs_port_id'])) {
+                $localCustomsVehicle->customs()->create($checkpoint);
+            }
+        }
 
         return redirect()
             ->route('local-shipments.index')
@@ -92,9 +117,11 @@ class LocalCustomsVehicleController extends Controller
     public function edit(LocalCustomsVehicle $localCustomsVehicle)
     {
         return view('local_customs_vehicles.edit', [
-            'localCustomsVehicle' => $localCustomsVehicle,
-            'companies' => Departement::query()->orderBy('name')->get(),
-            'departments' => Section::query()->orderBy('name')->get(),
+            'localCustomsVehicle' => $localCustomsVehicle->load('customs'),
+            'companies' => Company::query()->orderBy('name')->get(),
+            'departments' => Departement::query()->orderBy('name')->get(),
+            'warehouses' => Warehouse::query()->orderBy('name')->get(),
+            'customsPorts' => CustomsPort::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -115,13 +142,36 @@ class LocalCustomsVehicleController extends Controller
             'exit_date_from_manufacture' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
-            'company_id' => ['required', 'exists:departement,id'],
-            'section_id' => ['nullable', 'exists:section,id'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'department_id' => ['nullable', 'exists:departements,id'],
+            'driver_name' => ['nullable', 'string', 'max:200'],
+            'driver_phone' => ['nullable', 'string', 'max:50'],
+            'factory_departure_date' => ['nullable', 'date'],
+            'warehouse_arrival_date' => ['nullable', 'date'],
+            'warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'checkpoints' => ['nullable', 'array'],
+            'checkpoints.*.customs_port_id' => ['required', 'exists:customs_port,id'],
+            'checkpoints.*.entry_date' => ['nullable', 'date'],
+            'checkpoints.*.entry_time' => ['nullable', 'date_format:H:i'],
+            'checkpoints.*.exit_date' => ['nullable', 'date'],
+            'checkpoints.*.exit_time' => ['nullable', 'date_format:H:i'],
         ]);
+
+        $checkpoints = $data['checkpoints'] ?? [];
+        unset($data['checkpoints']);
 
         $data['is_active'] = $request->boolean('is_active');
 
         $localCustomsVehicle->update($data);
+
+        $localCustomsVehicle->customs()->delete();
+        foreach ($checkpoints as $checkpoint) {
+            if (!empty($checkpoint['customs_port_id'])) {
+                $localCustomsVehicle->customs()->create($checkpoint);
+            }
+        }
+
+
 
         return redirect()
             ->route('local-shipments.index')

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Departement;
+use App\Models\Company;
 use App\Models\CustomsData;
 use App\Models\LandShipping;
 use App\Models\LandShippingDocument;
 use App\Models\Document;
-use App\Models\Section;
+use App\Models\Departement;
+use App\Models\CustomsPort;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,7 +16,7 @@ class LandShippingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = LandShipping::query()->with(['company', 'department', 'documents', 'currentStage']);
+        $query = LandShipping::query()->with(['company', 'department', 'documents', 'currentStage', 'locomotives', 'customsPort']);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));
@@ -38,14 +39,14 @@ class LandShippingController extends Controller
             $query->where('company_id', $request->company_id);
         }
 
-        if ($request->filled('section_id')) {
-            $query->where('section_id', $request->section_id);
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         $reports = $query->orderByDesc('id')->paginate(15)->withQueryString();
 
-        $companies = Departement::query()->orderBy('name')->get();
-        $departments = Section::query()->orderBy('name')->get();
+        $companies = Company::query()->orderBy('name')->get();
+        $departments = Departement::query()->orderBy('name')->get();
 
         return view('shipping_reports.index', compact('reports', 'companies', 'departments'));
     }
@@ -53,10 +54,11 @@ class LandShippingController extends Controller
     public function create()
     {
         return view('shipping_reports.create', [
-            'companies' => Departement::query()->orderBy('name')->get(),
-            'departments' => Section::query()->orderBy('name')->get(),
+            'companies' => Company::query()->orderBy('name')->get(),
+            'departments' => Departement::query()->orderBy('name')->get(),
             'customsDataList' => CustomsData::query()->orderByDesc('datano')->pluck('datano'),
             'activeDocuments' => Document::query()->where('is_active', true)->orderBy('name')->get(),
+            'customsPorts' => CustomsPort::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -64,25 +66,42 @@ class LandShippingController extends Controller
     {
         $data = $request->validate([
             'operation_number' => ['required', 'string', 'max:50'],
-            'locomotive_number' => ['nullable', 'string', 'max:50'],
+            'locomotive_numbers' => ['nullable', 'array'],
+            'locomotive_numbers.*' => ['nullable', 'string', 'max:50'],
             'shipment_name' => ['nullable', 'string', 'max:200'],
             'declaration_number' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'arrival_date' => ['nullable', 'date'],
             'exit_date' => ['nullable', 'date'],
             'docking_days' => ['nullable', 'integer', 'min:0'],
             'documents_sent_date' => ['nullable', 'date'],
-            'documents_type' => ['nullable', 'string', 'max:100'],
+
             'warehouse_arrival_date' => ['nullable', 'date'],
-            'company_id' => ['required', 'exists:departement,id'],
-            'section_id' => ['nullable', 'exists:section,id'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'department_id' => ['nullable', 'exists:departements,id'],
+            'customs_port_id' => ['nullable', 'exists:customs_port,id'],
             'documents_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
             'attached_documents' => ['nullable', 'array'],
             'attached_documents.*' => ['integer'],
         ]);
 
-        unset($data['documents_zip'], $data['attached_documents']);
+        $attachedDocuments = $data['attached_documents'] ?? [];
+        unset($data['documents_zip'], $data['attached_documents'], $data['locomotive_numbers']);
 
         $landShipping = LandShipping::create($data);
+
+        if ($request->filled('locomotive_numbers')) {
+            foreach ($request->locomotive_numbers as $number) {
+                if (!empty($number)) {
+                    $landShipping->locomotives()->create([
+                        'locomotive_number' => $number,
+                    ]);
+                }
+            }
+        }
+
+        if (!empty($attachedDocuments)) {
+            $landShipping->attachedDocuments()->sync($attachedDocuments);
+        }
 
         if ($request->hasFile('documents_zip')) {
             $file = $request->file('documents_zip');
@@ -104,12 +123,15 @@ class LandShippingController extends Controller
 
     public function edit(LandShipping $landShipping)
     {
+        $landShipping->load(['locomotives', 'attachedDocuments']);
+
         return view('shipping_reports.edit', [
             'landShipping' => $landShipping,
-            'companies' => Departement::query()->orderBy('name')->get(),
-            'departments' => Section::query()->orderBy('name')->get(),
+            'companies' => Company::query()->orderBy('name')->get(),
+            'departments' => Departement::query()->orderBy('name')->get(),
             'customsDataList' => CustomsData::query()->orderByDesc('datano')->pluck('datano'),
             'activeDocuments' => Document::query()->where('is_active', true)->orderBy('name')->get(),
+            'customsPorts' => CustomsPort::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -117,25 +139,46 @@ class LandShippingController extends Controller
     {
         $data = $request->validate([
             'operation_number' => ['required', 'string', 'max:50'],
-            'locomotive_number' => ['nullable', 'string', 'max:50'],
+            'locomotive_numbers' => ['nullable', 'array'],
+            'locomotive_numbers.*' => ['nullable', 'string', 'max:50'],
             'shipment_name' => ['nullable', 'string', 'max:200'],
             'declaration_number' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'arrival_date' => ['nullable', 'date'],
             'exit_date' => ['nullable', 'date'],
             'docking_days' => ['nullable', 'integer', 'min:0'],
             'documents_sent_date' => ['nullable', 'date'],
-            'documents_type' => ['nullable', 'string', 'max:100'],
+
             'warehouse_arrival_date' => ['nullable', 'date'],
-            'company_id' => ['required', 'exists:departement,id'],
-            'section_id' => ['nullable', 'exists:section,id'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'department_id' => ['nullable', 'exists:departements,id'],
+            'customs_port_id' => ['nullable', 'exists:customs_port,id'],
             'documents_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
             'attached_documents' => ['nullable', 'array'],
             'attached_documents.*' => ['integer'],
         ]);
 
-        unset($data['documents_zip'], $data['attached_documents']);
+        $attachedDocuments = $data['attached_documents'] ?? [];
+        unset($data['documents_zip'], $data['attached_documents'], $data['locomotive_numbers']);
 
         $landShipping->update($data);
+
+        // Sync locomotives
+        $landShipping->locomotives()->delete();
+        if ($request->filled('locomotive_numbers')) {
+            foreach ($request->locomotive_numbers as $number) {
+                if (!empty($number)) {
+                    $landShipping->locomotives()->create([
+                        'locomotive_number' => $number,
+                    ]);
+                }
+            }
+        }
+
+        if (!empty($attachedDocuments)) {
+            $landShipping->attachedDocuments()->sync($attachedDocuments);
+        } else {
+            $landShipping->attachedDocuments()->detach();
+        }
 
         if ($request->hasFile('documents_zip')) {
             $file = $request->file('documents_zip');

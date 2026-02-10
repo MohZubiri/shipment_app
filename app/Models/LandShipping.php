@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Company;
 use App\Models\Departement;
-use App\Models\Section;
 use App\Models\ShipmentStage;
+use App\Models\CustomsPort;
 
 class LandShipping extends Model
 {
@@ -16,7 +17,6 @@ class LandShipping extends Model
 
     protected $fillable = [
         'operation_number',
-        'locomotive_number',
         'shipment_name',
         'declaration_number',
         'arrival_date',
@@ -26,8 +26,9 @@ class LandShipping extends Model
         'documents_type',
         'warehouse_arrival_date',
         'company_id',
-        'section_id',
+        'department_id',
         'current_stage_id',
+        'customs_port_id',
     ];
 
     protected $casts = [
@@ -40,17 +41,33 @@ class LandShipping extends Model
 
     public function company()
     {
-        return $this->belongsTo(Departement::class, 'company_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function department()
     {
-        return $this->belongsTo(Section::class, 'section_id');
+        return $this->belongsTo(Departement::class, 'department_id');
+    }
+
+    public function customsPort()
+    {
+        return $this->belongsTo(CustomsPort::class, 'customs_port_id');
+    }
+
+    public function locomotives()
+    {
+        return $this->hasMany(LandShippingLocomotive::class);
     }
 
     public function documents()
     {
         return $this->hasMany(LandShippingDocument::class, 'land_shipping_id');
+    }
+
+    public function attachedDocuments()
+    {
+        return $this->belongsToMany(Document::class, 'document_land_shipping', 'land_shipping_id', 'document_id')
+            ->withTimestamps();
     }
 
     public function trackingStageRecords($stageId)
@@ -69,6 +86,15 @@ class LandShipping extends Model
     public function currentStage()
     {
         return $this->belongsTo(ShipmentStage::class, 'current_stage_id');
+    }
+
+    public function warehouseTracking()
+    {
+        return $this->hasOne(LandShippingTracking::class, 'land_shipping_id')
+            ->whereHas('stage', function ($q) {
+                $q->where('code', 'warehouse');
+            })
+            ->latest();
     }
 
     public function addTrackingRecord(array $data): LandShippingTracking

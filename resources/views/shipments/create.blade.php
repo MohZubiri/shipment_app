@@ -8,11 +8,19 @@
         $pageSubtitle = $isEdit ? 'قم بتحديث البيانات المطلوبة ثم احفظ التعديلات.' : 'نموذج منظم بخطوات واضحة لسهولة الإدخال.';
     @endphp
     <x-slot name="header">
-        <div>
-            <h2 class="text-xl font-semibold leading-tight text-slate-900">
-                {{ $pageTitle }}
-            </h2>
-            <p class="mt-1 text-sm text-slate-500">{{ $pageSubtitle }}</p>
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-slate-900">
+                    {{ $pageTitle }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">{{ $pageSubtitle }}</p>
+            </div>
+            @if($isEdit)
+                <a href="{{ route('shipments.tracking.index', $shipment) }}"
+                    class="px-4 py-2 text-sm font-medium text-white transition-colors duration-150 bg-indigo-600 border border-transparent rounded-lg active:bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:shadow-outline-indigo">
+                    تتبع الشحنة
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -161,25 +169,25 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="departmentno">الشركة</label>
-                            <select id="departmentno" name="departmentno" required
+                            <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
+                            <select id="company_id" name="company_id" required
                                 class="mt-2 w-full rounded-md border-slate-300">
                                 <option value="">اختر الشركة</option>
-                                @foreach($departments as $department)
-                                    <option value="{{ $department->id }}" @selected(old('departmentno', $shipment?->departmentno ?? '') == $department->id)>
-                                        {{ $department->name }}
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->id }}" @selected(old('company_id', $shipment?->company_id ?? '') == $company->id)>
+                                        {{ $company->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700" for="sectionno">القسم</label>
-                            <select id="sectionno" name="sectionno"
+                            <label class="block text-sm font-medium text-slate-700" for="department_id">القسم</label>
+                            <select id="department_id" name="department_id"
                                 class="mt-2 w-full rounded-md border-slate-300">
                                 <option value="">اختر القسم</option>
-                                @foreach($sections as $section)
-                                    <option value="{{ $section->id }}" @selected(old('sectionno', $shipment?->sectionno ?? '') == $section->id)>
-                                        {{ $section->name }}
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" @selected(old('department_id', $shipment?->department_id ?? '') == $department->id)>
+                                        {{ $department->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -343,6 +351,15 @@
                     </div>
                     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
+                            <label class="block text-sm font-medium text-slate-700" for="paperno">نوع المستندات</label>
+                            <select id="paperno" name="paperno" class="mt-2 w-full rounded-md border-slate-300">
+                                <option value="">اختر النوع</option>
+                                <option value="أصل" @selected(old('paperno', $shipment?->paperno ?? '') == 'أصل')>أصل</option>
+                                <option value="صورة" @selected(old('paperno', $shipment?->paperno ?? '') == 'صورة')>صورة</option>
+                                <option value="أصل + صورة" @selected(old('paperno', $shipment?->paperno ?? '') == 'أصل + صورة')>أصل + صورة</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700" for="sendingdate">تاريخ إرسل المستندات</label>
                             <input id="sendingdate" name="sendingdate" type="date" value="{{ old('sendingdate', $shipment?->sendingdate?->format('Y-m-d')) }}"
                                 class="mt-2 w-full rounded-md border-slate-300">
@@ -389,7 +406,7 @@
                                 @foreach($activeDocuments as $document)
                                     <label class="flex gap-3 items-center p-3 rounded-lg border transition cursor-pointer border-slate-200 hover:bg-slate-50">
                                         <input type="checkbox" name="attached_documents[]" value="{{ $document->id }}"
-                                            {{ in_array($document->id, old('attached_documents', [])) ? 'checked' : '' }}
+                                            {{ in_array($document->id, old('attached_documents', $shipment?->attachedDocuments?->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}
                                             class="text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                         <span class="text-sm text-slate-700">{{ $document->name }}</span>
                                     </label>

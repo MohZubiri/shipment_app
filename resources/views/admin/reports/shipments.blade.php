@@ -5,15 +5,26 @@
                 {{ __('تقرير الشحنات') }}
             </h2>
             <div class="flex gap-2">
-                <a href="{{ route('admin.reports.shipments.pdf', request()->all()) }}"
-                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    {{ __('تصدير PDF') }}
-                </a>
+                @if($hasFilters)
+                    <div class="flex items-center gap-2">
+                        <select id="pdf_font" name="pdf_font"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                            onchange="updatePdfLink()">
+                            <option value="dejavusans" {{ request('font') == 'dejavusans' || !request('font') ? 'selected' : '' }}>DejaVu Sans</option>
+                            <option value="cairo" {{ request('font') == 'cairo' ? 'selected' : '' }}>Cairo</option>
+                            <option value="almarai" {{ request('font') == 'almarai' ? 'selected' : '' }}>Almarai</option>
+                        </select>
+                        <a id="pdf_export_link" href="{{ route('admin.reports.shipments.pdf', array_merge(request()->all(), ['font' => request('font') ?: 'dejavusans'])) }}"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {{ __('تصدير PDF') }}
+                        </a>
+                    </div>
+                @endif
                 <a href="{{ route('admin.reports.index') }}"
                     class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     {{ __('رجوع') }}
@@ -27,7 +38,7 @@
             <!-- Filter Section -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 p-6 mb-6">
                 <form method="GET" action="{{ route('admin.reports.shipments') }}"
-                    class="flex flex-wrap items-end gap-4">
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 items-end">
                     <div>
                         <x-input-label for="customs_port_id" :value="__('المنفذ')" class="mb-1" />
                         <select id="customs_port_id" name="customs_port_id"
@@ -41,7 +52,7 @@
                         </select>
                     </div>
                     <div>
-                        <x-input-label for="department_id" :value="__('الشركة')" class="mb-1" />
+                        <x-input-label for="department_id" :value="__('القسم')" class="mb-1" />
                         <select id="department_id" name="department_id"
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full">
                             <option value="">{{ __('الكل') }}</option>
@@ -53,10 +64,18 @@
                         </select>
                     </div>
                     <div>
-                        <x-input-label for="shipment_name" :value="__('اسم الشحنة')" class="mb-1" />
-                        <x-text-input id="shipment_name" class="block w-full" type="text" name="shipment_name"
-                            :value="request('shipment_name')" />
+                        <x-input-label for="company_id" :value="__('الشركة')" class="mb-1" />
+                        <select id="company_id" name="company_id"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full">
+                            <option value="">{{ __('الكل') }}</option>
+                            @foreach($companies as $company)
+                                <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+
                     <div>
                         <x-input-label for="date_from" :value="__('من تاريخ')" class="mb-1" />
                         <x-text-input id="date_from" class="block w-full" type="date" name="date_from"
@@ -73,7 +92,7 @@
                             {{ __('تصفية') }}
                         </button>
                     </div>
-                    @if(request()->filled('date_from') || request()->filled('date_to') || request()->filled('department_id') || request()->filled('customs_port_id') || request()->filled('shipment_name'))
+                    @if(request()->filled('date_from') || request()->filled('date_to') || request()->filled('department_id') || request()->filled('customs_port_id') || request()->filled('company_id'))
                         <div>
                             <a href="{{ route('admin.reports.shipments') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 h-[42px]">
@@ -84,79 +103,140 @@
                 </form>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 overflow-x-auto">
-                <div class="p-6 text-center">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">
-                        التقرير اليومي لشركة التكامل الدولية شركة
-                        {{ request('department_id') ? $departments->where('id', request('department_id'))->first()->name ?? 'العصائر' : 'العصائر' }}
-                        لدى منفذ
-                    </h3>
-                    <h4 class="text-lg font-semibold text-gray-700">
-                        {{ request('customs_port_id') ? $ports->where('id', request('customs_port_id'))->first()->name ?? 'منفذ شحن' : 'منفذ شحن' }}
-                    </h4>
-                </div>
+            @if($hasFilters)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 overflow-x-auto">
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">
+                            التقرير اليومي لشركة التكامل الدولية
+                        </h3>
+                        <div class="text-sm text-gray-600">
+                            @if(request('company_id'))
+                                <span>الشركة: {{ $companies->where('id', request('company_id'))->first()->name ?? '' }}</span>
+                            @endif
+                            @if(request('department_id'))
+                                <span class="mx-2">|</span>
+                                <span>القسم: {{ $departments->where('id', request('department_id'))->first()->name ?? '' }}</span>
+                            @endif
+                            @if(request('customs_port_id'))
+                                <span class="mx-2">|</span>
+                                <span>المنفذ الجمركي: {{ $ports->where('id', request('customs_port_id'))->first()->name ?? '' }}</span>
+                            @endif
+                        </div>
+                    </div>
 
-                <table class="w-full text-sm text-center text-gray-500 border-collapse border border-gray-300">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">الرقم</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم العملية</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">إسم الشحنة</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم البوليصة</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم الببان</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">الخط الملاحي</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">حاويات 20</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">حاويات 40</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ وصول الباخرة المتوقعة</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">فترة السماح</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ انتهاء فترة السماح</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">نوع المستندات</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ استلام المستندات</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الترحيل</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">وجهة الترحيل</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($shipments as $index => $shipment)
-                            <tr class="bg-white border-b hover:bg-gray-50">
-                                <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->shippmintno ?? '-' }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->pilno }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ optional($shipment->shippingLine)->name ?? '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->park20 }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->park40 }}</td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->others ?? '-' }}</td>
-                                <!-- Confirm field for allowance period -->
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->paperno }}</td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $shipment->relaydate ? $shipment->relaydate->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $shipment->relayname }}</td>
-
-                            </tr>
-                        @empty
+                    <table class="w-full text-sm text-center text-gray-500 border-collapse border border-gray-300">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <td colspan="15" class="px-6 py-4 text-center text-gray-500">
-                                    لا يوجد شحنات لعرضها
-                                </td>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">الرقم</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">رقم العملية</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">إسم الشحنة</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">مرحلة الشحنة الحالية</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">رقم الببان</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">الخط الملاحي</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">عدد الحاويات</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ وصول الباخرة المتوقعة</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">فترة السماح</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ انتهاء فترة السماح</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">نوع المستندات</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ استلام المستندات</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الترحيل</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">وجهة الترحيل</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @forelse($shipments as $index => $shipment)
+                                <tr class="bg-white border-b hover:bg-gray-50">
+                                    <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->shippmintno ?? '-' }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ optional($shipment->shippingLine)->name ?? '-' }}
+                                    </td>
+                                    @php
+                                        $containerCounts = $shipment->containers
+                                            ->filter(fn($container) => $container->container_size && $container->container_count)
+                                            ->groupBy('container_size')
+                                            ->map(fn($group) => $group->sum('container_count'));
+
+                                        if ($containerCounts->isEmpty()) {
+                                            $containerCounts = collect();
+                                            if (($shipment->park40 ?? 0) > 0) {
+                                                $containerCounts->put('40', $shipment->park40);
+                                            }
+                                            if (($shipment->park20 ?? 0) > 0) {
+                                                $containerCounts->put('20', $shipment->park20);
+                                            }
+                                        }
+
+                                        $preferredOrder = ['40', '40HC', '20'];
+                                        $orderedCounts = collect();
+                                        foreach ($preferredOrder as $size) {
+                                            if ($containerCounts->has($size)) {
+                                                $orderedCounts->put($size, $containerCounts->get($size));
+                                            }
+                                        }
+                                        $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
+                                        $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode('<br>');
+                                    @endphp
+                                    <td class="px-2 py-2 border border-gray-300 text-sm font-semibold text-gray-800">
+                                        {!! $containerSummary !== '' ? $containerSummary : '-' !!}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->endallowdate ? (int) now()->startOfDay()->diffInDays($shipment->endallowdate, false) : '-' }}
+                                    </td>
+                                    <!-- Confirm field for allowance period -->
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->relaydate ? $shipment->relaydate->format('Y-m-d') : '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shipment->warehouseTracking?->warehouse?->name ?? '-' }}</td>
+
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="15" class="px-6 py-4 text-center text-gray-500">
+                                        لا يوجد شحنات لعرضها
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 p-12 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">يرجى استخدام الفلاتر أعلاه للبحث</h3>
+                    <p class="text-gray-500">قم باختيار المنفذ، القسم، الشركة، أو التواريخ لعرض تقرير الشحنات</p>
+                </div>
+            @endif
         </div>
     </div>
+
+    <script>
+        function updatePdfLink() {
+            const fontSelect = document.getElementById('pdf_font');
+            const pdfLink = document.getElementById('pdf_export_link');
+            const currentUrl = new URL(pdfLink.href);
+            currentUrl.searchParams.set('font', fontSelect.value);
+            pdfLink.href = currentUrl.toString();
+        }
+    </script>
 </x-app-layout>

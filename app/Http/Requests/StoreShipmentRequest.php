@@ -34,11 +34,11 @@ class StoreShipmentRequest extends FormRequest
             'pakingno2' => ['nullable', 'string', 'max:255'],
             'pilno2' => ['nullable', 'string', 'max:255'],
             'orginalno2' => ['nullable', 'string', 'max:255'],
-            'paperno' => ['nullable', 'integer', 'min:0'],
+            'paperno' => ['nullable', 'string', 'max:255'],
             'others' => ['nullable', 'string'],
             'shipmtype' => ['required', 'integer', 'min:0'],
-            'departmentno' => ['required', 'exists:departement,id'],
-            'sectionno' => ['nullable', 'exists:section,id'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'department_id' => ['nullable', 'exists:departements,id'],
             'customs_port_id' => ['required', 'exists:customs_port,id'],
             'sendingdate' => ['nullable', 'date'],
             'officedate' => ['nullable', 'date'],
@@ -57,6 +57,8 @@ class StoreShipmentRequest extends FormRequest
             'relaycases' => ['nullable', 'string'],
             'alarm' => ['nullable', 'integer', 'min:0'],
             'returndate' => ['nullable', 'date'],
+            'attached_documents' => ['nullable', 'array'],
+            'attached_documents.*' => ['integer', 'exists:documents,id'],
             'bill_of_lading' => ['nullable', 'array'],
             'bill_of_lading.*' => ['file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
@@ -78,6 +80,7 @@ class StoreShipmentRequest extends FormRequest
             'operationno' => 'رقم العملية',
             'shippmintno' => 'اسم الشحنة',
             'customs_port_id' => 'المنفذ',
+            'paperno' => 'نوع المستندات',
         ];
     }
 }

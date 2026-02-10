@@ -76,11 +76,11 @@
                     </div>
                     <div>
                         <p class="text-slate-500">الشركة</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->department?->name ?? '-' }}</p>
+                        <p class="font-semibold text-slate-900">{{ $shipment->company?->name ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-slate-500">القسم</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->section?->name ?? '-' }}</p>
+                        <p class="font-semibold text-slate-900">{{ $shipment->department?->name ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-slate-500">الخط الملاحي</p>
@@ -92,11 +92,13 @@
                     </div>
                     <div>
                         <p class="text-slate-500">نوع الشحنة</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->shipmentType?->name ?? $shipment->shipmtype }}</p>
+                        <p class="font-semibold text-slate-900">
+                            {{ $shipment->shipmentType?->name ?? $shipment->shipmtype }}</p>
                     </div>
                     <div>
                         <p class="text-slate-500">حالة الشحنة</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->shipmentStatus?->name ?? $shipment->state }}</p>
+                        <p class="font-semibold text-slate-900">
+                            {{ $shipment->shipmentStatus?->name ?? $shipment->state }}</p>
                     </div>
                 </div>
             </section>
@@ -143,8 +145,10 @@
                         <tbody>
                             @forelse($shipment->containers as $container)
                                 <tr class="border-b">
-                                    <td class="px-3 py-2 border border-slate-200">{{ $container->container_count ?? '-' }}</td>
-                                    <td class="px-3 py-2 border border-slate-200">{{ $container->container_size ?? '-' }}</td>
+                                    <td class="px-3 py-2 border border-slate-200">{{ $container->container_count ?? '-' }}
+                                    </td>
+                                    <td class="px-3 py-2 border border-slate-200">{{ $container->container_size ?? '-' }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -164,7 +168,8 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">
                     <div>
                         <p class="text-slate-500">تاريخ الإرسال</p>
-                        <p class="font-semibold text-slate-900">{{ $shipment->sendingdate?->format('Y-m-d') ?? '-' }}</p>
+                        <p class="font-semibold text-slate-900">{{ $shipment->sendingdate?->format('Y-m-d') ?? '-' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-slate-500">تاريخ المكتب</p>

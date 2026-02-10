@@ -10,7 +10,7 @@ class Departement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'departement';
+    protected $table = 'departements';
 
     protected $fillable = [
         'name',
@@ -20,21 +20,6 @@ class Departement extends Model
 
     public function shipments()
     {
-        return $this->hasMany(ShipmentTransaction::class, 'departmentno');
-    }
-
-    public function shipmentTransactions()
-    {
-        return $this->hasMany(ShipmentTransaction::class, 'departmentno');
-    }
-
-    public function landShippings()
-    {
-        return $this->hasMany(LandShipping::class, 'company_id');
-    }
-
-    public function localCustomsVehicles()
-    {
-        return $this->hasMany(LocalCustomsVehicle::class, 'company_id');
+        return $this->hasMany(ShipmentTransaction::class, 'department_id');
     }
 }

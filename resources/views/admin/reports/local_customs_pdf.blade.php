@@ -11,8 +11,8 @@
         }
 
         body {
-            font-family: 'almarai', sans-serif;
-            font-size: 10px;
+            
+            font-size: 8px;
         }
 
         table {
@@ -24,7 +24,7 @@
         th,
         td {
             border: 1px solid #000;
-            padding: 5px;
+            padding: 3px;
             text-align: center;
         }
 
@@ -34,7 +34,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h2,
@@ -49,12 +49,19 @@
     <div class="header">
         <h2>
             تقرير مركبات الجمارك المحلية
-            {{ $selectedCompany ? $selectedCompany->name : '' }}
         </h2>
-        @if($selectedSection)
-        <h3>
-            القسم: {{ $selectedSection->name }}
-        </h3>
+        @if($selectedCompany || $selectedDepartment || $selectedPort)
+            <h3>
+                @if($selectedCompany)
+                    الشركة: {{ $selectedCompany->name }}
+                @endif
+                @if($selectedDepartment)
+                    {{ $selectedCompany ? ' | ' : '' }}القسم: {{ $selectedDepartment->name }}
+                @endif
+                @if($selectedPort)
+                    {{ ($selectedCompany || $selectedDepartment) ? ' | ' : '' }}المنفذ الجمركي: {{ $selectedPort->name }}
+                @endif
+            </h3>
         @endif
     </div>
 
@@ -62,10 +69,16 @@
         <thead>
             <tr>
                 <th>الرقم</th>
-                <th>الرقم التسلسلي</th>
+                <th>رقم القيد</th>
                 <th>رقم اللوحة</th>
-                <th>اسم المستخدم</th>
-                <th>تاريخ الوصول من الفرع</th>
+                <th>اسم السائق</th>
+                <th>رقم هاتف السائق</th>
+                <th>المنفذ الجمركي</th>
+                <th>تاريخ الوصول للجمرك</th>
+                <th>تاريخ مغادرة الجمرك</th>
+                <th>المخزن</th>
+                <th>وقت مغادرة المصنع</th>
+                <th>تاريخ الوصول للمخزن</th>
                 <th>الشركة</th>
                 <th>القسم</th>
             </tr>
@@ -76,8 +89,32 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $vehicle->serial_number ?? '-' }}</td>
                     <td>{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
-                    <td>{{ $vehicle->user_name ?? '-' }}</td>
-                    <td>{{ $vehicle->arrival_date_from_branch ? $vehicle->arrival_date_from_branch->format('Y-m-d') : '-' }}</td>
+                    <td>{{ $vehicle->driver_name ?? '-' }}</td>
+                    <td>{{ $vehicle->driver_phone ?? '-' }}</td>
+                    <td>
+                        @if($vehicle->customs && $vehicle->customs->first())
+                            {{ optional($vehicle->customs->first()->customsPort)->name ?? '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if($vehicle->customs && $vehicle->customs->first())
+                            {{ $vehicle->customs->first()->entry_date ? $vehicle->customs->first()->entry_date->format('Y-m-d') : '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if($vehicle->customs && $vehicle->customs->first())
+                            {{ $vehicle->customs->first()->exit_date ? $vehicle->customs->first()->exit_date->format('Y-m-d') : '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>{{ optional($vehicle->warehouse)->name ?? '-' }}</td>
+                    <td>{{ $vehicle->factory_departure_date ? $vehicle->factory_departure_date->format('Y-m-d') : '-' }}</td>
+                    <td>{{ $vehicle->warehouse_arrival_date ? $vehicle->warehouse_arrival_date->format('Y-m-d') : '-' }}</td>
                     <td>{{ optional($vehicle->company)->name ?? '-' }}</td>
                     <td>{{ optional($vehicle->department)->name ?? '-' }}</td>
                 </tr>

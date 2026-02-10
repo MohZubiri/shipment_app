@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Section;
+use App\Models\Departement;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
     public function index()
     {
-        $sections = Section::latest()->paginate(10);
+        $sections = Departement::latest()->paginate(10);
         return view('admin.sections.index', compact('sections'));
     }
 
@@ -22,24 +22,24 @@ class SectionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:section,name',
+            'name' => 'required|string|max:255|unique:departements,name',
         ]);
 
-        Section::create($validated);
+        Departement::create($validated);
 
         return redirect()->route('admin.sections.index')
             ->with('status', 'تم إضافة القسم بنجاح');
     }
 
-    public function edit(Section $section)
+    public function edit(Departement $section)
     {
         return view('admin.sections.edit', compact('section'));
     }
 
-    public function update(Request $request, Section $section)
+    public function update(Request $request, Departement $section)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:section,name,' . $section->id,
+            'name' => 'required|string|max:255|unique:departements,name,' . $section->id,
         ]);
 
         $section->update($validated);
@@ -48,7 +48,7 @@ class SectionController extends Controller
             ->with('status', 'تم تحديث القسم بنجاح');
     }
 
-    public function destroy(Section $section)
+    public function destroy(Departement $section)
     {
         $section->delete();
 

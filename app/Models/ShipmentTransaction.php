@@ -29,8 +29,8 @@ class ShipmentTransaction extends Model
         'paperno',
         'others',
         'shipmtype',
-        'departmentno',
-        'sectionno',
+        'company_id',
+        'department_id',
         'sendingdate',
         'officedate',
         'workerdate',
@@ -94,14 +94,14 @@ class ShipmentTransaction extends Model
 
     const DELETED_AT = 'delete_at';
 
-    public function department()
+    public function company()
     {
-        return $this->belongsTo(Departement::class, 'departmentno');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function section()
+    public function department()
     {
-        return $this->belongsTo(Section::class, 'sectionno');
+        return $this->belongsTo(Departement::class, 'department_id');
     }
 
     public function shipgroup()
@@ -149,16 +149,23 @@ class ShipmentTransaction extends Model
         return $this->hasMany(ShipmentContainer::class, 'shipment_transaction_id');
     }
 
+    public function attachedDocuments()
+    {
+        return $this->belongsToMany(Document::class, 'document_shipment_transaction', 'shipment_transaction_id', 'document_id')
+            ->withTimestamps();
+    }
+
     public function auditLogs()
     {
         return $this->morphMany(AuditLog::class, 'auditable');
     }
-  public function trackingStageRecords($stage_no)
+
+    public function trackingStageRecords($stage_no)
     {
         return $this->hasMany(ShipmentTracking::class, 'shipment_transaction_id')
            ->where('stage_id', $stage_no) ->orderBy('created_at');
-
     }
+
     public function trackingRecords()
     {
         return $this->hasMany(ShipmentTracking::class, 'shipment_transaction_id')
@@ -183,7 +190,6 @@ class ShipmentTransaction extends Model
     public function getTotalContainers(): int
     {
         return $this->containers()->sum('container_count');
-        // return ($this->park20 ?? 0) + ($this->park40 ?? 0);
     }
 
     public function getUsedContainers($stage_no): int
@@ -191,6 +197,15 @@ class ShipmentTransaction extends Model
         return $this->trackingStageRecords($stage_no)
             ->whereNotNull('container_count')
             ->sum('container_count');
+    }
+
+    public function warehouseTracking()
+    {
+        return $this->hasOne(ShipmentTracking::class, 'shipment_transaction_id')
+            ->whereHas('stage', function ($q) {
+                $q->where('code', 'warehouse');
+            })
+            ->latest();
     }
 
     public function getRemainingContainers($stage_no): int

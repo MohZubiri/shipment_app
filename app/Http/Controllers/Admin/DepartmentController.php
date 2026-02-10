@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Departement;
+use App\Models\Company;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Departement::latest()->paginate(10);
+        $departments = Company::latest()->paginate(10);
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -22,24 +22,24 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:departement,name',
+            'name' => 'required|string|max:255|unique:companies,name',
         ]);
 
-        Departement::create($validated);
+        Company::create($validated);
 
         return redirect()->route('admin.departments.index')
             ->with('status', 'تم إضافة الشركة بنجاح');
     }
 
-    public function edit(Departement $department)
+    public function edit(Company $department)
     {
         return view('admin.departments.edit', compact('department'));
     }
 
-    public function update(Request $request, Departement $department)
+    public function update(Request $request, Company $department)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:departement,name,' . $department->id,
+            'name' => 'required|string|max:255|unique:companies,name,' . $department->id,
         ]);
 
         $department->update($validated);
@@ -48,7 +48,7 @@ class DepartmentController extends Controller
             ->with('status', 'تم تحديث الشركة بنجاح');
     }
 
-    public function destroy(Departement $department)
+    public function destroy(Company $department)
     {
         $department->delete();
 

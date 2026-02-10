@@ -11,7 +11,7 @@
         }
 
         body {
-            font-family: 'almarai', sans-serif;
+            
             font-size: 10px;
         }
 
@@ -47,14 +47,20 @@
 <body>
 
     <div class="header">
-        <h2>
-            التقرير اليومي لشركة التكامل الدولية شركة
-            {{ $selectedDepartment ? $selectedDepartment->name : 'العصائر' }}
-            لدى منفذ
-        </h2>
-        <h3>
-            {{ $selectedPort ? $selectedPort->name : 'منفذ شحن' }}
-        </h3>
+        <h2>التقرير اليومي لشركة التكامل الدولية</h2>
+        @if(isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort))
+            <h3>
+                @if(isset($selectedCompany))
+                    الشركة: {{ $selectedCompany->name }}
+                @endif
+                @if(isset($selectedDepartment))
+                    {{ isset($selectedCompany) ? ' | ' : '' }}القسم: {{ $selectedDepartment->name }}
+                @endif
+                @if(isset($selectedPort))
+                    {{ (isset($selectedCompany) || isset($selectedDepartment)) ? ' | ' : '' }}المنفذ الجمركي: {{ $selectedPort->name }}
+                @endif
+            </h3>
+        @endif
     </div>
 
     <table>
@@ -63,11 +69,10 @@
                 <th>الرقم</th>
                 <th>رقم العملية</th>
                 <th>إسم الشحنة</th>
-                <th>رقم البوليصة</th>
+                <th>مرحلة الشحنة الحالية</th>
                 <th>رقم الببان</th>
                 <th>الخط الملاحي</th>
-                <th>حاويات 20</th>
-                <th>حاويات 40</th>
+                <th>عدد الحاويات</th>
                 <th>تاريخ وصول الباخرة المتوقعة</th>
                 <th>فترة السماح</th>
                 <th>تاريخ انتهاء فترة السماح</th>
@@ -83,18 +88,44 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $shipment->operationno }}</td>
                     <td>{{ $shipment->shippmintno ?? '-' }}</td>
-                    <td>{{ $shipment->pilno }}</td>
+                    <td>{{ $shipment->currentStage->name ?? '-' }}</td>
                     <td>{{ $shipment->datano }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>
-                    <td>{{ $shipment->park20 }}</td>
-                    <td>{{ $shipment->park40 }}</td>
+                    @php
+                        $containerCounts = $shipment->containers
+                            ->filter(fn($container) => $container->container_size && $container->container_count)
+                            ->groupBy('container_size')
+                            ->map(fn($group) => $group->sum('container_count'));
+
+                        if ($containerCounts->isEmpty()) {
+                            $containerCounts = collect();
+                            if (($shipment->park40 ?? 0) > 0) {
+                                $containerCounts->put('40', $shipment->park40);
+                            }
+                            if (($shipment->park20 ?? 0) > 0) {
+                                $containerCounts->put('20', $shipment->park20);
+                            }
+                        }
+
+                        $preferredOrder = ['40', '40HC', '20'];
+                        $orderedCounts = collect();
+                        foreach ($preferredOrder as $size) {
+                            if ($containerCounts->has($size)) {
+                                $orderedCounts->put($size, $containerCounts->get($size));
+                            }
+                        }
+                        $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
+                        $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode('<br>');
+                    @endphp
+                    <td>{!! $containerSummary !== '' ? $containerSummary : '-' !!}</td>
                     <td>{{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $shipment->others ?? '-' }}</td>
+                    <td>{{ $shipment->endallowdate ? (int) now()->startOfDay()->diffInDays($shipment->endallowdate->startOfDay(), false) : '-' }}
+                    </td>
                     <td>{{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $shipment->paperno }}</td>
+                    <td>{{ $shipment->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}</td>
                     <td>{{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}</td>
                     <td>{{ $shipment->relaydate ? $shipment->relaydate->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $shipment->relayname }}</td>
+                    <td>{{ $shipment->warehouseTracking?->warehouse?->name ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

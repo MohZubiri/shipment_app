@@ -25,10 +25,53 @@
                         <input id="operation_number" name="operation_number" type="text" value="{{ old('operation_number') }}"
                             required class="mt-2 w-full rounded-md border-slate-300">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700" for="locomotive_number">رقم القاطرة</label>
-                        <input id="locomotive_number" name="locomotive_number" type="text" value="{{ old('locomotive_number') }}"
-                            class="mt-2 w-full rounded-md border-slate-300">
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700">أرقام القواطر</label>
+                        <div id="locomotives-container" class="space-y-2 mt-2">
+                            @if(old('locomotive_numbers'))
+                                @foreach(old('locomotive_numbers') as $number)
+                                    <div class="flex gap-2">
+                                        <input name="locomotive_numbers[]" type="text" value="{{ $number }}" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                        <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="flex gap-2">
+                                    <input name="locomotive_numbers[]" type="text" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                    <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                        <button type="button" onclick="addLocomotive()" class="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            إضافة قاطرة
+                        </button>
+                        <script>
+                            function addLocomotive() {
+                                const container = document.getElementById('locomotives-container');
+                                const div = document.createElement('div');
+                                div.className = 'flex gap-2';
+                                div.innerHTML = `
+                                    <input name="locomotive_numbers[]" type="text" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                    <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                `;
+                                container.appendChild(div);
+                            }
+                        </script>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
@@ -40,11 +83,20 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700" for="section_id">القسم</label>
-                        <select id="section_id" name="section_id" class="mt-2 w-full rounded-md border-slate-300">
-                            <option value="">اختياري</option>
+                        <label class="block text-sm font-medium text-slate-700" for="department_id">القسم</label>
+                        <select id="department_id" name="department_id" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر القسم</option>
                             @foreach($departments as $department)
-                                <option value="{{ $department->id }}" @selected(old('section_id') == $department->id)>{{ $department->name }}</option>
+                                <option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700" for="customs_port_id">المنفذ</label>
+                        <select id="customs_port_id" name="customs_port_id" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر المنفذ</option>
+                            @foreach($customsPorts as $port)
+                                <option value="{{ $port->id }}" @selected(old('customs_port_id') == $port->id)>{{ $port->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -73,7 +125,7 @@
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700" for="docking_days">أيام الربط</label>
+                        <label class="block text-sm font-medium text-slate-700" for="docking_days">ايام المماسي </label>
                         <input id="docking_days" name="docking_days" type="number" min="0" value="{{ old('docking_days') }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
@@ -82,11 +134,7 @@
                         <input id="documents_sent_date" name="documents_sent_date" type="date" value="{{ old('documents_sent_date') }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700" for="documents_type">نوع المستندات</label>
-                        <input id="documents_type" name="documents_type" type="text" value="{{ old('documents_type') }}"
-                            class="mt-2 w-full rounded-md border-slate-300">
-                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="warehouse_arrival_date">تاريخ وصول المخزن</label>
                         <input id="warehouse_arrival_date" name="warehouse_arrival_date" type="date" value="{{ old('warehouse_arrival_date') }}"

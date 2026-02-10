@@ -11,7 +11,7 @@
         }
 
         body {
-            font-family: 'almarai', sans-serif;
+            
             font-size: 10px;
         }
 
@@ -49,12 +49,19 @@
     <div class="header">
         <h2>
             تقرير الشحنات البرية
-            {{ $selectedCompany ? $selectedCompany->name : '' }}
         </h2>
-        @if($selectedSection)
-        <h3>
-            القسم: {{ $selectedSection->name }}
-        </h3>
+        @if($selectedCompany || $selectedDepartment || $selectedPort)
+            <h3>
+                @if($selectedCompany)
+                    الشركة: {{ $selectedCompany->name }}
+                @endif
+                @if($selectedDepartment)
+                    {{ $selectedCompany ? ' | ' : '' }}القسم: {{ $selectedDepartment->name }}
+                @endif
+                @if($selectedPort)
+                    {{ ($selectedCompany || $selectedDepartment) ? ' | ' : '' }}المنفذ الجمركي: {{ $selectedPort->name }}
+                @endif
+            </h3>
         @endif
     </div>
 
@@ -69,7 +76,10 @@
                 <th>الشركة</th>
                 <th>القسم</th>
                 <th>المرحلة الحالية</th>
-                <th>المستندات</th>
+                <th>وجهة الترحيل (المخزن)</th>
+                <th>تاريخ استلام المستندات</th>
+                <th>ايام المماسي</th>
+                <th>نوع المستند</th>
             </tr>
         </thead>
         <tbody>
@@ -83,7 +93,17 @@
                     <td>{{ optional($landShipping->company)->name ?? '-' }}</td>
                     <td>{{ optional($landShipping->department)->name ?? '-' }}</td>
                     <td>{{ optional($landShipping->currentStage)->name ?? '-' }}</td>
-                    <td>{{ $landShipping->documents_type ?? '-' }}</td>
+                    <td>
+                        @if(optional($landShipping->currentStage)->code === 'warehouse')
+                            {{ $landShipping->warehouseTracking?->warehouse?->name ?? '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>{{ $landShipping->documents_sent_date ? $landShipping->documents_sent_date->format('Y-m-d') : '-' }}
+                    </td>
+                    <td>{{ $landShipping->docking_days ?? '-' }}</td>
+                    <td>{{ $landShipping->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

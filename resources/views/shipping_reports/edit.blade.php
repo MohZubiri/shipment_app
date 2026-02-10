@@ -1,6 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-900 leading-tight">تعديل شحنة دولية برية</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-slate-900 leading-tight">تعديل شحنة دولية برية</h2>
+            <a href="{{ route('road-shipments.tracking.index', $landShipping) }}"
+               class="px-4 py-2 text-sm font-medium text-white transition-colors duration-150 bg-indigo-600 border border-transparent rounded-lg active:bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:shadow-outline-indigo">
+               تتبع الشحنة
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -27,11 +33,57 @@
                             value="{{ old('operation_number', $landShipping->operation_number) }}" required
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700" for="locomotive_number">رقم القاطرة</label>
-                        <input id="locomotive_number" name="locomotive_number" type="text"
-                            value="{{ old('locomotive_number', $landShipping->locomotive_number) }}"
-                            class="mt-2 w-full rounded-md border-slate-300">
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700">أرقام القواطر</label>
+                        <div id="locomotives-container" class="space-y-2 mt-2">
+                            @php
+                                $locomotives = old('locomotive_numbers') ?? $landShipping->locomotives->pluck('locomotive_number')->toArray();
+                            @endphp
+
+                            @if(count($locomotives) > 0)
+                                @foreach($locomotives as $number)
+                                    <div class="flex gap-2">
+                                        <input name="locomotive_numbers[]" type="text" value="{{ $number }}" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                        <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="flex gap-2">
+                                    <input name="locomotive_numbers[]" type="text" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                    <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                        <button type="button" onclick="addLocomotive()" class="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            إضافة قاطرة
+                        </button>
+                        <script>
+                            function addLocomotive() {
+                                const container = document.getElementById('locomotives-container');
+                                const div = document.createElement('div');
+                                div.className = 'flex gap-2';
+                                div.innerHTML = `
+                                    <input name="locomotive_numbers[]" type="text" class="w-full rounded-md border-slate-300" placeholder="رقم القاطرة">
+                                    <button type="button" class="px-3 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100" onclick="this.parentElement.remove()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                `;
+                                container.appendChild(div);
+                            }
+                        </script>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
@@ -43,11 +95,20 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700" for="section_id">القسم</label>
-                        <select id="section_id" name="section_id" class="mt-2 w-full rounded-md border-slate-300">
-                            <option value="">اختياري</option>
+                        <label class="block text-sm font-medium text-slate-700" for="department_id">القسم</label>
+                        <select id="department_id" name="department_id" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر القسم</option>
                             @foreach($departments as $department)
-                                <option value="{{ $department->id }}" @selected(old('section_id', $landShipping->section_id) == $department->id)>{{ $department->name }}</option>
+                                <option value="{{ $department->id }}" @selected(old('department_id', $landShipping->department_id) == $department->id)>{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700" for="customs_port_id">المنفذ</label>
+                        <select id="customs_port_id" name="customs_port_id" class="mt-2 w-full rounded-md border-slate-300">
+                            <option value="">اختر المنفذ</option>
+                            @foreach($customsPorts as $port)
+                                <option value="{{ $port->id }}" @selected(old('customs_port_id', $landShipping->customs_port_id) == $port->id)>{{ $port->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -79,7 +140,7 @@
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700" for="docking_days">أيام الربط</label>
+                        <label class="block text-sm font-medium text-slate-700" for="docking_days">ايام المماسي </label>
                         <input id="docking_days" name="docking_days" type="number" min="0"
                             value="{{ old('docking_days', $landShipping->docking_days) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
@@ -90,12 +151,7 @@
                             value="{{ old('documents_sent_date', $landShipping->documents_sent_date?->format('Y-m-d')) }}"
                             class="mt-2 w-full rounded-md border-slate-300">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700" for="documents_type">نوع المستندات</label>
-                        <input id="documents_type" name="documents_type" type="text"
-                            value="{{ old('documents_type', $landShipping->documents_type) }}"
-                            class="mt-2 w-full rounded-md border-slate-300">
-                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-slate-700" for="warehouse_arrival_date">تاريخ وصول المخزن</label>
                         <input id="warehouse_arrival_date" name="warehouse_arrival_date" type="date"
@@ -117,7 +173,7 @@
                                 @foreach($activeDocuments as $document)
                                     <label class="flex gap-3 items-center p-3 rounded-lg border transition cursor-pointer border-slate-200 hover:bg-slate-50">
                                         <input type="checkbox" name="attached_documents[]" value="{{ $document->id }}"
-                                            {{ in_array($document->id, old('attached_documents', [])) ? 'checked' : '' }}
+                                            {{ in_array($document->id, old('attached_documents', $landShipping->attachedDocuments->pluck('id')->toArray())) ? 'checked' : '' }}
                                             class="text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                         <span class="text-sm text-slate-700">{{ $document->name }}</span>
                                     </label>

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreShipmentRequest;
 use App\Models\CustomsPort;
+use App\Models\Company;
 use App\Models\Departement;
-use App\Models\Section;
 use App\Models\ShipmentTransaction;
 use App\Models\ShipmentDocument;
 use App\Models\Shipgroup;
@@ -20,8 +20,8 @@ class ShipmentController extends Controller
     {
         $query = ShipmentTransaction::query()
             ->with([
+                'company',
                 'department',
-                'section',
                 'shipgroup',
                 'shippingLine',
                 'customsData',
@@ -43,9 +43,9 @@ class ShipmentController extends Controller
 
         return view('shipments.index', [
             'shipments' => $shipments,
-            'departments' => Departement::query()->orderBy('name')->get(),
+            'companies' => Company::query()->orderBy('name')->get(),
             'ports' => CustomsPort::query()->orderBy('name')->get(),
-            'sections' => Section::query()->orderBy('name')->get(),
+            'departments' => Departement::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
         ]);
     }
@@ -53,8 +53,8 @@ class ShipmentController extends Controller
     public function create()
     {
         return view('shipments.create', [
+            'companies' => Company::query()->orderBy('name')->get(),
             'departments' => Departement::query()->orderBy('name')->get(),
-            'sections' => Section::query()->orderBy('name')->get(),
             'shipgroups' => Shipgroup::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
             'customsPorts' => \App\Models\CustomsPort::query()->orderBy('name')->get(),
@@ -69,8 +69,8 @@ class ShipmentController extends Controller
     public function show(ShipmentTransaction $shipment)
     {
         $shipment->load([
+            'company',
             'department',
-            'section',
             'shipgroup',
             'shippingLine',
             'customsPort',
@@ -91,12 +91,12 @@ class ShipmentController extends Controller
 
     public function edit(ShipmentTransaction $shipment)
     {
-        $shipment->load(['containers', 'documents']);
+        $shipment->load(['containers', 'documents', 'attachedDocuments']);
 
         return view('shipments.create', [
             'shipment' => $shipment,
+            'companies' => Company::query()->orderBy('name')->get(),
             'departments' => Departement::query()->orderBy('name')->get(),
-            'sections' => Section::query()->orderBy('name')->get(),
             'shipgroups' => Shipgroup::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
             'customsPorts' => \App\Models\CustomsPort::query()->orderBy('name')->get(),
@@ -114,12 +114,18 @@ class ShipmentController extends Controller
         if (!array_key_exists('pilno', $data)) {
             $data['pilno'] = '';
         }
+        $attachedDocuments = $data['attached_documents'] ?? [];
         unset($data['bill_of_lading']);
         unset($data['containers']);
         unset($data['attached_documents']);
         unset($data['documents_zip']);
 
         $shipment = ShipmentTransaction::create($data);
+
+        // Save attached documents
+        if (!empty($attachedDocuments)) {
+            $shipment->attachedDocuments()->sync($attachedDocuments);
+        }
 
         // Save containers
         if ($request->has('containers')) {
@@ -177,12 +183,16 @@ class ShipmentController extends Controller
     public function update(StoreShipmentRequest $request, ShipmentTransaction $shipment)
     {
         $data = $request->validated();
+        $attachedDocuments = $data['attached_documents'] ?? [];
         unset($data['bill_of_lading']);
         unset($data['containers']);
         unset($data['attached_documents']);
         unset($data['documents_zip']);
 
         $shipment->update($data);
+
+        // Sync attached documents
+        $shipment->attachedDocuments()->sync($attachedDocuments);
 
         $shipment->containers()->delete();
         if ($request->has('containers')) {
@@ -220,7 +230,7 @@ class ShipmentController extends Controller
     public function export(Request $request)
     {
         $query = ShipmentTransaction::query()
-            ->with(['department', 'section', 'shippingLine']);
+            ->with(['company', 'department', 'shippingLine']);
 
         $this->applyFilters($query, $request);
 
@@ -256,8 +266,8 @@ class ShipmentController extends Controller
                     $shipment->shippmintno,
                     $shipment->pillno,
                     $shipment->pilno,
+                    $shipment->company?->name,
                     $shipment->department?->name,
-                    $shipment->section?->name,
                     $shipment->shippingLine?->name,
                     $shipment->dategase?->format('Y-m-d'),
                     $shipment->endallowdate?->format('Y-m-d'),
@@ -300,9 +310,9 @@ class ShipmentController extends Controller
             });
         }
 
-        $query->when($request->filled('departmentno'), fn (Builder $builder) => $builder->where('departmentno', $request->departmentno));
+        $query->when($request->filled('company_id'), fn (Builder $builder) => $builder->where('company_id', $request->company_id));
         $query->when($request->filled('customs_port_id'), fn (Builder $builder) => $builder->where('customs_port_id', $request->customs_port_id));
-        $query->when($request->filled('sectionno'), fn (Builder $builder) => $builder->where('sectionno', $request->sectionno));
+        $query->when($request->filled('department_id'), fn (Builder $builder) => $builder->where('department_id', $request->department_id));
         $query->when($request->filled('shippingno'), fn (Builder $builder) => $builder->where('shippingno', $request->shippingno));
         $customsState = $request->get('customs_state', $request->get('dectype'));
         if ($customsState !== null && $customsState !== '') {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alarm;
-use App\Models\Departement;
+use App\Models\Company;
 use App\Models\LandShipping;
 use App\Models\LocalCustomsVehicle;
 use App\Models\ShipmentStage;
@@ -39,19 +39,19 @@ class DashboardController extends Controller
             ->count();
 
         $alerts = Alarm::query()
-            ->with('shipment.department')
+            ->with('shipment.company')
             ->orderBy('still_days')
             ->limit(6)
             ->get();
 
-        $byDepartment = Departement::query()
+        $byCompany = Company::query()
             ->withCount(['shipments as shipments_count' => function ($query) {
                 $query->whereNotNull('dategase');
             }])
             ->orderBy('name')
             ->get();
 
-        $maxDepartmentCount = $byDepartment->max('shipments_count') ?: 1;
+        $maxCompanyCount = $byCompany->max('shipments_count') ?: 1;
 
         $seaShipmentsCount = ShipmentTransaction::query()->count();
         $internationalRoadCount = LandShipping::query()->count();
@@ -63,8 +63,8 @@ class DashboardController extends Controller
             'pendingRelease' => $pendingRelease,
             'nearExpiryCount' => $nearExpiryCount,
             'completedToday' => $completedToday,
-            'byDepartment' => $byDepartment,
-            'maxDepartmentCount' => $maxDepartmentCount,
+            'byDepartment' => $byCompany,
+            'maxDepartmentCount' => $maxCompanyCount,
             'alerts' => $alerts,
             'seaShipmentsCount' => $seaShipmentsCount,
             'internationalRoadCount' => $internationalRoadCount,

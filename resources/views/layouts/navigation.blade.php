@@ -47,20 +47,45 @@
                             </x-dropdown>
                         </div>
                     @endcan
-                    @can('manage shipments')
-                        <x-nav-link :href="route('shipments.create')" :active="request()->routeIs('shipments.create')">
-                            إدخال شحنة
-                        </x-nav-link>
-                    @endcan
                     @can('view customs')
                         <x-nav-link :href="route('customs.index')" :active="request()->routeIs('customs.*')">
                             البيانات الجمركية
                         </x-nav-link>
                     @endcan
                     @can('view reports')
-                        <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
-                            التقارير
-                        </x-nav-link>
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <x-dropdown align="right" width="48">
+                                <x-slot name="trigger">
+                                    <button
+                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 bg-white rounded-md border border-transparent transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                                        <div>التقارير</div>
+                                        <div class="ms-1">
+                                            <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <x-dropdown-link :href="route('admin.reports.shipments')">
+                                        تقرير الشحنات (بحر/جو)
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.reports.land_shipping')">
+                                        تقرير الشحنات البرية
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.reports.local_customs')">
+                                        تقرير الشحنات المحلية
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.reports.summary')">
+                                        التقرير المجمّع
+                                    </x-dropdown-link>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
                     @endcan
 
                     <!-- User Management Dropdown -->
@@ -238,22 +263,29 @@
                             الشحن المحلي البري
                         </x-responsive-nav-link>
                     @endcan
-                    @can('manage shipments')
-                        <x-responsive-nav-link :href="route('shipments.create')"
-                            :active="request()->routeIs('shipments.create')">
-                            إدخال شحنة
-                        </x-responsive-nav-link>
-                    @endcan
                     @can('view customs')
                         <x-responsive-nav-link :href="route('customs.index')" :active="request()->routeIs('customs.*')">
                             البيانات الجمركية
                         </x-responsive-nav-link>
                     @endcan
-
                     @can('view reports')
-                        <x-responsive-nav-link :href="route('admin.reports.index')"
-                            :active="request()->routeIs('admin.reports.*')">
-                            التقارير
+                        <div class="my-2 border-t border-gray-200"></div>
+                        <div class="px-4 py-2 text-xs text-gray-400">التقارير</div>
+                        <x-responsive-nav-link :href="route('admin.reports.shipments')"
+                            :active="request()->routeIs('admin.reports.shipments')">
+                            تقرير الشحنات (بحر/جو)
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.reports.land_shipping')"
+                            :active="request()->routeIs('admin.reports.land_shipping')">
+                            تقرير الشحنات البرية
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.reports.local_customs')"
+                            :active="request()->routeIs('admin.reports.local_customs')">
+                            تقرير الشحنات المحلية
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.reports.summary')"
+                            :active="request()->routeIs('admin.reports.summary')">
+                            التقرير المجمّع
                         </x-responsive-nav-link>
                     @endcan
 

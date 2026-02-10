@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Company;
 use App\Models\Departement;
-use App\Models\Section;
+use App\Models\Warehouse;
+use App\Models\LocalShipmentCustoms;
 
 class LocalCustomsVehicle extends Model
 {
@@ -28,23 +30,40 @@ class LocalCustomsVehicle extends Model
         'created_by',
         'is_active',
         'company_id',
-        'section_id',
+        'department_id',
+        'driver_name',
+        'driver_phone',
+        'factory_departure_date',
+        'warehouse_arrival_date',
+        'warehouse_id',
     ];
 
     protected $casts = [
         'arrival_date_from_branch' => 'date',
         'manufacture_date' => 'date',
         'exit_date_from_manufacture' => 'date',
+        'factory_departure_date' => 'date',
+        'warehouse_arrival_date' => 'date',
         'is_active' => 'boolean',
     ];
 
     public function company()
     {
-        return $this->belongsTo(Departement::class, 'company_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function department()
     {
-        return $this->belongsTo(Section::class, 'section_id');
+        return $this->belongsTo(Departement::class, 'department_id');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function customs()
+    {
+        return $this->hasMany(LocalShipmentCustoms::class, 'local_customs_vehicle_id');
     }
 }
