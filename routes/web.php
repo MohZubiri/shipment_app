@@ -252,6 +252,12 @@ Route::middleware(['auth', 'permission:view reports'])->prefix('admin/reports')-
     Route::get('/', [ReportController::class, 'index'])->name('index');
     Route::get('/shipments', [ReportController::class, 'shipmentReport'])->name('shipments');
     Route::get('/shipments/pdf', [ReportController::class, 'shipmentReportPdf'])->name('shipments.pdf');
+    Route::get('/land-shipping', [ReportController::class, 'landShippingReport'])->name('land_shipping');
+    Route::get('/land-shipping/pdf', [ReportController::class, 'landShippingReportPdf'])->name('land_shipping.pdf');
+    Route::get('/local-customs', [ReportController::class, 'localCustomsReport'])->name('local_customs');
+    Route::get('/local-customs/pdf', [ReportController::class, 'localCustomsReportPdf'])->name('local_customs.pdf');
+    Route::get('/summary', [ReportController::class, 'summaryReport'])->name('summary');
+    Route::get('/summary/pdf', [ReportController::class, 'summaryReportPdf'])->name('summary.pdf');
 });
 
 require __DIR__.'/auth.php';

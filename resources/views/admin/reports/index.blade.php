@@ -24,29 +24,80 @@
                             <div>
                                 <h5
                                     class="mb-2 text-xl font-bold tracking-tight text-gray-900 group-hover:text-indigo-600">
-                                    تقرير الشحنات</h5>
-                                <p class="font-normal text-gray-700 text-sm">عرض وتصدير تقرير شامل عن الشحنات وحالتها.
+                                    تقرير الشحنات (بحر/جو)</h5>
+                                <p class="font-normal text-gray-700 text-sm">عرض وتصدير تقرير شامل عن الشحنات البحرية والجوية.
                                 </p>
                             </div>
                         </div>
                     </a>
 
-                    <!-- Placeholder for future reports -->
-                    <!--
-                    <div class="block p-6 bg-gray-50 border border-gray-200 rounded-lg border-dashed">
-                        <div class="flex items-center gap-4 opacity-50">
-                            <div class="p-3 bg-gray-200 rounded-full text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    <!-- Land Shipping Report Card -->
+                    <a href="{{ route('admin.reports.land_shipping') }}"
+                        class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition duration-150 ease-in-out group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="p-3 bg-green-100 rounded-full text-green-600 group-hover:bg-green-200 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                 </svg>
                             </div>
                             <div>
-                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-400">تقارير إضافية</h5>
-                                <p class="font-normal text-gray-400 text-sm">قريباً...</p>
+                                <h5
+                                    class="mb-2 text-xl font-bold tracking-tight text-gray-900 group-hover:text-green-600">
+                                    تقرير الشحنات البرية</h5>
+                                <p class="font-normal text-gray-700 text-sm">عرض وتصدير تقرير شامل عن الشحنات البرية.
+                                </p>
                             </div>
                         </div>
-                    </div>
-                    -->
+                    </a>
+
+                    <!-- Local Customs Vehicles Report Card -->
+                    <a href="{{ route('admin.reports.local_customs') }}"
+                        class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition duration-150 ease-in-out group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="p-3 bg-orange-100 rounded-full text-orange-600 group-hover:bg-orange-200 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5
+                                    class="mb-2 text-xl font-bold tracking-tight text-gray-900 group-hover:text-orange-600">
+                                    تقرير مركبات الجمارك المحلية</h5>
+                                <p class="font-normal text-gray-700 text-sm">عرض وتصدير تقرير شامل عن مركبات الجمارك المحلية.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Summary Report Card -->
+                    <a href="{{ route('admin.reports.summary') }}"
+                        class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition duration-150 ease-in-out group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="p-3 bg-purple-100 rounded-full text-purple-600 group-hover:bg-purple-200 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5
+                                    class="mb-2 text-xl font-bold tracking-tight text-gray-900 group-hover:text-purple-600">
+                                    التقرير المجمّع حسب الشركة</h5>
+                                <p class="font-normal text-gray-700 text-sm">عرض ملخص شامل لجميع أنواع الشحنات حسب الشركة.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>

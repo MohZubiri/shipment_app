@@ -22,4 +22,19 @@ class Departement extends Model
     {
         return $this->hasMany(ShipmentTransaction::class, 'departmentno');
     }
+
+    public function shipmentTransactions()
+    {
+        return $this->hasMany(ShipmentTransaction::class, 'departmentno');
+    }
+
+    public function landShippings()
+    {
+        return $this->hasMany(LandShipping::class, 'company_id');
+    }
+
+    public function localCustomsVehicles()
+    {
+        return $this->hasMany(LocalCustomsVehicle::class, 'company_id');
+    }
 }
