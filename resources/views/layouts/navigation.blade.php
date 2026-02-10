@@ -47,7 +47,7 @@
                             </x-dropdown>
                         </div>
                     @endcan
-                    @can('view customs')
+                    @can('view customs data')
                         <x-nav-link :href="route('customs.index')" :active="request()->routeIs('customs.*')">
                             البيانات الجمركية
                         </x-nav-link>
@@ -263,7 +263,7 @@
                             الشحن المحلي البري
                         </x-responsive-nav-link>
                     @endcan
-                    @can('view customs')
+                    @can('view customs data')
                         <x-responsive-nav-link :href="route('customs.index')" :active="request()->routeIs('customs.*')">
                             البيانات الجمركية
                         </x-responsive-nav-link>
