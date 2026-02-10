@@ -79,8 +79,11 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Roles
+        $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $superAdmin->syncPermissions($permissions); // Super Admin gets all permissions
+
         $manager = Role::firstOrCreate(['name' => 'manager']);
-        $manager->syncPermissions($permissions); // Manager gets all permissions
+        $manager->syncPermissions($permissions); // Manager also gets all permissions for now
 
         // Field Officer (Example restricted role)
         $fieldOfficer = Role::firstOrCreate(['name' => 'field_officer']);
