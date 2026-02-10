@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Storage;
 
 class LandShippingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view land shipments')->only(['index', 'show', 'downloadDocument']);
+        $this->middleware('permission:create land shipments')->only(['create', 'store']);
+        $this->middleware('permission:edit land shipments')->only(['edit', 'update']);
+        $this->middleware('permission:delete land shipments')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $query = LandShipping::query()->with(['company', 'department', 'documents', 'currentStage', 'locomotives', 'customsPort']);

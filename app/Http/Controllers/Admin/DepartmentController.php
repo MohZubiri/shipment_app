@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view departments')->only(['index', 'show']);
+        $this->middleware('permission:create departments')->only(['create', 'store']);
+        $this->middleware('permission:edit departments')->only(['edit', 'update']);
+        $this->middleware('permission:delete departments')->only(['destroy']);
+    }
+
     public function index()
     {
         $departments = Company::latest()->paginate(10);

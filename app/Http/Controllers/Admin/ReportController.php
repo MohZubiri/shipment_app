@@ -13,6 +13,15 @@ use Mpdf\Mpdf;
 
 class ReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view reports')->only(['index']);
+        $this->middleware('permission:view shipments report')->only(['shipmentReport', 'shipmentReportPdf']);
+        $this->middleware('permission:view land shipping report')->only(['landShippingReport', 'landShippingReportPdf']);
+        $this->middleware('permission:view local customs report')->only(['localCustomsReport', 'localCustomsReportPdf']);
+        $this->middleware('permission:view summary report')->only(['summaryReport', 'summaryReportPdf']);
+    }
+
     public function index()
     {
         return view('admin.reports.index');

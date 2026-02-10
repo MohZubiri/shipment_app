@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view sections')->only(['index', 'show']);
+        $this->middleware('permission:create sections')->only(['create', 'store']);
+        $this->middleware('permission:edit sections')->only(['edit', 'update']);
+        $this->middleware('permission:delete sections')->only(['destroy']);
+    }
+
     public function index()
     {
         $sections = Departement::latest()->paginate(10);

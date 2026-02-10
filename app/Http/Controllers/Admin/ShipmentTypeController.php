@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class ShipmentTypeController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view shipment types')->only(['index', 'show']);
+        $this->middleware('permission:create shipment types')->only(['create', 'store']);
+        $this->middleware('permission:edit shipment types')->only(['edit', 'update']);
+        $this->middleware('permission:delete shipment types')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $shipmentTypes = ShipmentType::latest()->paginate(10);
         return view('admin.shipment_types.index', compact('shipmentTypes'));

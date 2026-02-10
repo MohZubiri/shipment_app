@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class LandShippingTrackingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view tracking')->only(['index', 'show']);
+        $this->middleware('permission:create tracking')->only(['create', 'store']);
+        $this->middleware('permission:edit tracking')->only(['edit', 'update']);
+        $this->middleware('permission:delete tracking')->only(['destroy']);
+    }
+
     public function index(LandShipping $landShipping)
     {
         $landShipping->load(['trackingRecords.stage', 'trackingRecords.createdBy', 'currentStage']);

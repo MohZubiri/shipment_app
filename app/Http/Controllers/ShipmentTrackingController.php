@@ -9,7 +9,15 @@ use Illuminate\Http\Request;
 
 class ShipmentTrackingController extends Controller
 {
-    public function index(ShipmentTransaction $shipment)
+    public function __construct()
+    {
+        $this->middleware('permission:view tracking')->only(['index', 'show']);
+        $this->middleware('permission:create tracking')->only(['create', 'store', 'getContainerInfo']);
+        $this->middleware('permission:edit tracking')->only(['edit', 'update']);
+        $this->middleware('permission:delete tracking')->only(['destroy']);
+    }
+
+    public function index(Request $request, ShipmentTransaction $shipment)
     {
         $shipment->load(['trackingRecords.stage', 'trackingRecords.createdBy', 'currentStage']);
 

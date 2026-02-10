@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class DocumentController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view documents')->only(['index', 'show']);
+        $this->middleware('permission:create documents')->only(['create', 'store']);
+        $this->middleware('permission:edit documents')->only(['edit', 'update']);
+        $this->middleware('permission:delete documents')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $documents = Document::latest()->paginate(10);
         return view('admin.documents.index', compact('documents'));

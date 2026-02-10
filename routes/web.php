@@ -26,7 +26,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'permission:view dashboard'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -37,18 +37,18 @@ Route::middleware('auth')->group(function () {
 
 // المسارات الثابتة يجب أن تأتي قبل المسارات الديناميكية
 Route::get('/shipments/create', [ShipmentController::class, 'create'])
-    ->middleware(['auth', 'permission:manage shipments'])
+    ->middleware(['auth'])
     ->name('shipments.create');
 
 Route::post('/shipments', [ShipmentController::class, 'store'])
-    ->middleware(['auth', 'permission:manage shipments'])
+    ->middleware(['auth'])
     ->name('shipments.store');
 
 Route::get('/shipments/export', [ShipmentController::class, 'export'])
-    ->middleware(['auth', 'permission:export shipments'])
+    ->middleware(['auth'])
     ->name('shipments.export');
 
-Route::middleware(['auth', 'permission:view shipments'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::get('/shipments/documents/{document}/download', [ShipmentController::class, 'downloadDocument'])
@@ -72,7 +72,7 @@ Route::middleware(['auth', 'permission:view shipments'])->group(function () {
     Route::get('/shipments/{shipment}/tracking/container-info', [ShipmentTrackingController::class, 'getContainerInfo'])->name('shipments.tracking.container-info');
 });
 
-Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
     Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
     Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])->name('shipments.destroy');
@@ -195,15 +195,15 @@ Route::middleware(['auth', 'permission:manage shipments'])->group(function () {
     ]);
 });
 
-Route::middleware(['auth', 'permission:view shipments'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
 });
 
-Route::middleware(['auth', 'permission:view customs'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/customs-data', [CustomsDataController::class, 'index'])->name('customs.index');
 });
 
-Route::middleware(['auth', 'permission:manage customs'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/customs-data/create', [CustomsDataController::class, 'create'])->name('customs.create');
     Route::post('/customs-data', [CustomsDataController::class, 'store'])->name('customs.store');
     Route::get('/customs-data/{customsData}/edit', [CustomsDataController::class, 'edit'])->name('customs.edit');
@@ -221,7 +221,7 @@ Route::middleware(['auth', 'permission:manage customs'])->group(function () {
     ]);
 });
 
-Route::middleware(['auth', 'permission:manage users'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/create', [UserManagementController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserManagementController::class, 'store'])->name('admin.users.store');
@@ -230,7 +230,7 @@ Route::middleware(['auth', 'permission:manage users'])->group(function () {
     Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
 });
 
-Route::middleware(['auth', 'permission:manage roles'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/roles', [RoleManagementController::class, 'index'])->name('admin.roles.index');
     Route::get('/admin/roles/create', [RoleManagementController::class, 'create'])->name('admin.roles.create');
     Route::post('/admin/roles', [RoleManagementController::class, 'store'])->name('admin.roles.store');
@@ -239,7 +239,7 @@ Route::middleware(['auth', 'permission:manage roles'])->group(function () {
     Route::delete('/admin/roles/{role}', [RoleManagementController::class, 'destroy'])->name('admin.roles.destroy');
 });
 
-Route::middleware(['auth', 'permission:manage permissions'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/permissions', [PermissionManagementController::class, 'index'])->name('admin.permissions.index');
     Route::get('/admin/permissions/create', [PermissionManagementController::class, 'create'])->name('admin.permissions.create');
     Route::post('/admin/permissions', [PermissionManagementController::class, 'store'])->name('admin.permissions.store');
@@ -248,7 +248,7 @@ Route::middleware(['auth', 'permission:manage permissions'])->group(function () 
     Route::delete('/admin/permissions/{permission}', [PermissionManagementController::class, 'destroy'])->name('admin.permissions.destroy');
 });
 
-Route::middleware(['auth', 'permission:view reports'])->prefix('admin/reports')->name('admin.reports.')->group(function () {
+Route::middleware(['auth'])->prefix('admin/reports')->name('admin.reports.')->group(function () {
     Route::get('/', [ReportController::class, 'index'])->name('index');
     Route::get('/shipments', [ReportController::class, 'shipmentReport'])->name('shipments');
     Route::get('/shipments/pdf', [ReportController::class, 'shipmentReportPdf'])->name('shipments.pdf');

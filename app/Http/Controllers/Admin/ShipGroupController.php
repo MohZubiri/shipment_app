@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class ShipGroupController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view ship groups')->only(['index', 'show']);
+        $this->middleware('permission:create ship groups')->only(['create', 'store']);
+        $this->middleware('permission:edit ship groups')->only(['edit', 'update']);
+        $this->middleware('permission:delete ship groups')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $shipGroups = Shipgroup::latest()->paginate(10);
         return view('admin.ship_groups.index', compact('shipGroups'));

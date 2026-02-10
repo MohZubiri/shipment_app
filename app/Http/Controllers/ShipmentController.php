@@ -16,6 +16,15 @@ use Illuminate\Support\Facades\Storage;
 
 class ShipmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view shipments')->only(['index', 'show', 'downloadDocument']);
+        $this->middleware('permission:create shipments')->only(['create', 'store']);
+        $this->middleware('permission:edit shipments')->only(['edit', 'update']);
+        $this->middleware('permission:delete shipments')->only(['destroy']);
+        $this->middleware('permission:export shipments')->only(['export']);
+    }
+
     public function index(Request $request)
     {
         $query = ShipmentTransaction::query()

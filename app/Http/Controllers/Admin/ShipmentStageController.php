@@ -9,7 +9,18 @@ use Illuminate\Validation\Rule;
 
 class ShipmentStageController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view shipment stages')->only(['index', 'show']);
+        $this->middleware('permission:create shipment stages')->only(['create', 'store']);
+        $this->middleware('permission:edit shipment stages')->only(['edit', 'update']);
+        $this->middleware('permission:delete shipment stages')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $stages = ShipmentStage::orderBy('order')->get();
 

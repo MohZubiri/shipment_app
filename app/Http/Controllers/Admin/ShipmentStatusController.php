@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class ShipmentStatusController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view shipment statuses')->only(['index', 'show']);
+        $this->middleware('permission:create shipment statuses')->only(['create', 'store']);
+        $this->middleware('permission:edit shipment statuses')->only(['edit', 'update']);
+        $this->middleware('permission:delete shipment statuses')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $shipmentStatuses = ShipmentStatus::latest()->paginate(10);
         return view('admin.shipment_statuses.index', compact('shipmentStatuses'));

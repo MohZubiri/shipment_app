@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class ShippingLineController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view shipping lines')->only(['index', 'show']);
+        $this->middleware('permission:create shipping lines')->only(['create', 'store']);
+        $this->middleware('permission:edit shipping lines')->only(['edit', 'update']);
+        $this->middleware('permission:delete shipping lines')->only(['destroy']);
+    }
+
     public function index()
     {
         $shippingLines = ShippingLine::latest()->paginate(10);

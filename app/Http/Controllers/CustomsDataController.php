@@ -8,6 +8,14 @@ use Illuminate\Validation\Rule;
 
 class CustomsDataController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view customs data')->only(['index', 'show']);
+        $this->middleware('permission:create customs data')->only(['create', 'store']);
+        $this->middleware('permission:edit customs data')->only(['edit', 'update']);
+        $this->middleware('permission:delete customs data')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $query = CustomsData::query()->withCount('shipments');

@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class CustomsPortController extends Controller
 {
-    public function index()
+    public function __construct()
+    {
+        $this->middleware('permission:view customs ports')->only(['index', 'show']);
+        $this->middleware('permission:create customs ports')->only(['create', 'store']);
+        $this->middleware('permission:edit customs ports')->only(['edit', 'update']);
+        $this->middleware('permission:delete customs ports')->only(['destroy']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
         $customsPorts = CustomsPort::latest()->paginate(10);
         return view('admin.customs_ports.index', compact('customsPorts'));

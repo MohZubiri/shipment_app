@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Auth;
 
 class LocalCustomsVehicleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view local shipments')->only(['index', 'show']);
+        $this->middleware('permission:create local shipments')->only(['create', 'store']);
+        $this->middleware('permission:edit local shipments')->only(['edit', 'update']);
+        $this->middleware('permission:delete local shipments')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $query = LocalCustomsVehicle::query()->with(['company', 'department', 'warehouse']);
