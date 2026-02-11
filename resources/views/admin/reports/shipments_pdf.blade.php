@@ -70,7 +70,7 @@
                 <th>رقم العملية</th>
                 <th>إسم الشحنة</th>
                 <th>رقم البوليصة</th>
-                <th>مرحلة الشحنة الحالية</th>
+                
                 <th>رقم الببان</th>
                   <th>حالة الببان</th>
                 <th>الخط الملاحي</th>
@@ -80,6 +80,7 @@
                 <th>تاريخ انتهاء فترة السماح</th>
                 <th>نوع المستندات</th>
                 <th>تاريخ استلام المستندات</th>
+                   <th>مرحلة الشحنة الحالية </th>
                 <th>تاريخ الترحيل</th>
                 <th>وجهة الترحيل</th>
             </tr>
@@ -91,7 +92,7 @@
                     <td>{{ $shipment->operationno }}</td>
                     <td>{{ $shipment->shippmintno ?? '-' }}</td>
                     <td>{{ $shipment->pillno ?: '-' }}</td>
-                    <td>{{ $shipment->currentStage->name ?? '-' }}</td>
+                 
                     <td>{{ $shipment->datano }}</td>
                          <td>{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>
@@ -132,8 +133,9 @@
                         $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
                         $relayDestination = $shipment->relayname ?: $shipment->warehouseTracking?->warehouse?->name;
                     @endphp
-                    <td>{{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}</td>
+                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
                     <td>{{ $relayDestination ?? '-' }}</td>
+                     <td>{{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}</td>
                 </tr>
             @endforeach
         </tbody>
