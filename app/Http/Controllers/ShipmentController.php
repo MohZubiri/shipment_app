@@ -128,6 +128,7 @@ class ShipmentController extends Controller
         unset($data['containers']);
         unset($data['attached_documents']);
         unset($data['documents_zip']);
+        unset($data['documents_to_delete']);
 
         $shipment = ShipmentTransaction::create($data);
 
@@ -155,18 +156,28 @@ class ShipmentController extends Controller
             }
         }
 
-        // Handle ZIP file upload
+        // Handle document uploads (multiple files allowed)
         if ($request->hasFile('documents_zip')) {
-            $file = $request->file('documents_zip');
-            $path = $file->store("shipment_documents/{$shipment->id}", 'public');
+            $files = $request->file('documents_zip');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
 
-            ShipmentDocument::create([
-                'shipment_id' => $shipment->id,
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+            foreach ($files as $file) {
+                if (!$file) {
+                    continue;
+                }
+
+                $path = $file->store("shipment_documents/{$shipment->id}", 'public');
+
+                ShipmentDocument::create([
+                    'shipment_id' => $shipment->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+            }
         }
 
         // Legacy support for bill_of_lading files
@@ -197,6 +208,7 @@ class ShipmentController extends Controller
         unset($data['containers']);
         unset($data['attached_documents']);
         unset($data['documents_zip']);
+        unset($data['documents_to_delete']);
 
         $shipment->update($data);
 
@@ -218,6 +230,43 @@ class ShipmentController extends Controller
                     'bill_of_lading' => $billOfLading,
                     'container_count' => $containerData['container_count'] ?? 1,
                     'container_size' => $containerData['container_size'] ?? null,
+                ]);
+            }
+        }
+
+        $documentsToDelete = $request->input('documents_to_delete', []);
+        if (!empty($documentsToDelete)) {
+            $documents = $shipment->documents()
+                ->whereIn('id', $documentsToDelete)
+                ->get();
+
+            foreach ($documents as $document) {
+                if ($document->path) {
+                    Storage::disk('public')->delete($document->path);
+                }
+                $document->delete();
+            }
+        }
+
+        if ($request->hasFile('documents_zip')) {
+            $files = $request->file('documents_zip');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            foreach ($files as $file) {
+                if (!$file) {
+                    continue;
+                }
+
+                $path = $file->store("shipment_documents/{$shipment->id}", 'public');
+
+                ShipmentDocument::create([
+                    'shipment_id' => $shipment->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
                 ]);
             }
         }

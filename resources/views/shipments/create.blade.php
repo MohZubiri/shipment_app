@@ -356,7 +356,7 @@
                                 <option value="">اختر النوع</option>
                                 <option value="أصل" @selected(old('paperno', $shipment?->paperno ?? '') == 'أصل')>أصل</option>
                                 <option value="صورة" @selected(old('paperno', $shipment?->paperno ?? '') == 'صورة')>صورة</option>
-                                <option value="أصل + صورة" @selected(old('paperno', $shipment?->paperno ?? '') == 'أصل + صورة')>أصل + صورة</option>
+                                <option value="أصل + افراج" @selected(old('paperno', $shipment?->paperno ?? '') == 'أصل + افراج')>أصل + إفراج</option>
                             </select>
                         </div>
                         <div>
@@ -412,16 +412,46 @@
                                     </label>
                                 @endforeach
                             </div>
-                            @if($activeDocuments->isEmpty())
-                                <p class="text-sm text-slate-500">لا توجد مستندات مفعلة. يمكنك إضافتها من <a href="{{ route('admin.documents.index') }}" class="text-blue-600 hover:underline">الإعدادات</a>.</p>
-                            @endif
-                        </div>
+                        @if($activeDocuments->isEmpty())
+                            <p class="text-sm text-slate-500">لا توجد مستندات مفعلة. يمكنك إضافتها من <a href="{{ route('admin.documents.index') }}" class="text-blue-600 hover:underline">الإعدادات</a>.</p>
+                        @endif
+                    </div>
+
+                        @if($isEdit)
+                            @php
+                                $documentsToDelete = old('documents_to_delete', []);
+                            @endphp
+                            <div class="pt-4 border-t border-slate-200">
+                                <p class="mb-3 text-sm font-medium text-slate-700">المستندات الحالية</p>
+                                <div class="space-y-2">
+                                    @forelse($shipment->documents as $document)
+                                        <label class="flex items-center justify-between gap-3 p-3 rounded-lg border border-slate-200">
+                                            <span class="flex items-center gap-3">
+                                                <input type="checkbox" name="documents_to_delete[]" value="{{ $document->id }}"
+                                                    @checked(in_array($document->id, $documentsToDelete))
+                                                    class="text-red-600 rounded border-slate-300 focus:ring-red-500">
+                                                <span class="text-sm text-slate-700">{{ $document->original_name }}</span>
+                                            </span>
+                                            <a class="text-xs text-blue-600 hover:underline"
+                                                href="{{ route('shipments.documents.download', $document) }}" download>
+                                                تحميل
+                                            </a>
+                                        </label>
+                                    @empty
+                                        <p class="text-sm text-slate-500">لا توجد مستندات مرفقة.</p>
+                                    @endforelse
+                                </div>
+                                @if($shipment->documents->isNotEmpty())
+                                    <p class="mt-2 text-xs text-slate-500">حدد المستندات التي ترغب في حذفها وسيتم حذفها عند حفظ التعديلات.</p>
+                                @endif
+                            </div>
+                        @endif
 
                         <div class="pt-4 border-t border-slate-200">
-                            <label class="block text-sm font-medium text-slate-700" for="documents_zip">رفع ملف المستندات (ZIP)</label>
-                            <input id="documents_zip" name="documents_zip" type="file" accept=".zip"
-                                class="mt-2 w-full text-sm text-slate-700">
-                            <p class="mt-2 text-xs text-slate-500">يرجى رفع جميع المستندات في ملف ZIP واحد (الحد الأقصى 50MB).</p>
+                            <label class="block text-sm font-medium text-slate-700" for="documents_zip">رفع المستندات</label>
+                            <input id="documents_zip" name="documents_zip[]" type="file" multiple
+                                accept=".zip,.pdf,.jpg,.jpeg,.png" class="mt-2 w-full text-sm text-slate-700">
+                            <p class="mt-2 text-xs text-slate-500">يمكن رفع أكثر من ملف (PDF/JPG/PNG/ZIP). الحد الأقصى 50MB لكل ملف.</p>
                         </div>
 
                         <div>

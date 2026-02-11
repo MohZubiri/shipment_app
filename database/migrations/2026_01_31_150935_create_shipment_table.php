@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('operationno');
             $table->unsignedBigInteger('shippmintno');
-            $table->foreignId('shipgroupno')
+            $table->foreignId('shipgroupno')->nullable()
                 ->constrained('shipgroup')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();

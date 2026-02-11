@@ -131,8 +131,8 @@
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم العملية</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">إسم الشحنة</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم البوليصة</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">مرحلة الشحنة الحالية</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم الببان</th>
+                                 <th scope="col" class="px-2 py-3 border border-gray-300">حالة الببان</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">الخط الملاحي</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">عدد الحاويات</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ وصول الباخرة المتوقعة</th>
@@ -140,8 +140,11 @@
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ انتهاء فترة السماح</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">نوع المستندات</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ استلام المستندات</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الترحيل</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">مرحلة الشحنة الحالية</th>
+                               
                                 <th scope="col" class="px-2 py-3 border border-gray-300">وجهة الترحيل</th>
+                                  <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الترحيل</th>
+                              
                             </tr>
                         </thead>
                         <tbody>
@@ -151,8 +154,9 @@
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->shippmintno ?? '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->pillno ?: '-' }}</td>
-                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
+                                   <td class="px-2 py-2 border border-gray-300">{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
+                                  
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ optional($shipment->shippingLine)->name ?? '-' }}
                                     </td>
@@ -189,29 +193,31 @@
                                         {{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
-                                        {{ $shipment->endallowdate ? (int) now()->startOfDay()->diffInDays($shipment->endallowdate, false) : '-' }}
+                                        {{ $shipment->shippingLine->time ?? '-' }}
                                     </td>
                                     <!-- Confirm field for allowance period -->
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
-                                        {{ $shipment->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}
+                                        {{ $shipment->paperno ?: '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}
                                     </td>
-                                    <td class="px-2 py-2 border border-gray-300">
-                                        @php
-                                            $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
-                                        @endphp
-                                        {{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}
-                                    </td>
+                                     
+                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300">
                                         @php
                                             $relayDestination = $shipment->relayname ?: $shipment->warehouseTracking?->warehouse?->name;
                                         @endphp
                                         {{ $relayDestination ?? '-' }}
+                                    </td>
+                                     <td class="px-2 py-2 border border-gray-300">
+                                        @php
+                                            $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
+                                        @endphp
+                                        {{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}
                                     </td>
 
                                 </tr>

@@ -59,6 +59,10 @@ class StoreShipmentRequest extends FormRequest
             'returndate' => ['nullable', 'date'],
             'attached_documents' => ['nullable', 'array'],
             'attached_documents.*' => ['integer', 'exists:documents,id'],
+            'documents_zip' => ['nullable', 'array'],
+            'documents_zip.*' => ['file', 'mimes:zip,pdf,jpg,jpeg,png', 'max:51200'],
+            'documents_to_delete' => ['nullable', 'array'],
+            'documents_to_delete.*' => ['integer', 'exists:shipment_documents,id'],
             'bill_of_lading' => ['nullable', 'array'],
             'bill_of_lading.*' => ['file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
