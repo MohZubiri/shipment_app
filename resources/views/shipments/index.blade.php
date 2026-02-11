@@ -135,6 +135,7 @@
                             <th class="py-2">حالة البيان</th>
                             <th class="py-2">المنفذ</th>
                             <th class="py-2">الشركة</th>
+                            <th class="py-2">القسم</th>
                             <th class="py-2">الخط الملاحي</th>
                             <th class="py-2">الوصول</th>
                             <th class="py-2">نهاية السماح</th>
@@ -200,6 +201,7 @@
                                 <td class="py-2">{{ $customsStateLabel }}</td>
                                 <td class="py-2">{{ $shipment->customsPort?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->company?->name ?? '-' }}</td>
+                                <td class="py-2">{{ $shipment->department?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
                                 <td class="py-2">{{ $computedEndAllowDate?->format('Y-m-d') ?? '-' }}</td>
