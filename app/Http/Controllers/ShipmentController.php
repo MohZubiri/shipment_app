@@ -302,7 +302,7 @@ class ShipmentController extends Controller
     public function export(Request $request)
     {
         $query = ShipmentTransaction::query()
-            ->with(['company', 'department', 'shippingLine']);
+            ->with(['company', 'department', 'shippingLine', 'customsData', 'customsPort', 'currentStage', 'containers']);
 
         $this->applyFilters($query, $request);
 
@@ -317,34 +317,90 @@ class ShipmentController extends Controller
             $handle = fopen('php://output', 'w');
 
             fputcsv($handle, [
-                'ID',
-                'Operation No',
-                'Shipment Name',
-                'Bill No',
-                'Container No',
-                'Company',
-                'Department',
-                'Shipping Line',
-                'Arrival Date',
-                'End Allow Date',
-                'Still Days',
-                'Created At',
+                '#',
+                'العملية',
+                'اسم الشحنة',
+                'البوليصة',
+                'عدد الحاويات',
+                'البيان الجمركي',
+                'حالة البيان',
+                'المنفذ',
+                'الشركة',
+                'القسم',
+                'الخط الملاحي',
+                'الوصول',
+                'نهاية السماح',
+                'تاريخ الإنشاء',
+                'مرحلة الشحنة',
+                'الأيام المتبقية',
             ], "\t");
 
-            foreach ($shipments as $shipment) {
+            foreach ($shipments as $index => $shipment) {
+                // Calculate container summary
+                $containerCounts = $shipment->containers
+                    ->filter(fn($container) => $container->container_size && $container->container_count)
+                    ->groupBy('container_size')
+                    ->map(fn($group) => $group->sum('container_count'));
+
+                if ($containerCounts->isEmpty()) {
+                    $containerCounts = collect();
+                    if (($shipment->park40 ?? 0) > 0) {
+                        $containerCounts->put('40', $shipment->park40);
+                    }
+                    if (($shipment->park20 ?? 0) > 0) {
+                        $containerCounts->put('20', $shipment->park20);
+                    }
+                }
+
+                $preferredOrder = ['40', '40HC', '20'];
+                $orderedCounts = collect();
+                foreach ($preferredOrder as $size) {
+                    if ($containerCounts->has($size)) {
+                        $orderedCounts->put($size, $containerCounts->get($size));
+                    }
+                }
+                $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
+                $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode(', ');
+
+                // Calculate customs state label
+                $customsStateLabel = match ($shipment->customsData?->state) {
+                    1 => 'ضمان',
+                    2 => 'سداد',
+                    default => '-',
+                };
+
+                // Calculate stage label
+                $stageLabel = $shipment->currentStage?->name ?? 'غير محددة';
+
+                // Calculate end allow date and still days
+                $today = \Carbon\Carbon::today();
+                $computedEndAllowDate = $shipment->endallowdate;
+                $computedStillday = 0;
+                $allowanceDays = $shipment->shippingLine?->time;
+                if ($shipment->dategase && $allowanceDays) {
+                    $computedEndAllowDate = \Carbon\Carbon::parse($shipment->dategase)->addDays((int) $allowanceDays);
+                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                } elseif ($computedEndAllowDate) {
+                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                }
+
                 fputcsv($handle, [
-                    $shipment->id,
+                    $index + 1,
                     $shipment->operationno,
                     $shipment->shippmintno,
                     $shipment->pillno,
-                    $shipment->pilno,
+                    $containerSummary,
+                    $shipment->datano,
+                    $customsStateLabel,
+                    $shipment->customsPort?->name,
                     $shipment->company?->name,
                     $shipment->department?->name,
                     $shipment->shippingLine?->name,
                     $shipment->dategase?->format('Y-m-d'),
-                    $shipment->endallowdate?->format('Y-m-d'),
-                    $shipment->stillday,
+                    $computedEndAllowDate?->format('Y-m-d'),
                     $shipment->created_at?->format('Y-m-d H:i'),
+                    $stageLabel,
+                    $computedStillday,
                 ], "\t");
             }
 

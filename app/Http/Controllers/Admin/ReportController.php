@@ -153,7 +153,7 @@ class ReportController extends Controller
      */
     public function landShippingReport(Request $request)
     {
-        $query = LandShipping::with(['company', 'department', 'currentStage', 'warehouseTracking.warehouse', 'attachedDocuments'])
+        $query = LandShipping::with(['company', 'department', 'currentStage', 'warehouseTracking.warehouse', 'attachedDocuments', 'locomotives'])
             ->latest('arrival_date');
 
         if ($request->has('date_from') && $request->date_from) {
@@ -207,7 +207,7 @@ class ReportController extends Controller
      */
     public function landShippingReportPdf(Request $request)
     {
-        $query = LandShipping::with(['company', 'department', 'currentStage', 'warehouseTracking.warehouse', 'attachedDocuments'])
+        $query = LandShipping::with(['company', 'department', 'currentStage', 'warehouseTracking.warehouse', 'attachedDocuments', 'locomotives'])
             ->latest('arrival_date');
 
         if ($request->has('date_from') && $request->date_from) {
