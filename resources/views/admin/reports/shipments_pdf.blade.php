@@ -72,6 +72,7 @@
                 <th>رقم البوليصة</th>
                 <th>مرحلة الشحنة الحالية</th>
                 <th>رقم الببان</th>
+                  <th>حالة الببان</th>
                 <th>الخط الملاحي</th>
                 <th>عدد الحاويات</th>
                 <th>تاريخ وصول الباخرة المتوقعة</th>
@@ -92,6 +93,7 @@
                     <td>{{ $shipment->pillno ?: '-' }}</td>
                     <td>{{ $shipment->currentStage->name ?? '-' }}</td>
                     <td>{{ $shipment->datano }}</td>
+                         <td>{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>
                     @php
                         $containerCounts = $shipment->containers
@@ -121,10 +123,10 @@
                     @endphp
                     <td>{!! $containerSummary !== '' ? $containerSummary : '-' !!}</td>
                     <td>{{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $shipment->endallowdate ? (int) now()->startOfDay()->diffInDays($shipment->endallowdate->startOfDay(), false) : '-' }}
+                    <td> {{ $shipment->shippingLine->time ?? '-' }}
                     </td>
-                    <td>{{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $shipment->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}</td>
+                    <td> {{ $shipment->endallowdate ? $shipment->endallowdate->subDay()->format('Y-m-d') : '-' }}</td>
+                    <td>{{ $shipment->paperno ?: '-' }}</td>
                     <td>{{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}</td>
                     @php
                         $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
