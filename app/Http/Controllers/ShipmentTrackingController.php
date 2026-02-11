@@ -90,7 +90,8 @@ class ShipmentTrackingController extends Controller
         $data['created_by'] = auth()->id();
         $data['event_date'] = $data['event_date'] ?? now();
 
-        $shipment->addTrackingRecord($data);
+        $tracking = $shipment->addTrackingRecord($data);
+        $this->syncRelayInfo($shipment, $tracking, $stage);
 
         return redirect()
             ->route('shipments.tracking.index', $shipment)
@@ -148,6 +149,8 @@ class ShipmentTrackingController extends Controller
         }
 
         $tracking->update($data);
+        $tracking->refresh();
+        $this->syncRelayInfo($shipment, $tracking, $stage);
 
         return redirect()
             ->route('shipments.tracking.index', $shipment)
@@ -186,5 +189,22 @@ dd($stageId,$usedContainers,$totalContainers,$remainingContainers);
             'used' => $usedContainers,
             'remaining' => $remainingContainers,
         ]);
+    }
+
+    private function syncRelayInfo(ShipmentTransaction $shipment, ShipmentTracking $tracking, ShipmentStage $stage): void
+    {
+        if ($stage->code !== 'warehouse') {
+            return;
+        }
+
+        $tracking->loadMissing('warehouse');
+        $relayDate = $tracking->event_date ?? $tracking->created_at ?? now();
+
+        $updates = ['relaydate' => $relayDate];
+        if ($tracking->warehouse?->name) {
+            $updates['relayname'] = $tracking->warehouse->name;
+        }
+
+        $shipment->update($updates);
     }
 }

@@ -130,6 +130,7 @@
                                 <th scope="col" class="px-2 py-3 border border-gray-300">الرقم</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم العملية</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">إسم الشحنة</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">رقم البوليصة</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">مرحلة الشحنة الحالية</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم الببان</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">الخط الملاحي</th>
@@ -149,6 +150,7 @@
                                     <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->shippmintno ?? '-' }}</td>
+                                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->pillno ?: '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
                                     <td class="px-2 py-2 border border-gray-300">
@@ -200,15 +202,22 @@
                                         {{ $shipment->officedate ? $shipment->officedate->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
-                                        {{ $shipment->relaydate ? $shipment->relaydate->format('Y-m-d') : '-' }}
+                                        @php
+                                            $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
+                                        @endphp
+                                        {{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
-                                        {{ $shipment->warehouseTracking?->warehouse?->name ?? '-' }}</td>
+                                        @php
+                                            $relayDestination = $shipment->relayname ?: $shipment->warehouseTracking?->warehouse?->name;
+                                        @endphp
+                                        {{ $relayDestination ?? '-' }}
+                                    </td>
 
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="15" class="px-6 py-4 text-center text-gray-500">
+                                    <td colspan="16" class="px-6 py-4 text-center text-gray-500">
                                         لا يوجد شحنات لعرضها
                                     </td>
                                 </tr>
