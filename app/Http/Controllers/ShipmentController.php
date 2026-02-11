@@ -45,8 +45,20 @@ class ShipmentController extends Controller
 
         $this->applyFilters($query, $request);
 
+        // Handle sorting
+        $sortColumn = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Validate sort column to prevent SQL injection
+        $allowedColumns = ['id', 'operationno', 'shippmintno', 'pillno', 'datano', 'dategase', 'endallowdate', 'stillday', 'created_at'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
+
         $shipments = $query
-            ->orderByDesc('id')
+            ->orderBy($sortColumn, $sortDirection)
             ->paginate(15)
             ->withQueryString();
 
@@ -56,6 +68,8 @@ class ShipmentController extends Controller
             'ports' => CustomsPort::query()->orderBy('name')->get(),
             'departments' => Departement::query()->orderBy('name')->get(),
             'shippingLines' => ShippingLine::query()->orderBy('name')->get(),
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
         ]);
     }
 

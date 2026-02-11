@@ -127,7 +127,22 @@
                 <table class="min-w-full text-sm text-right">
                     <thead>
                         <tr class="text-slate-500 border-b">
-                            <th class="py-2">العملية</th>
+                            <th class="py-2">#</th>
+                            <th class="py-2">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'operationno', 'direction' => $sortColumn === 'operationno' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                                   class="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                                    العملية
+                                    @if($sortColumn === 'operationno')
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            @if($sortDirection === 'asc')
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            @endif
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-2">اسم الشحنة</th>
                             <th class="py-2">البوليصة</th>
                             <th class="py-2">عدد الحاويات</th>
@@ -137,8 +152,37 @@
                             <th class="py-2">الشركة</th>
                             <th class="py-2">القسم</th>
                             <th class="py-2">الخط الملاحي</th>
-                            <th class="py-2">الوصول</th>
+                            <th class="py-2">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'dategase', 'direction' => $sortColumn === 'dategase' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                                   class="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                                    الوصول
+                                    @if($sortColumn === 'dategase')
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            @if($sortDirection === 'asc')
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            @endif
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-2">نهاية السماح</th>
+                            <th class="py-2">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'created_at', 'direction' => $sortColumn === 'created_at' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                                   class="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                                    تاريخ الإنشاء
+                                    @if($sortColumn === 'created_at')
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            @if($sortDirection === 'asc')
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            @endif
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-2">مرحلة الشحنة</th>
                             <th class="py-2">الأيام المتبقية</th>
                             <th class="py-2">المستندات</th>
@@ -146,7 +190,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($shipments as $shipment)
+                        @forelse($shipments as $index => $shipment)
                             @php
                                 $customsStateLabel = match ($shipment->customsData?->state) {
                                     1 => 'ضمان',
@@ -193,6 +237,7 @@
                                 $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode('<br>');
                             @endphp
                             <tr class="border-b last:border-0">
+                                <td class="py-2">{{ ($shipments->currentPage() - 1) * $shipments->perPage() + $loop->iteration }}</td>
                                 <td class="py-2">{{ $shipment->operationno }}</td>
                                 <td class="py-2">{{ $shipment->shippmintno ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->pillno }}</td>
@@ -205,6 +250,7 @@
                                 <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
                                 <td class="py-2">{{ $computedEndAllowDate?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="py-2">{{ $shipment->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
                                 <td class="py-2">
                                     <span
                                         class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
@@ -278,7 +324,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="15" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
+                                <td colspan="17" class="py-4 text-center text-gray-500">لا توجد شحنات بعد.</td>
                             </tr>
                         @endforelse
                     </tbody>
