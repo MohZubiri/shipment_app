@@ -197,7 +197,7 @@
                                     </td>
                                     <!-- Confirm field for allowance period -->
                                     <td class="px-2 py-2 border border-gray-300">
-                                        {{ $shipment->endallowdate ? $shipment->endallowdate->format('Y-m-d') : '-' }}
+                                        {{ $shipment->endallowdate ? $shipment->endallowdate->subDay()->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ $shipment->paperno ?: '-' }}
