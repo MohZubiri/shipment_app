@@ -12,7 +12,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+        <div class="max-w-12xl mx-auto sm:px-6 lg:px-8 space-y-8">
             <div class="bg-white shadow-sm sm:rounded-xl p-6 border border-slate-100">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-semibold text-slate-900">سجل التتبع</h3>

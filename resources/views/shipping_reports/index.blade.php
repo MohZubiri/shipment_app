@@ -74,35 +74,56 @@
                 <table class="min-w-full text-sm text-right">
                     <thead>
                         <tr class="text-slate-500 border-b">
+                            <th class="py-2">#</th>
                             <th class="py-2">رقم العملية</th>
-                            <th class="py-2">عدد القواطر</th>
+                            <th class="py-2">أرقام القواطر</th>
                             <th class="py-2">اسم الشحنة</th>
                             <th class="py-2">رقم البيان</th>
+                            <th class="py-2">حالة البيان</th>
                             <th class="py-2">الشركة</th>
                             <th class="py-2">القسم</th>
                             <th class="py-2">المنفذ</th>
                             <th class="py-2">تاريخ الوصول</th>
                             <th class="py-2">تاريخ الخروج</th>
                             <th class="py-2">ايام المماسي </th>
-                            <th class="py-2">وصول المخزن</th>
+                            <th class="py-2">تاريخ وصول المخزن</th>
+                            <th class="py-2">المرحلة الحالية</th>
                             <th class="py-2">المستندات</th>
                             <th class="py-2">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($reports as $report)
+                            @php
+                                $customsStateLabel = match ($report->customsData?->state) {
+                                    1 => 'ضمان',
+                                    2 => 'سداد',
+                                    default => '-',
+                                };
+                                $dockingDays = '-';
+                                if ($report->arrival_date && $report->exit_date) {
+                                    $diffDays = $report->arrival_date->diffInDays($report->exit_date, false);
+                                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                                }
+                                $warehouseArrivalDate = $report->warehouseTracking?->event_date
+                                    ?? $report->warehouseTracking?->created_at
+                                    ?? $report->warehouse_arrival_date;
+                            @endphp
                             <tr class="border-b last:border-0">
+                                <td class="py-2">{{ ($reports->currentPage() - 1) * $reports->perPage() + $loop->iteration }}</td>
                                 <td class="py-2 font-semibold text-slate-800">{{ $report->operation_number }}</td>
-                                <td class="py-2">{{ $report->locomotives->count() }}</td>
+                                <td class="py-2">{{ $report->locomotives->pluck('locomotive_number')->implode(', ') ?: '-' }}</td>
                                 <td class="py-2">{{ $report->shipment_name ?? '-' }}</td>
                                 <td class="py-2">{{ $report->declaration_number ?? '-' }}</td>
+                                <td class="py-2">{{ $customsStateLabel }}</td>
                                 <td class="py-2">{{ $report->company?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $report->department?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $report->customsPort?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $report->arrival_date?->format('Y-m-d') ?? '-' }}</td>
                                 <td class="py-2">{{ $report->exit_date?->format('Y-m-d') ?? '-' }}</td>
-                                <td class="py-2">{{ $report->docking_days ?? '-' }}</td>
-                                <td class="py-2">{{ $report->warehouse_arrival_date?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="py-2">{{ $dockingDays }}</td>
+                                <td class="py-2">{{ $warehouseArrivalDate?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="py-2">{{ $report->currentStage?->name ?? '-' }}</td>
                                 <td class="py-2">
                                     @forelse($report->documents as $document)
                                         <a class="text-blue-600 hover:underline"
@@ -160,7 +181,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
+                                <td colspan="16" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
                             </tr>
                         @endforelse
                     </tbody>

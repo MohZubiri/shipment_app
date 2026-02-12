@@ -77,13 +77,12 @@
                 <th>حالة البيان</th>
                 <th>تاريخ الوصول</th>
                 <th>تاريخ الخروج</th>
-                <th>الشركة</th>
-                <th>القسم</th>
-                <th>المرحلة الحالية</th>
-                <th>وجهة الترحيل (المخزن)</th>
-                <th>تاريخ استلام المستندات</th>
                 <th>أيام المماسي</th>
                 <th>نوع المستند</th>
+                <th>تاريخ استلام المستندات</th>
+                <th>المرحلة الحالية</th>
+                <th>وجهة الترحيل (المخزن)</th>
+                <th>تاريخ الترحيل</th>
             </tr>
         </thead>
         <tbody>
@@ -100,6 +99,14 @@
                             $dockingDays = 0;
                         }
                     }
+                    $customsStateLabel = match ($landShipping->customsData?->state) {
+                        1 => 'ضمان',
+                        2 => 'سداد',
+                        default => '-',
+                    };
+                    $warehouseTransferDate = $landShipping->warehouseTracking?->event_date
+                        ?? $landShipping->warehouseTracking?->created_at
+                        ?? $landShipping->warehouse_arrival_date;
                 @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
@@ -108,23 +115,15 @@
                     <td>{{ $landShipping->shipment_name ?? '-' }}</td>
                     <td>{{ $landShipping->locomotives->count() ?: '-' }}</td>
                     <td>{{ $landShipping->declaration_number ?? '-' }}</td>
-                    <td>{{ $landShipping->documents_type ?? '-' }}</td>
+                    <td>{{ $customsStateLabel }}</td>
                     <td>{{ $landShipping->arrival_date ? $landShipping->arrival_date->format('Y-m-d') : '-' }}</td>
                     <td>{{ $landShipping->exit_date ? $landShipping->exit_date->format('Y-m-d') : '-' }}</td>
-                    <td>{{ optional($landShipping->company)->name ?? '-' }}</td>
-                    <td>{{ optional($landShipping->department)->name ?? '-' }}</td>
-                    <td>{{ optional($landShipping->currentStage)->name ?? '-' }}</td>
-                    <td>
-                        @if(optional($landShipping->currentStage)->code === 'warehouse')
-                            {{ $landShipping->warehouseTracking?->warehouse?->name ?? '-' }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td>{{ $landShipping->documents_sent_date ? $landShipping->documents_sent_date->format('Y-m-d') : '-' }}
-                    </td>
                     <td>{{ $dockingDays }}</td>
-                    <td>{{ $landShipping->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}</td>
+                    <td>{{ $landShipping->documents_type ?? '-' }}</td>
+                    <td>{{ $landShipping->documents_sent_date ? $landShipping->documents_sent_date->format('Y-m-d') : '-' }}</td>
+                    <td>{{ optional($landShipping->currentStage)->name ?? '-' }}</td>
+                    <td>{{ $landShipping->warehouseTracking?->warehouse?->name ?? '-' }}</td>
+                    <td>{{ $warehouseTransferDate?->format('Y-m-d') ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -136,13 +136,12 @@
                                 <th scope="col" class="px-2 py-3 border border-gray-300">حالة البيان</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الوصول</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الخروج</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">الشركة</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">القسم</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">المرحلة الحالية</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">وجهة الترحيل</th>
-                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ استلام المستندات</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">أيام المماسي</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">نوع المستند</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ استلام المستندات</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">المرحلة الحالية</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">وجهة الترحيل</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الترحيل</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -159,6 +158,14 @@
                                             $dockingDays = 0;
                                         }
                                     }
+                                    $customsStateLabel = match ($landShipping->customsData?->state) {
+                                        1 => 'ضمان',
+                                        2 => 'سداد',
+                                        default => '-',
+                                    };
+                                    $warehouseTransferDate = $landShipping->warehouseTracking?->event_date
+                                        ?? $landShipping->warehouseTracking?->created_at
+                                        ?? $landShipping->warehouse_arrival_date;
                                 @endphp
                                 <tr class="bg-white border-b hover:bg-gray-50">
                                     <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900 text-xs">{{ $index + 1 }}</td>
@@ -167,7 +174,7 @@
                                     <td class="px-2 py-2 border border-gray-300 text-xs whitespace-nowrap">{{ $landShipping->shipment_name ?? '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs whitespace-nowrap">{{ $landShipping->locomotives->count() ?: '-' }}</td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs whitespace-nowrap">{{ $landShipping->declaration_number ?? '-' }}</td>
-                                    <td class="px-2 py-2 border border-gray-300 text-xs whitespace-nowrap">{{ $landShipping->documents_type ?? '-' }}</td>
+                                    <td class="px-2 py-2 border border-gray-300 text-xs whitespace-nowrap">{{ $customsStateLabel }}</td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
                                         {{ $landShipping->arrival_date ? $landShipping->arrival_date->format('Y-m-d') : '-' }}
                                     </td>
@@ -175,34 +182,27 @@
                                         {{ $landShipping->exit_date ? $landShipping->exit_date->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        {{ optional($landShipping->company)->name ?? '-' }}
+                                        {{ $dockingDays }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        {{ optional($landShipping->department)->name ?? '-' }}
-                                    </td>
-                                    <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        {{ optional($landShipping->currentStage)->name ?? '-' }}
-                                    </td>
-                                    <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        @if(optional($landShipping->currentStage)->code === 'warehouse')
-                                            {{ $landShipping->warehouseTracking?->warehouse?->name ?? '-' }}
-                                        @else
-                                            -
-                                        @endif
+                                        {{ $landShipping->documents_type ?? '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
                                         {{ $landShipping->documents_sent_date ? $landShipping->documents_sent_date->format('Y-m-d') : '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        {{ $dockingDays }}
+                                        {{ optional($landShipping->currentStage)->name ?? '-' }}
                                     </td>
                                     <td class="px-2 py-2 border border-gray-300 text-xs">
-                                        {{ $landShipping->attachedDocuments->pluck('name')->implode(', ') ?: '-' }}
+                                        {{ $landShipping->warehouseTracking?->warehouse?->name ?? '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300 text-xs">
+                                        {{ $warehouseTransferDate?->format('Y-m-d') ?? '-' }}
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="16" class="px-6 py-4 text-center text-gray-500">
+                                    <td colspan="15" class="px-6 py-4 text-center text-gray-500">
                                         لا يوجد بيانات تطابق الفلاتر المختارة
                                     </td>
                                 </tr>

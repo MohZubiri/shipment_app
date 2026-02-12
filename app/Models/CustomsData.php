@@ -29,4 +29,9 @@ class CustomsData extends Model
     {
         return $this->hasMany(ShipmentTransaction::class, 'datano', 'datano');
     }
+
+    public function landShipments()
+    {
+        return $this->hasMany(LandShipping::class, 'declaration_number', 'datano');
+    }
 }

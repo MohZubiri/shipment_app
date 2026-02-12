@@ -24,7 +24,16 @@ class LandShippingController extends Controller
 
     public function index(Request $request)
     {
-        $query = LandShipping::query()->with(['company', 'department', 'documents', 'currentStage', 'locomotives', 'customsPort']);
+        $query = LandShipping::query()->with([
+            'company',
+            'department',
+            'documents',
+            'currentStage',
+            'locomotives',
+            'customsPort',
+            'customsData',
+            'warehouseTracking.warehouse',
+        ]);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));
@@ -80,14 +89,13 @@ class LandShippingController extends Controller
             'declaration_number' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'arrival_date' => ['nullable', 'date'],
             'exit_date' => ['nullable', 'date'],
-            'docking_days' => ['nullable', 'integer', 'min:0'],
+            'documents_type' => ['nullable', 'string', 'max:100'],
             'documents_sent_date' => ['nullable', 'date'],
-
-            'warehouse_arrival_date' => ['nullable', 'date'],
             'company_id' => ['required', 'exists:companies,id'],
             'department_id' => ['nullable', 'exists:departements,id'],
             'customs_port_id' => ['nullable', 'exists:customs_port,id'],
-            'documents_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
+            'documents_zip' => ['nullable', 'array'],
+            'documents_zip.*' => ['file', 'mimes:zip,pdf', 'max:51200'],
             'attached_documents' => ['nullable', 'array'],
             'attached_documents.*' => ['integer'],
         ]);
@@ -112,16 +120,20 @@ class LandShippingController extends Controller
         }
 
         if ($request->hasFile('documents_zip')) {
-            $file = $request->file('documents_zip');
-            $path = $file->store("land_shipping_documents/{$landShipping->id}", 'public');
+            $files = $request->file('documents_zip');
+            $files = is_array($files) ? $files : [$files];
 
-            LandShippingDocument::create([
-                'land_shipping_id' => $landShipping->id,
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+            foreach ($files as $file) {
+                $path = $file->store("land_shipping_documents/{$landShipping->id}", 'public');
+
+                LandShippingDocument::create([
+                    'land_shipping_id' => $landShipping->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+            }
         }
 
         return redirect()
@@ -131,7 +143,7 @@ class LandShippingController extends Controller
 
     public function edit(LandShipping $landShipping)
     {
-        $landShipping->load(['locomotives', 'attachedDocuments']);
+        $landShipping->load(['locomotives', 'attachedDocuments', 'documents']);
 
         return view('shipping_reports.edit', [
             'landShipping' => $landShipping,
@@ -153,20 +165,22 @@ class LandShippingController extends Controller
             'declaration_number' => ['nullable', 'integer', 'min:1', 'exists:data,datano'],
             'arrival_date' => ['nullable', 'date'],
             'exit_date' => ['nullable', 'date'],
-            'docking_days' => ['nullable', 'integer', 'min:0'],
+            'documents_type' => ['nullable', 'string', 'max:100'],
             'documents_sent_date' => ['nullable', 'date'],
-
-            'warehouse_arrival_date' => ['nullable', 'date'],
             'company_id' => ['required', 'exists:companies,id'],
             'department_id' => ['nullable', 'exists:departements,id'],
             'customs_port_id' => ['nullable', 'exists:customs_port,id'],
-            'documents_zip' => ['nullable', 'file', 'mimes:zip', 'max:51200'],
+            'documents_zip' => ['nullable', 'array'],
+            'documents_zip.*' => ['file', 'mimes:zip,pdf', 'max:51200'],
             'attached_documents' => ['nullable', 'array'],
             'attached_documents.*' => ['integer'],
+            'documents_to_delete' => ['nullable', 'array'],
+            'documents_to_delete.*' => ['integer', 'exists:land_shipping_documents,id'],
         ]);
 
         $attachedDocuments = $data['attached_documents'] ?? [];
-        unset($data['documents_zip'], $data['attached_documents'], $data['locomotive_numbers']);
+        $documentsToDelete = $data['documents_to_delete'] ?? [];
+        unset($data['documents_zip'], $data['attached_documents'], $data['documents_to_delete'], $data['locomotive_numbers']);
 
         $landShipping->update($data);
 
@@ -188,17 +202,31 @@ class LandShippingController extends Controller
             $landShipping->attachedDocuments()->detach();
         }
 
-        if ($request->hasFile('documents_zip')) {
-            $file = $request->file('documents_zip');
-            $path = $file->store("land_shipping_documents/{$landShipping->id}", 'public');
+        if (!empty($documentsToDelete)) {
+            $documents = $landShipping->documents()->whereIn('id', $documentsToDelete)->get();
+            foreach ($documents as $document) {
+                if ($document->path && Storage::disk('public')->exists($document->path)) {
+                    Storage::disk('public')->delete($document->path);
+                }
+                $document->delete();
+            }
+        }
 
-            LandShippingDocument::create([
-                'land_shipping_id' => $landShipping->id,
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+        if ($request->hasFile('documents_zip')) {
+            $files = $request->file('documents_zip');
+            $files = is_array($files) ? $files : [$files];
+
+            foreach ($files as $file) {
+                $path = $file->store("land_shipping_documents/{$landShipping->id}", 'public');
+
+                LandShippingDocument::create([
+                    'land_shipping_id' => $landShipping->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+            }
         }
 
         return redirect()

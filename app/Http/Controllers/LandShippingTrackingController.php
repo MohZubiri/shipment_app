@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LandShipping;
 use App\Models\LandShippingTracking;
 use App\Models\ShipmentStage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class LandShippingTrackingController extends Controller
@@ -78,6 +79,7 @@ class LandShippingTrackingController extends Controller
         $data['event_date'] = $data['event_date'] ?? now();
 
         $landShipping->addTrackingRecord($data);
+        $this->syncWarehouseArrivalDate($landShipping, $stage, $data['event_date'] ?? null);
 
         return redirect()
             ->route('road-shipments.tracking.index', $landShipping)
@@ -123,6 +125,8 @@ class LandShippingTrackingController extends Controller
         if ($landShipping->current_stage_id !== $tracking->stage_id) {
             $landShipping->update(['current_stage_id' => $tracking->stage_id]);
         }
+        $eventDate = $data['event_date'] ?? $tracking->event_date ?? null;
+        $this->syncWarehouseArrivalDate($landShipping, $stage, $eventDate);
 
         return redirect()
             ->route('road-shipments.tracking.index', $landShipping)
@@ -136,5 +140,15 @@ class LandShippingTrackingController extends Controller
         return redirect()
             ->route('road-shipments.tracking.index', $landShipping)
             ->with('status', 'تم حذف سجل التتبع بنجاح.');
+    }
+
+    private function syncWarehouseArrivalDate(LandShipping $landShipping, ShipmentStage $stage, $eventDate): void
+    {
+        if ($stage->code !== 'warehouse') {
+            return;
+        }
+
+        $arrivalDate = $eventDate ? Carbon::parse($eventDate)->toDateString() : now()->toDateString();
+        $landShipping->update(['warehouse_arrival_date' => $arrivalDate]);
     }
 }

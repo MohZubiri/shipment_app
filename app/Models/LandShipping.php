@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Departement;
 use App\Models\ShipmentStage;
 use App\Models\CustomsPort;
+use App\Models\CustomsData;
 
 class LandShipping extends Model
 {
@@ -54,6 +55,11 @@ class LandShipping extends Model
         return $this->belongsTo(CustomsPort::class, 'customs_port_id');
     }
 
+    public function customsData()
+    {
+        return $this->belongsTo(CustomsData::class, 'declaration_number', 'datano');
+    }
+
     public function locomotives()
     {
         return $this->hasMany(LandShippingLocomotive::class);
@@ -94,7 +100,7 @@ class LandShipping extends Model
             ->whereHas('stage', function ($q) {
                 $q->where('code', 'warehouse');
             })
-            ->latest();
+            ->latest('event_date');
     }
 
     public function addTrackingRecord(array $data): LandShippingTracking
