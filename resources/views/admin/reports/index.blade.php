@@ -46,7 +46,7 @@
                             <div>
                                 <h5
                                     class="mb-2 text-xl font-bold tracking-tight text-gray-900 group-hover:text-green-600">
-                                    تقرير الشحنات البرية</h5>
+                                    تقرير الشحنات البرية  الدولية</h5>
                                 <p class="font-normal text-gray-700 text-sm">عرض وتصدير تقرير شامل عن الشحنات البرية.
                                 </p>
                             </div>

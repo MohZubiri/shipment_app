@@ -30,6 +30,7 @@ class RolePermissionSeeder extends Seeder
             'create land shipments',
             'edit land shipments',
             'delete land shipments',
+            'export land shipments',
 
             // Local Customs Vehicles (Local Shipments)
             'view local shipments',
@@ -104,6 +105,7 @@ class RolePermissionSeeder extends Seeder
             'view land shipments',
             'view local shipments',
             'export shipments',
+            'export land shipments',
             'view reports',
             'view shipments report',
             'view land shipping report',

@@ -71,7 +71,7 @@ class ReportController extends Controller
         $hasFilters = $request->filled('date_from') || $request->filled('date_to') ||
                       $request->filled('company_id') || $request->filled('customs_port_id') ||
                       $request->filled('department_id') || $request->filled('shipping_line_type');
-
+       // dd($query->get(),);
         if ($hasFilters) {
             $shipments = $query->get();
         } else {

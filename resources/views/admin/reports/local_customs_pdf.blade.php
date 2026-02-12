@@ -69,54 +69,82 @@
         <thead>
             <tr>
                 <th>الرقم</th>
+                <th>رقم العملية</th>
+                <th>تاريخ مغادرة المصنع</th>
+                <th>رقم المركبة</th>
                 <th>رقم القيد</th>
-                <th>رقم اللوحة</th>
+                <th>نوع البضاعة</th>
                 <th>اسم السائق</th>
                 <th>رقم هاتف السائق</th>
                 <th>المنفذ الجمركي</th>
                 <th>تاريخ الوصول للجمرك</th>
+                <th>وقت الدخول للجمرك</th>
                 <th>تاريخ مغادرة الجمرك</th>
+                <th>وقت الخروج من الجمرك</th>
+                <th>ايام المماسي</th>
                 <th>المخزن</th>
-                <th>وقت مغادرة المصنع</th>
-                <th>تاريخ الوصول للمخزن</th>
-                <th>الشركة</th>
-                <th>القسم</th>
             </tr>
         </thead>
         <tbody>
             @foreach($vehicles as $index => $vehicle)
+                @php
+                    $firstCustoms = $vehicle->customs->first();
+                    $entryDate = $firstCustoms?->entry_date;
+                    $exitDate = $firstCustoms?->exit_date;
+                    $entryTime = $firstCustoms?->entry_time ? \Carbon\Carbon::parse($firstCustoms->entry_time)->format('H:i') : null;
+                    $exitTime = $firstCustoms?->exit_time ? \Carbon\Carbon::parse($firstCustoms->exit_time)->format('H:i') : null;
+                    $dockingDays = '-';
+                    if ($entryDate && $exitDate) {
+                        $diffDays = $entryDate->diffInDays($exitDate, false);
+                        $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                    }
+                @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $vehicle->serial_number ?? '-' }}</td>
+                    <td>{{ $vehicle->factory_departure_date ? $vehicle->factory_departure_date->format('Y-m-d') : '-' }}</td>
                     <td>{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
+                    <td>{{ $vehicle->vehicle_number ?? '-' }}</td>
+                    <td>{{ $vehicle->cargo_type ?? '-' }}</td>
                     <td>{{ $vehicle->driver_name ?? '-' }}</td>
                     <td>{{ $vehicle->driver_phone ?? '-' }}</td>
                     <td>
-                        @if($vehicle->customs && $vehicle->customs->first())
-                            {{ optional($vehicle->customs->first()->customsPort)->name ?? '-' }}
+                        @if($firstCustoms)
+                            {{ optional($firstCustoms->customsPort)->name ?? '-' }}
                         @else
                             -
                         @endif
                     </td>
                     <td>
-                        @if($vehicle->customs && $vehicle->customs->first())
-                            {{ $vehicle->customs->first()->entry_date ? $vehicle->customs->first()->entry_date->format('Y-m-d') : '-' }}
+                        @if($firstCustoms)
+                            {{ $entryDate ? $entryDate->format('Y-m-d') : '-' }}
                         @else
                             -
                         @endif
                     </td>
                     <td>
-                        @if($vehicle->customs && $vehicle->customs->first())
-                            {{ $vehicle->customs->first()->exit_date ? $vehicle->customs->first()->exit_date->format('Y-m-d') : '-' }}
+                        @if($firstCustoms)
+                            {{ $entryTime ?? '-' }}
                         @else
                             -
                         @endif
                     </td>
+                    <td>
+                        @if($firstCustoms)
+                            {{ $exitDate ? $exitDate->format('Y-m-d') : '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if($firstCustoms)
+                            {{ $exitTime ?? '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>{{ $dockingDays }}</td>
                     <td>{{ optional($vehicle->warehouse)->name ?? '-' }}</td>
-                    <td>{{ $vehicle->factory_departure_date ? $vehicle->factory_departure_date->format('Y-m-d') : '-' }}</td>
-                    <td>{{ $vehicle->warehouse_arrival_date ? $vehicle->warehouse_arrival_date->format('Y-m-d') : '-' }}</td>
-                    <td>{{ optional($vehicle->company)->name ?? '-' }}</td>
-                    <td>{{ optional($vehicle->department)->name ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

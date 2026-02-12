@@ -78,7 +78,7 @@
                     <div>
                         <x-input-label for="search" :value="__('بحث')" class="mb-1" />
                         <x-text-input id="search" class="block w-full" type="text" name="search"
-                            :value="request('search')" placeholder="الرقم التسلسلي، رقم اللوحة، اسم السائق" />
+                            :value="request('search')" placeholder="رقم العملية، رقم المركبة، اسم السائق" />
                     </div>
                     <div>
                         <x-input-label for="date_from" :value="__('من تاريخ')" class="mb-1" />
@@ -132,69 +132,88 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" class="px-2 py-3 border border-gray-300">الرقم</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم العملية</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ مغادرة المصنع</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم المركبة</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">رقم القيد</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">رقم اللوحة</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">نوع البضاعة</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">اسم السائق</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">رقم هاتف السائق</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">المنفذ الجمركي</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الوصول للجمرك</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">وقت الدخول للجمرك</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ مغادرة الجمرك</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">وقت الخروج من الجمرك</th>
+                            <th scope="col" class="px-2 py-3 border border-gray-300">ايام المماسي</th>
                             <th scope="col" class="px-2 py-3 border border-gray-300">المخزن</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">وقت مغادرة المصنع</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ الوصول للمخزن</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">الشركة</th>
-                            <th scope="col" class="px-2 py-3 border border-gray-300">القسم</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($vehicles as $index => $vehicle)
+                            @php
+                                $firstCustoms = $vehicle->customs->first();
+                                $entryDate = $firstCustoms?->entry_date;
+                                $exitDate = $firstCustoms?->exit_date;
+                                $entryTime = $firstCustoms?->entry_time ? \Carbon\Carbon::parse($firstCustoms->entry_time)->format('H:i') : null;
+                                $exitTime = $firstCustoms?->exit_time ? \Carbon\Carbon::parse($firstCustoms->exit_time)->format('H:i') : null;
+                                $dockingDays = '-';
+                                if ($entryDate && $exitDate) {
+                                    $diffDays = $entryDate->diffInDays($exitDate, false);
+                                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                                }
+                            @endphp
                             <tr class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $vehicle->serial_number ?? '-' }}</td>
-                                <td class="px-2 py-2 border border-gray-300">{{ $vehicle->vehicle_plate_number ?? '-' }}
-                                </td>
+                                <td class="px-2 py-2 border border-gray-300">{{ $vehicle->factory_departure_date ? $vehicle->factory_departure_date->format('Y-m-d') : '-' }}</td>
+                                <td class="px-2 py-2 border border-gray-300">{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
+                                <td class="px-2 py-2 border border-gray-300">{{ $vehicle->vehicle_number ?? '-' }}</td>
+                                <td class="px-2 py-2 border border-gray-300">{{ $vehicle->cargo_type ?? '-' }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $vehicle->driver_name ?? '-' }}</td>
                                 <td class="px-2 py-2 border border-gray-300">{{ $vehicle->driver_phone ?? '-' }}</td>
                                 <td class="px-2 py-2 border border-gray-300">
-                                    @if($vehicle->customs && $vehicle->customs->first())
-                                        {{ optional($vehicle->customs->first()->customsPort)->name ?? '-' }}
+                                    @if($firstCustoms)
+                                        {{ optional($firstCustoms->customsPort)->name ?? '-' }}
                                     @else
                                         -
                                     @endif
                                 </td>
                                 <td class="px-2 py-2 border border-gray-300">
-                                    @if($vehicle->customs && $vehicle->customs->first())
-                                        {{ $vehicle->customs->first()->entry_date ? $vehicle->customs->first()->entry_date->format('Y-m-d') : '-' }}
+                                    @if($firstCustoms)
+                                        {{ $entryDate ? $entryDate->format('Y-m-d') : '-' }}
                                     @else
                                         -
                                     @endif
                                 </td>
                                 <td class="px-2 py-2 border border-gray-300">
-                                    @if($vehicle->customs && $vehicle->customs->first())
-                                        {{ $vehicle->customs->first()->exit_date ? $vehicle->customs->first()->exit_date->format('Y-m-d') : '-' }}
+                                    @if($firstCustoms)
+                                        {{ $entryTime ?? '-' }}
                                     @else
                                         -
                                     @endif
                                 </td>
+                                <td class="px-2 py-2 border border-gray-300">
+                                    @if($firstCustoms)
+                                        {{ $exitDate ? $exitDate->format('Y-m-d') : '-' }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="px-2 py-2 border border-gray-300">
+                                    @if($firstCustoms)
+                                        {{ $exitTime ?? '-' }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="px-2 py-2 border border-gray-300">{{ $dockingDays }}</td>
                                 <td class="px-2 py-2 border border-gray-300">
                                     {{ optional($vehicle->warehouse)->name ?? '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $vehicle->factory_departure_date ? $vehicle->factory_departure_date->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ $vehicle->warehouse_arrival_date ? $vehicle->warehouse_arrival_date->format('Y-m-d') : '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ optional($vehicle->company)->name ?? '-' }}
-                                </td>
-                                <td class="px-2 py-2 border border-gray-300">
-                                    {{ optional($vehicle->department)->name ?? '-' }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="14" class="px-6 py-4 text-center text-gray-500">
+                                <td colspan="15" class="px-6 py-4 text-center text-gray-500">
                                     لا يوجد مركبات لعرضها
                                 </td>
                             </tr>

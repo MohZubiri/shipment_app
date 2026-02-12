@@ -48,6 +48,10 @@ Route::get('/shipments/export', [ShipmentController::class, 'export'])
     ->middleware(['auth'])
     ->name('shipments.export');
 
+Route::get('/road-shipments/export', [LandShippingController::class, 'export'])
+    ->middleware(['auth'])
+    ->name('road-shipments.export');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');

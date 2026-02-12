@@ -25,7 +25,7 @@
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700" for="serial_number">رقم
-                                التسلسل</label>
+                                العملية</label>
                             <input id="serial_number" name="serial_number" type="number"
                                 value="{{ old('serial_number') }}" required
                                 class="mt-2 w-full rounded-md border-slate-300">
@@ -64,16 +64,6 @@
                                 البضاعة</label>
                             <input id="cargo_description" name="cargo_description" type="text"
                                 value="{{ old('cargo_description') }}" class="mt-2 w-full rounded-md border-slate-300">
-                        </div>
-                        <div class="lg:col-span-3">
-                            <label class="block text-sm font-medium text-slate-700" for="notes">ملاحظات</label>
-                            <input id="notes" name="notes" type="text" value="{{ old('notes') }}"
-                                class="mt-2 w-full rounded-md border-slate-300">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input id="is_active" name="is_active" type="checkbox" value="1"
-                                class="rounded border-slate-300 text-blue-600" {{ old('is_active', true) ? 'checked' : '' }}>
-                            <label class="text-sm text-slate-700" for="is_active">نشط</label>
                         </div>
                     </div>
                 </div>

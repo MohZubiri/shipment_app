@@ -20,6 +20,7 @@ class LandShippingController extends Controller
         $this->middleware('permission:create land shipments')->only(['create', 'store']);
         $this->middleware('permission:edit land shipments')->only(['edit', 'update']);
         $this->middleware('permission:delete land shipments')->only(['destroy']);
+        $this->middleware('permission:export land shipments')->only(['export']);
     }
 
     public function index(Request $request)
@@ -241,6 +242,124 @@ class LandShippingController extends Controller
         return redirect()
             ->route('road-shipments.index')
             ->with('status', 'تم حذف الشحنة الدولية البرية بنجاح.');
+    }
+
+    public function export(Request $request)
+    {
+        $query = LandShipping::query()->with([
+            'company',
+            'department',
+            'documents',
+            'currentStage',
+            'locomotives',
+            'customsPort',
+            'customsData',
+            'warehouseTracking.warehouse',
+        ]);
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->get('search'));
+            $query->where(function ($builder) use ($search) {
+                $builder->where('operation_number', 'like', "%{$search}%")
+                    ->orWhere('shipment_name', 'like', "%{$search}%")
+                    ->orWhere('declaration_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('arrival_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('arrival_date', '<=', $request->date_to);
+        }
+
+        if ($request->filled('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $reports = $query->orderByDesc('id')->get();
+
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename="road-shipments.xls"',
+        ];
+
+        $callback = function () use ($reports) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, [
+                '#',
+                'رقم العملية',
+                'أرقام القواطر',
+                'اسم الشحنة',
+                'رقم البيان',
+                'حالة البيان',
+                'الشركة',
+                'القسم',
+                'المنفذ',
+                'تاريخ الوصول',
+                'تاريخ الخروج',
+                'ايام المماسي',
+                'تاريخ وصول المخزن',
+                'المرحلة الحالية',
+                'المستندات',
+            ], "\t");
+
+            foreach ($reports as $index => $report) {
+                $customsStateLabel = match ($report->customsData?->state) {
+                    1 => 'ضمان',
+                    2 => 'سداد',
+                    default => '-',
+                };
+
+                $dockingDays = '-';
+                if ($report->arrival_date && $report->exit_date) {
+                    $diffDays = $report->arrival_date->diffInDays($report->exit_date, false);
+                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                }
+
+                $warehouseArrivalDate = $report->warehouseTracking?->event_date
+                    ?? $report->warehouseTracking?->created_at
+                    ?? $report->warehouse_arrival_date;
+
+                $locomotiveNumbers = $report->locomotives
+                    ->pluck('locomotive_number')
+                    ->filter()
+                    ->implode(', ');
+
+                $documentNames = $report->documents
+                    ->pluck('original_name')
+                    ->filter()
+                    ->implode(' | ');
+
+                fputcsv($handle, [
+                    $index + 1,
+                    $report->operation_number,
+                    $locomotiveNumbers ?: '-',
+                    $report->shipment_name ?? '-',
+                    $report->declaration_number ?? '-',
+                    $customsStateLabel,
+                    $report->company?->name ?? '-',
+                    $report->department?->name ?? '-',
+                    $report->customsPort?->name ?? '-',
+                    $report->arrival_date?->format('Y-m-d') ?? '-',
+                    $report->exit_date?->format('Y-m-d') ?? '-',
+                    $dockingDays,
+                    $warehouseArrivalDate?->format('Y-m-d') ?? '-',
+                    $report->currentStage?->name ?? '-',
+                    $documentNames ?: '-',
+                ], "\t");
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, 'road-shipments.xls', $headers);
     }
 
     public function downloadDocument(LandShippingDocument $document)

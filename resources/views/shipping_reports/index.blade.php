@@ -5,12 +5,20 @@
                 <h2 class="font-semibold text-xl text-slate-900 leading-tight">الشحن الدولي البري</h2>
                 <p class="text-sm text-slate-500">إدارة تقارير الشحن البري الدولي.</p>
             </div>
-            @can('manage shipments')
-                <a href="{{ route('road-shipments.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    إضافة شحنة برية دولية
-                </a>
-            @endcan
+            <div class="flex items-center gap-3">
+                @can('export land shipments')
+                    <a href="{{ route('road-shipments.export', request()->query()) }}"
+                        class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50">
+                        تصدير Excel
+                    </a>
+                @endcan
+                @can('manage shipments')
+                    <a href="{{ route('road-shipments.create') }}"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        إضافة شحنة برية دولية
+                    </a>
+                @endcan
+            </div>
         </div>
     </x-slot>
 

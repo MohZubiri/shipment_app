@@ -23,7 +23,7 @@ class LocalCustomsVehicleController extends Controller
 
     public function index(Request $request)
     {
-        $query = LocalCustomsVehicle::query()->with(['company', 'department', 'warehouse']);
+        $query = LocalCustomsVehicle::query()->with(['company', 'department', 'warehouse', 'customs.customsPort']);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));
@@ -86,8 +86,6 @@ class LocalCustomsVehicleController extends Controller
             'vehicle_number' => ['nullable', 'string', 'max:50'],
             'manufacture_date' => ['nullable', 'date'],
             'exit_date_from_manufacture' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:500'],
-            'is_active' => ['nullable', 'boolean'],
             'company_id' => ['required', 'exists:companies,id'],
             'department_id' => ['nullable', 'exists:departements,id'],
             'driver_name' => ['nullable', 'string', 'max:200'],
@@ -107,7 +105,6 @@ class LocalCustomsVehicleController extends Controller
         unset($data['checkpoints']);
 
         $data['created_by'] = Auth::user()?->name;
-        $data['is_active'] = $request->boolean('is_active');
 
         $localCustomsVehicle = LocalCustomsVehicle::create($data);
 
@@ -148,8 +145,6 @@ class LocalCustomsVehicleController extends Controller
             'vehicle_number' => ['nullable', 'string', 'max:50'],
             'manufacture_date' => ['nullable', 'date'],
             'exit_date_from_manufacture' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:500'],
-            'is_active' => ['nullable', 'boolean'],
             'company_id' => ['required', 'exists:companies,id'],
             'department_id' => ['nullable', 'exists:departements,id'],
             'driver_name' => ['nullable', 'string', 'max:200'],
@@ -167,8 +162,6 @@ class LocalCustomsVehicleController extends Controller
 
         $checkpoints = $data['checkpoints'] ?? [];
         unset($data['checkpoints']);
-
-        $data['is_active'] = $request->boolean('is_active');
 
         $localCustomsVehicle->update($data);
 

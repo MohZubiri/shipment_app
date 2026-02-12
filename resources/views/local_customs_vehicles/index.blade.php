@@ -15,7 +15,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-12xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if(session('status'))
                 <div class="bg-emerald-50 text-emerald-800 px-4 py-3 rounded-lg">
                     {{ session('status') }}
@@ -27,7 +27,7 @@
                 <div class="lg:col-span-2">
                     <label class="block text-sm font-medium text-slate-700" for="search">بحث</label>
                     <input id="search" name="search" type="text" value="{{ request('search') }}"
-                        class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم التسلسل، اللوحة، اسم السائق">
+                        class="mt-2 w-full rounded-md border-slate-300" placeholder="رقم العملية، اللوحة، اسم السائق">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700" for="company_id">الشركة</label>
@@ -73,39 +73,55 @@
                 <table class="min-w-full text-sm text-right">
                     <thead>
                         <tr class="text-slate-500 border-b">
-                            <th class="py-2">رقم التسلسل</th>
+                            <th class="py-2">رقم العملية</th>
+                            <th class="py-2">تاريخ مغادرة المصنع</th>
+                            <th class="py-2">رقم المركبة</th>
+                            <th class="py-2">رقم القيد</th>
+                            <th class="py-2">نوع البضاعة</th>
                             <th class="py-2">اسم السائق</th>
                             <th class="py-2">رقم الهاتف</th>
-                            <th class="py-2">رقم القيد</th>
-                            <th class="py-2">رقم اللوحة</th>
+                            <th class="py-2">المنفذ الجمركي</th>
+                            <th class="py-2">تاريخ الدخول للجمرك</th>
+                            <th class="py-2">تاريخ الخروج من الجمرك</th>
+                            <th class="py-2">ايام المماسي</th>
                             <th class="py-2">الشركة</th>
                             <th class="py-2">القسم</th>
                             <th class="py-2">تاريخ الوصول</th>
                             <th class="py-2">المخزن</th>
-                            <th class="py-2">نوع البضاعة</th>
-                            <th class="py-2">الحالة</th>
                             <th class="py-2">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($vehicles as $vehicle)
+                            @php
+                                $firstCustoms = $vehicle->customs->first();
+                                $entryDateObj = $firstCustoms?->entry_date;
+                                $exitDateObj = $firstCustoms?->exit_date;
+                                $entryDate = $entryDateObj ? $entryDateObj->format('Y-m-d') : null;
+                                $exitDate = $exitDateObj ? $exitDateObj->format('Y-m-d') : null;
+                                $customsPortName = $firstCustoms?->customsPort?->name ?? '-';
+                                $dockingDays = '-';
+                                if ($entryDateObj && $exitDateObj) {
+                                    $diffDays = $entryDateObj->diffInDays($exitDateObj, false);
+                                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                                }
+                            @endphp
                             <tr class="border-b last:border-0">
                                 <td class="py-2 font-semibold text-slate-800">{{ $vehicle->serial_number }}</td>
+                                <td class="py-2">{{ $vehicle->factory_departure_date?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="py-2">{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
+                                <td class="py-2">{{ $vehicle->vehicle_number ?? '-' }}</td>
+                                <td class="py-2">{{ $vehicle->cargo_type ?? '-' }}</td>
                                 <td class="py-2">{{ $vehicle->driver_name ?? '-' }}</td>
                                 <td class="py-2">{{ $vehicle->driver_phone ?? '-' }}</td>
-                                <td class="py-2">{{ $vehicle->vehicle_number ?? '-' }}</td>
-                                <td class="py-2">{{ $vehicle->vehicle_plate_number ?? '-' }}</td>
+                                <td class="py-2">{{ $customsPortName }}</td>
+                                <td class="py-2">{{ $entryDate ?? '-' }}</td>
+                                <td class="py-2">{{ $exitDate ?? '-' }}</td>
+                                <td class="py-2">{{ $dockingDays }}</td>
                                 <td class="py-2">{{ $vehicle->company?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $vehicle->department?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $vehicle->arrival_date_from_branch?->format('Y-m-d') ?? '-' }}</td>
                                 <td class="py-2">{{ $vehicle->warehouse?->name ?? '-' }}</td>
-                                <td class="py-2">{{ $vehicle->cargo_type ?? '-' }}</td>
-                                <td class="py-2">
-                                    <span
-                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $vehicle->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
-                                        {{ $vehicle->is_active ? 'نشط' : 'غير نشط' }}
-                                    </span>
-                                </td>
                                 <td class="py-2">
                                     <div class="flex items-center gap-2 justify-end">
                                         @can('manage shipments')
@@ -140,7 +156,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
+                                <td colspan="16" class="py-4 text-center text-slate-500">لا توجد شحنات بعد.</td>
                             </tr>
                         @endforelse
                     </tbody>
