@@ -103,7 +103,7 @@
                                 $dockingDays = '-';
                                 if ($entryDateObj && $exitDateObj) {
                                     $diffDays = $entryDateObj->diffInDays($exitDateObj, false);
-                                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                                    $dockingDays = $diffDays >= 1 ? $diffDays - 1 : 0;
                                 }
                             @endphp
                             <tr class="border-b last:border-0">

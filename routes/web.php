@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\ShipmentStageController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\CustomsDataController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandShippingController;
@@ -197,6 +198,10 @@ Route::middleware(['auth'])->group(function () {
         'update' => 'admin.documents.update',
         'destroy' => 'admin.documents.destroy',
     ]);
+
+    // Site Settings (system-only)
+    Route::get('/admin/site-settings', [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');
+    Route::post('/admin/site-settings', [SiteSettingController::class, 'update'])->name('admin.site-settings.update');
 });
 
 Route::middleware(['auth'])->group(function () {

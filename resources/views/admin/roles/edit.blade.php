@@ -32,7 +32,7 @@
                                 <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
                                        class="rounded border-gray-300"
                                        @checked($role->hasPermissionTo($permission->name))>
-                                {{ $permission->name }}
+                                {{ $permission->display_name_ar ?? $permission->name }}
                             </label>
                         @endforeach
                     </div>

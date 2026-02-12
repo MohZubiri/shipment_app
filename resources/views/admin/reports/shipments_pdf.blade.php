@@ -134,7 +134,8 @@
                             }
                         }
                         $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
-                        $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode('<br>');
+                        $unitLabel = $shipment->shippingLine?->transport_type === 'air' ? 'طرود' : 'حاويات';
+                        $containerSummary = $orderedCounts->map(fn($count, $size) => "{$unitLabel} {$size} قدم عدد {$count}")->implode('<br>');
                     @endphp
                     <td>{!! $containerSummary !== '' ? $containerSummary : '-' !!}</td>
                     <td>{{ $shipment->dategase ? $shipment->dategase->format('Y-m-d') : '-' }}</td>

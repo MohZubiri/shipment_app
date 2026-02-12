@@ -96,7 +96,7 @@
                     $dockingDays = '-';
                     if ($entryDate && $exitDate) {
                         $diffDays = $entryDate->diffInDays($exitDate, false);
-                        $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                        $dockingDays = $diffDays >= 1 ? $diffDays - 1 : 0;
                     }
                 @endphp
                 <tr>

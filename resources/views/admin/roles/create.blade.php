@@ -29,7 +29,7 @@
                         @foreach($permissions as $permission)
                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                 <input type="checkbox" name="permissions[]" value="{{ $permission->name }}" class="rounded border-gray-300">
-                                {{ $permission->name }}
+                                {{ $permission->display_name_ar ?? $permission->name }}
                             </label>
                         @endforeach
                     </div>

@@ -5,8 +5,12 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="flex items-center shrink-0">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block w-auto h-9 text-gray-800 fill-current" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+                        @if(!empty($appSetting?->logo_url))
+                            <img src="{{ $appSetting->logo_url }}" alt="Logo" class="h-9 w-9 object-contain rounded">
+                        @else
+                            <x-application-logo class="block w-auto h-9 text-gray-800 fill-current" />
+                        @endif
                     </a>
                 </div>
 
@@ -208,6 +212,12 @@
                             </x-slot>
 
                             <x-slot name="content">
+                                @if(Auth::user()->is_system)
+                                    <x-dropdown-link :href="route('admin.site-settings.edit')">
+                                        إعدادات النظام
+                                    </x-dropdown-link>
+                                @endif
+
                                 <x-dropdown-link :href="route('profile.edit')">
                                     {{ __('Profile') }}
                                 </x-dropdown-link>
@@ -316,6 +326,13 @@
 
                     <div class="my-2 border-t border-gray-200"></div>
                     <div class="px-4 py-2 text-xs text-gray-400">الإعدادات</div>
+
+                    @if(Auth::user()->is_system)
+                        <x-responsive-nav-link :href="route('admin.site-settings.edit')"
+                            :active="request()->routeIs('admin.site-settings.edit')">
+                            إعدادات النظام
+                        </x-responsive-nav-link>
+                    @endif
 
                     <x-responsive-nav-link :href="route('admin.shipping-lines.index')"
                         :active="request()->routeIs('admin.shipping-lines.*')">

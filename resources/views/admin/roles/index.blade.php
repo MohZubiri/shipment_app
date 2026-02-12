@@ -32,7 +32,7 @@
                             <td class="py-2">
                                 @foreach($role->permissions as $permission)
                                     <span class="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                                        {{ $permission->name }}
+                                        {{ $permission->display_name_ar ?? $permission->name }}
                                     </span>
                                 @endforeach
                             </td>

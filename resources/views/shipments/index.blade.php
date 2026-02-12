@@ -234,7 +234,8 @@
                                     }
                                 }
                                 $orderedCounts = $orderedCounts->union($containerCounts->diffKeys($orderedCounts));
-                                $containerSummary = $orderedCounts->map(fn($count, $size) => "حاويات {$size} قدم عدد {$count}")->implode('<br>');
+                                $unitLabel = $shipment->shippingLine?->transport_type === 'air' ? 'طرود' : 'حاويات';
+                                $containerSummary = $orderedCounts->map(fn($count, $size) => "{$unitLabel} {$size} قدم عدد {$count}")->implode('<br>');
                             @endphp
                             <tr class="border-b last:border-0">
                                 <td class="py-2">{{ ($shipments->currentPage() - 1) * $shipments->perPage() + $loop->iteration }}</td>

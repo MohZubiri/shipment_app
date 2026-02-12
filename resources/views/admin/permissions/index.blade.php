@@ -20,15 +20,17 @@
                 <table class="min-w-full text-sm text-right">
                     <thead>
                     <tr class="text-gray-500 border-b">
-                        <th class="py-2">الصلاحية</th>
+                        <th class="py-2">الاسم بالعربي</th>
+                        <th class="py-2">الاسم البرمجي</th>
                         <th class="py-2">إجراءات</th>
                     </tr>
                     </thead>
                     <tbody>
                     @forelse($permissions as $permission)
                         <tr class="border-b last:border-0">
-                            <td class="py-2">{{ $permission->name }}</td>
-                            <td class="py-2 flex items-center gap-2 justify-end">
+                            <td class="py-2 font-semibold text-slate-800">{{ $permission->display_name_ar ?? '—' }}</td>
+                            <td class="py-2 text-slate-500">{{ $permission->name }}</td>
+                            <td class="py-2 flex items-center gap-2 justify-end whitespace-nowrap">
                                 <a href="{{ route('admin.permissions.edit', $permission) }}"
                                     class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
                                     title="تعديل" aria-label="تعديل">

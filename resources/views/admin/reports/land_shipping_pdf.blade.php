@@ -92,12 +92,8 @@
                     $dockingDays = '-';
                     if ($landShipping->arrival_date && $landShipping->exit_date) {
                         $diffDays = $landShipping->arrival_date->diffInDays($landShipping->exit_date, false);
-                        // If difference is 2 days or more, start counting after 2 days
-                        if ($diffDays >= 2) {
-                            $dockingDays = $diffDays - 2;
-                        } else {
-                            $dockingDays = 0;
-                        }
+                        // بدء العد بعد يوم واحد
+                        $dockingDays = $diffDays >= 1 ? $diffDays - 1 : 0;
                     }
                     $customsStateLabel = match ($landShipping->customsData?->state) {
                         1 => 'ضمان',

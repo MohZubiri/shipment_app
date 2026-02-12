@@ -20,6 +20,7 @@ class PermissionManagementController extends Controller
     public function index()
     {
         $permissions = Permission::query()
+            ->orderBy('display_name_ar')
             ->orderBy('name')
             ->get();
 
@@ -35,9 +36,11 @@ class PermissionManagementController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:permissions,name'],
+            'display_name_ar' => ['required', 'string', 'max:255'],
         ]);
 
-        Permission::create(['name' => $data['name']]);
+        $permission = Permission::create(['name' => $data['name']]);
+        $permission->update(['display_name_ar' => $data['display_name_ar']]);
 
         return redirect()->route('admin.permissions.index')->with('status', 'تم إنشاء الصلاحية بنجاح.');
     }
@@ -51,9 +54,13 @@ class PermissionManagementController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('permissions', 'name')->ignore($permission->id)],
+            'display_name_ar' => ['required', 'string', 'max:255'],
         ]);
 
-        $permission->update(['name' => $data['name']]);
+        $permission->update([
+            'name' => $data['name'],
+            'display_name_ar' => $data['display_name_ar'],
+        ]);
 
         return redirect()->route('admin.permissions.index')->with('status', 'تم تحديث الصلاحية بنجاح.');
     }

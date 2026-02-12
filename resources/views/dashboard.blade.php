@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-xl font-semibold leading-tight text-slate-900">
-                    لوحة التحكم
+                    <span class="text-sm font-semibold text-slate-801">{{ $appSetting->system_name ?? config('app.name') }}</span>
                 </h2>
                 <p class="text-sm text-slate-500">نظرة عامة على حركة الشحنات اليوم</p>
             </div>

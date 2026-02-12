@@ -23,6 +23,7 @@ class UserManagementController extends Controller
     {
         $users = User::query()
             ->with('roles')
+            ->where('is_system', false)
             ->orderBy('name')
             ->paginate(15);
 
@@ -59,6 +60,10 @@ class UserManagementController extends Controller
 
     public function edit(User $user)
     {
+        if ($user->is_system) {
+            abort(404);
+        }
+
         $roles = Role::query()->orderBy('name')->get();
 
         return view('admin.users.edit', compact('user', 'roles'));
@@ -66,6 +71,10 @@ class UserManagementController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if ($user->is_system) {
+            abort(404);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
@@ -91,6 +100,10 @@ class UserManagementController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->is_system) {
+            return back()->with('status', 'لا يمكن حذف مستخدم النظام.');
+        }
+
         if (Auth::id() === $user->id) {
             return back()->with('status', 'لا يمكن حذف المستخدم الحالي.');
         }

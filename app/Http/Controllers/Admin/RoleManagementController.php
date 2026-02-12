@@ -30,7 +30,7 @@ class RoleManagementController extends Controller
 
     public function create()
     {
-        $permissions = Permission::query()->orderBy('name')->get();
+        $permissions = Permission::query()->orderBy('display_name_ar')->orderBy('name')->get();
 
         return view('admin.roles.create', compact('permissions'));
     }
@@ -51,7 +51,7 @@ class RoleManagementController extends Controller
 
     public function edit(Role $role)
     {
-        $permissions = Permission::query()->orderBy('name')->get();
+        $permissions = Permission::query()->orderBy('display_name_ar')->orderBy('name')->get();
 
         return view('admin.roles.edit', compact('role', 'permissions'));
     }

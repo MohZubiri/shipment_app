@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\ShipmentTransaction;
+use App\Models\Setting;
 use App\Observers\ShipmentTransactionObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
@@ -31,5 +32,14 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191); 
         ShipmentTransaction::observe(ShipmentTransactionObserver::class);
         Paginator::useTailwind();
+
+        // Share system settings globally (name + logo) and set app name for titles
+        view()->composer('*', function ($view) {
+            $setting = Setting::first();
+            if ($setting) {
+                config(['app.name' => $setting->system_name]);
+            }
+            $view->with('appSetting', $setting);
+        });
     }
 }

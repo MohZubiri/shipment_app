@@ -111,7 +111,7 @@
                                 $dockingDays = '-';
                                 if ($report->arrival_date && $report->exit_date) {
                                     $diffDays = $report->arrival_date->diffInDays($report->exit_date, false);
-                                    $dockingDays = $diffDays >= 2 ? $diffDays - 2 : 0;
+                                    $dockingDays = $diffDays >= 1 ? $diffDays - 1 : 0;
                                 }
                                 $warehouseArrivalDate = $report->warehouseTracking?->event_date
                                     ?? $report->warehouseTracking?->created_at

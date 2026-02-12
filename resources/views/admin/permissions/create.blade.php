@@ -19,7 +19,12 @@
                 @endif
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700" for="name">اسم الصلاحية</label>
+                    <label class="block text-sm font-medium text-gray-700" for="display_name_ar">الاسم بالعربي</label>
+                    <input id="display_name_ar" name="display_name_ar" type="text" value="{{ old('display_name_ar') }}" required class="mt-1 w-full rounded-md border-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" for="name">الاسم البرمجي (بالإنجليزية)</label>
                     <input id="name" name="name" type="text" value="{{ old('name') }}" required class="mt-1 w-full rounded-md border-gray-300">
                 </div>
 
