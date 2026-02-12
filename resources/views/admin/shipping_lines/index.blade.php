@@ -39,6 +39,9 @@
                                     الاسم</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    النوع</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     الشركة</th>
                                 <th scope="col"
                                     class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -59,9 +62,20 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($shippingLines as $line)
+                                @php
+                                    $transportLabel = match ($line->transport_type) {
+                                        'sea' => 'بحري',
+                                        'air' => 'جوي',
+                                        'land' => 'بري',
+                                        default => '-',
+                                    };
+                                @endphp
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {{ $line->name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $transportLabel }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $line->company_name ?? '-' }}
@@ -115,7 +129,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                                    <td colspan="8" class="px-6 py-10 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300 mb-2"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">

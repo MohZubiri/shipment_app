@@ -24,6 +24,18 @@
                                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </div>
 
+                            <!-- Transport Type -->
+                            <div>
+                                <x-input-label for="transport_type" :value="__('نوع الخط الملاحي')" class="mb-1" />
+                                <select id="transport_type" name="transport_type" required
+                                    class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="sea" @selected(old('transport_type', $shippingLine->transport_type) === 'sea')>بحري</option>
+                                    <option value="air" @selected(old('transport_type', $shippingLine->transport_type) === 'air')>جوي</option>
+                                    <option value="land" @selected(old('transport_type', $shippingLine->transport_type) === 'land')>بري</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('transport_type')" class="mt-2" />
+                            </div>
+
                             <!-- Company Name -->
                             <div>
                                 <x-input-label for="company_name" :value="__('اسم الشركة')" class="mb-1" />

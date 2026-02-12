@@ -31,6 +31,7 @@ class ShippingLineController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'transport_type' => 'required|in:sea,air,land',
             'company_name' => 'nullable|string|max:255',
             'code' => 'nullable|string|max:255|unique:shipping_line,code',
             'time' => 'nullable|integer',
@@ -53,6 +54,7 @@ class ShippingLineController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'transport_type' => 'required|in:sea,air,land',
             'company_name' => 'nullable|string|max:255',
             'code' => 'nullable|string|max:255|unique:shipping_line,code,' . $shippingLine->id,
             'time' => 'nullable|integer',

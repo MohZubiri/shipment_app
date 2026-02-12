@@ -59,6 +59,7 @@
                                 2 => 'سداد',
                                 default => 'غير محددة',
                             };
+                            $totalShipments = ($row->shipments_count ?? 0) + ($row->land_shipments_count ?? 0);
                         @endphp
                         <tr class="border-b last:border-0">
                             <td class="py-2 font-semibold text-slate-800">{{ $row->datano }}</td>
@@ -68,7 +69,7 @@
                                     {{ $stateLabel }}
                                 </span>
                             </td>
-                            <td class="py-2">{{ $row->shipments_count }}</td>
+                            <td class="py-2">{{ $totalShipments }}</td>
                             <td class="py-2 flex items-center gap-2 justify-end">
                                 @canany(['edit customs data', 'delete customs data'])
                                     @can('edit customs data')

@@ -18,7 +18,7 @@ class CustomsDataController extends Controller
 
     public function index(Request $request)
     {
-        $query = CustomsData::query()->withCount('shipments');
+        $query = CustomsData::query()->withCount(['shipments', 'landShipments']);
 
         if ($request->filled('search')) {
             $search = trim((string) $request->get('search'));

@@ -14,6 +14,7 @@ class ShippingLine extends Model
 
     protected $fillable = [
         'name',
+        'transport_type',
         'company_name',
         'time',
         'code',
