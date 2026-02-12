@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('تقرير الشحنات') }}
+                {{ __('تقرير الشحنات البحرية') }}
             </h2>
             <div class="flex gap-2">
                 @if($hasFilters)
@@ -75,6 +75,16 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <x-input-label for="shipping_line_type" :value="__('نوع الخط الملاحي')" class="mb-1" />
+                        <select id="shipping_line_type" name="shipping_line_type"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full">
+                            <option value="">{{ __('الكل') }}</option>
+                            <option value="sea" @selected(request('shipping_line_type') === 'sea')>بحري</option>
+                            <option value="air" @selected(request('shipping_line_type') === 'air')>جوي</option>
+                            <option value="land" @selected(request('shipping_line_type') === 'land')>بري</option>
+                        </select>
+                    </div>
 
                     <div>
                         <x-input-label for="date_from" :value="__('من تاريخ')" class="mb-1" />
@@ -92,7 +102,7 @@
                             {{ __('تصفية') }}
                         </button>
                     </div>
-                    @if(request()->filled('date_from') || request()->filled('date_to') || request()->filled('department_id') || request()->filled('customs_port_id') || request()->filled('company_id'))
+                    @if(request()->filled('date_from') || request()->filled('date_to') || request()->filled('department_id') || request()->filled('customs_port_id') || request()->filled('company_id') || request()->filled('shipping_line_type'))
                         <div>
                             <a href="{{ route('admin.reports.shipments') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 h-[42px]">
@@ -107,7 +117,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 overflow-x-auto">
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2">
-                            التقرير اليومي لشركة التكامل الدولية
+                            تقرير الشحنات 
                         </h3>
                         <div class="text-sm text-gray-600">
                             @if(request('company_id'))
@@ -121,6 +131,10 @@
                                 <span class="mx-2">|</span>
                                 <span>المنفذ الجمركي: {{ $ports->where('id', request('customs_port_id'))->first()->name ?? '' }}</span>
                             @endif
+                            @if(request('shipping_line_type'))
+                                <span class="mx-2">|</span>
+                                <span>نوع الخط الملاحي: {{ request('shipping_line_type') === 'sea' ? 'بحري' : (request('shipping_line_type') === 'air' ? 'جوي' : 'بري') }}</span>
+                            @endif
                         </div>
                     </div>
 
@@ -132,8 +146,9 @@
                                 <th scope="col" class="px-2 py-3 border border-gray-300">إسم الشحنة</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم البوليصة</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">رقم الببان</th>
-                                 <th scope="col" class="px-2 py-3 border border-gray-300">حالة الببان</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">حالة الببان</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">الخط الملاحي</th>
+                                <th scope="col" class="px-2 py-3 border border-gray-300">نوع الخط الملاحي</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">عدد الحاويات</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">تاريخ وصول الباخرة المتوقعة</th>
                                 <th scope="col" class="px-2 py-3 border border-gray-300">فترة السماح</th>
@@ -149,6 +164,14 @@
                         </thead>
                         <tbody>
                             @forelse($shipments as $index => $shipment)
+                                @php
+                                    $shippingLineType = match ($shipment->shippingLine?->transport_type) {
+                                        'sea' => 'بحري',
+                                        'air' => 'جوي',
+                                        'land' => 'بري',
+                                        default => '-',
+                                    };
+                                @endphp
                                 <tr class="bg-white border-b hover:bg-gray-50">
                                     <td class="px-2 py-2 border border-gray-300 font-medium text-gray-900">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->operationno }}</td>
@@ -159,6 +182,9 @@
                                    <td class="px-2 py-2 border border-gray-300">{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td> 
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ optional($shipment->shippingLine)->name ?? '-' }}
+                                    </td>
+                                    <td class="px-2 py-2 border border-gray-300">
+                                        {{ $shippingLineType }}
                                     </td>
                                     @php
                                         $containerCounts = $shipment->containers
@@ -223,7 +249,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="16" class="px-6 py-4 text-center text-gray-500">
+                                    <td colspan="17" class="px-6 py-4 text-center text-gray-500">
                                         لا يوجد شحنات لعرضها
                                     </td>
                                 </tr>

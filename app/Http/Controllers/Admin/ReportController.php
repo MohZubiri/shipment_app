@@ -56,9 +56,13 @@ class ReportController extends Controller
             $query->where('shippmintno', 'like', '%' . $request->shipment_name . '%');
         }
 
+        if ($request->filled('shipping_line_type')) {
+            $query->whereHas('shippingLine', fn ($q) => $q->where('transport_type', $request->shipping_line_type));
+        }
+
         $hasFilters = $request->filled('date_from') || $request->filled('date_to') ||
                       $request->filled('company_id') || $request->filled('customs_port_id') ||
-                      $request->filled('department_id');
+                      $request->filled('department_id') || $request->filled('shipping_line_type');
 
         if ($hasFilters) {
             $shipments = $query->get();
@@ -102,11 +106,21 @@ class ReportController extends Controller
             $query->where('shippmintno', 'like', '%' . $request->shipment_name . '%');
         }
 
+        if ($request->filled('shipping_line_type')) {
+            $query->whereHas('shippingLine', fn ($q) => $q->where('transport_type', $request->shipping_line_type));
+        }
+
         $shipments = $query->get();
 
         $selectedCompany = $request->company_id ? Company::find($request->company_id) : null;
         $selectedDepartment = $request->department_id ? Departement::find($request->department_id) : null;
         $selectedPort = $request->customs_port_id ? \App\Models\CustomsPort::find($request->customs_port_id) : null;
+        $selectedShippingLineType = $request->shipping_line_type ? match ($request->shipping_line_type) {
+            'sea' => 'بحري',
+            'air' => 'جوي',
+            'land' => 'بري',
+            default => $request->shipping_line_type,
+        } : null;
         $selectedFont = $request->font ?? 'cairo';
 
         // Define font data with fonts from storage/fonts directory
@@ -141,7 +155,7 @@ class ReportController extends Controller
             'default_font' => $selectedFont,
         ]);
         $mpdf->SetDirectionality('rtl');
-        $html = view('admin.reports.shipments_pdf', compact('shipments', 'selectedCompany', 'selectedDepartment', 'selectedPort'))->render();
+        $html = view('admin.reports.shipments_pdf', compact('shipments', 'selectedCompany', 'selectedDepartment', 'selectedPort', 'selectedShippingLineType'))->render();
         $mpdf->WriteHTML($html);
         return response($mpdf->Output('shipment_report_' . now()->format('Y-m-d') . '.pdf', 'D'))
             ->header('Content-Type', 'application/pdf')

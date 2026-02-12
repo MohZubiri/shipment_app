@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>تقرير الشحنات</title>
+    <title>تقرير الشحنات </title>
     <style>
         @page {
             header: page-header;
@@ -47,8 +47,8 @@
 <body>
 
     <div class="header">
-        <h2>التقرير اليومي لشركة التكامل الدولية</h2>
-        @if(isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort))
+        <h2>تقرير الشحنات </h2>
+        @if(isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort) || isset($selectedShippingLineType))
             <h3>
                 @if(isset($selectedCompany))
                     الشركة: {{ $selectedCompany->name }}
@@ -58,6 +58,9 @@
                 @endif
                 @if(isset($selectedPort))
                     {{ (isset($selectedCompany) || isset($selectedDepartment)) ? ' | ' : '' }}المنفذ الجمركي: {{ $selectedPort->name }}
+                @endif
+                @if(isset($selectedShippingLineType))
+                    {{ (isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort)) ? ' | ' : '' }}نوع الخط الملاحي: {{ $selectedShippingLineType }}
                 @endif
             </h3>
         @endif
@@ -72,8 +75,9 @@
                 <th>رقم البوليصة</th>
                 
                 <th>رقم الببان</th>
-                  <th>حالة الببان</th>
+                <th>حالة الببان</th>
                 <th>الخط الملاحي</th>
+                <th>نوع الخط الملاحي</th>
                 <th>عدد الحاويات</th>
                 <th>تاريخ وصول الباخرة المتوقعة</th>
                 <th>فترة السماح</th>
@@ -88,6 +92,14 @@
         </thead>
         <tbody>
             @foreach($shipments as $index => $shipment)
+                @php
+                    $shippingLineType = match ($shipment->shippingLine?->transport_type) {
+                        'sea' => 'بحري',
+                        'air' => 'جوي',
+                        'land' => 'بري',
+                        default => '-',
+                    };
+                @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $shipment->operationno }}</td>
@@ -97,6 +109,7 @@
                     <td>{{ $shipment->datano }}</td>
                          <td>{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>
+                    <td>{{ $shippingLineType }}</td>
                     @php
                         $containerCounts = $shipment->containers
                             ->filter(fn($container) => $container->container_size && $container->container_count)
