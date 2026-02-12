@@ -57,7 +57,15 @@ class ReportController extends Controller
         }
 
         if ($request->filled('shipping_line_type')) {
-            $query->whereHas('shippingLine', fn ($q) => $q->where('transport_type', $request->shipping_line_type));
+            $shippingLineType = $request->shipping_line_type;
+            $query->whereHas('shippingLine', function ($q) use ($shippingLineType) {
+                $q->where(function ($inner) use ($shippingLineType) {
+                    $inner->where('transport_type', $shippingLineType);
+                    if ($shippingLineType === 'sea') {
+                        $inner->orWhereNull('transport_type');
+                    }
+                });
+            });
         }
 
         $hasFilters = $request->filled('date_from') || $request->filled('date_to') ||
@@ -107,7 +115,15 @@ class ReportController extends Controller
         }
 
         if ($request->filled('shipping_line_type')) {
-            $query->whereHas('shippingLine', fn ($q) => $q->where('transport_type', $request->shipping_line_type));
+            $shippingLineType = $request->shipping_line_type;
+            $query->whereHas('shippingLine', function ($q) use ($shippingLineType) {
+                $q->where(function ($inner) use ($shippingLineType) {
+                    $inner->where('transport_type', $shippingLineType);
+                    if ($shippingLineType === 'sea') {
+                        $inner->orWhereNull('transport_type');
+                    }
+                });
+            });
         }
 
         $shipments = $query->get();
