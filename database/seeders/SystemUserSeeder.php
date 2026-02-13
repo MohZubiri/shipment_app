@@ -18,6 +18,9 @@ class SystemUserSeeder extends Seeder
             ]
         );
 
+      
+      
+      
         // تأكيد أنه مستخدم نظام مخفي
         if (!$user->is_system) {
             $user->forceFill(['is_system' => true])->save();
