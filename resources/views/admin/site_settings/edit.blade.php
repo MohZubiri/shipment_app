@@ -54,6 +54,15 @@ ops@example.com">{{ old('backup_emails', isset($setting->backup_emails) ? implod
                         <x-input-error class="mt-1" :messages="$errors->get('backup_emails')" />
                     </div>
 
+                    <div class="border-t pt-6">
+                        <h3 class="font-semibold text-gray-800 mb-2">استعادة نسخة قاعدة البيانات</h3>
+                        <p class="text-sm text-gray-600 mb-3">ارفع ملف النسخة الاحتياطية (.sql أو .sql.gz). سيؤدي ذلك إلى استبدال البيانات الحالية بالكامل، لذا استخدمها بحذر.</p>
+                        <input id="restore_backup" name="restore_backup" type="file" accept=".sql,.gz"
+                               class="w-full rounded-md border-gray-300">
+                        <x-input-error class="mt-1" :messages="$errors->get('restore_backup')" />
+                        <p class="text-xs text-amber-600 mt-2">يُفضل أخذ نسخة حالية قبل الاستعادة.</p>
+                    </div>
+
                     <div class="flex justify-end gap-3">
                         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">حفظ</button>
                     </div>
