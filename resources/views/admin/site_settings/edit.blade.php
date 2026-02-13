@@ -46,6 +46,14 @@
                         </div>
                     </div>
 
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700" for="backup_emails">ايميلات النسخ الاحتياطي (افصلها بفواصل أو أسطر)</label>
+                        <textarea id="backup_emails" name="backup_emails" rows="3" class="mt-1 w-full rounded-md border-gray-300" placeholder="admin@example.com
+ops@example.com">{{ old('backup_emails', isset($setting->backup_emails) ? implode('\n', $setting->backup_emails) : '') }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">سيتم إرسال نسخة قاعدة البيانات اليومية إلى هذه الإيميلات.</p>
+                        <x-input-error class="mt-1" :messages="$errors->get('backup_emails')" />
+                    </div>
+
                     <div class="flex justify-end gap-3">
                         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">حفظ</button>
                     </div>

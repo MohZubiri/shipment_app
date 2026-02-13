@@ -37,10 +37,20 @@ class SiteSettingController extends Controller
         $data = $request->validate([
             'system_name' => ['required', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'max:2048'],
+            'backup_emails' => ['nullable', 'string'],
         ]);
 
         $setting = Setting::first() ?? new Setting();
         $setting->system_name = $data['system_name'];
+
+        // Parse comma/line separated emails, keep only valid ones
+        $emails = collect(preg_split('/[\s,]+/', $data['backup_emails'] ?? ''))
+            ->map(fn ($email) => trim($email))
+            ->filter()
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->values()
+            ->all();
+        $setting->backup_emails = $emails;
 
         if ($request->hasFile('logo')) {
             if ($setting->logo_path && Storage::disk('public')->exists($setting->logo_path)) {

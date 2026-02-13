@@ -10,9 +10,14 @@ class Setting extends Model
     protected $fillable = [
         'system_name',
         'logo_path',
+        'backup_emails',
     ];
 
     protected $appends = ['logo_url'];
+
+    protected $casts = [
+        'backup_emails' => 'array',
+    ];
 
     public function getLogoUrlAttribute(): ?string
     {
