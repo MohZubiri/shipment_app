@@ -53,7 +53,8 @@ class LocalCustomsVehicleController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
-        $vehicles = $query->orderByDesc('id')->paginate(15)->withQueryString();
+        // Default sort: ascending by serial number (operation number for local road shipments)
+        $vehicles = $query->orderBy('serial_number')->paginate(15)->withQueryString();
 
         $companies = Company::query()->orderBy('name')->get();
         $departments = Departement::query()->orderBy('name')->get();

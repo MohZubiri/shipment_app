@@ -179,7 +179,7 @@
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->pillno ?: '-' }}</td>
                                  
                                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->datano }}</td>
-                                   <td class="px-2 py-2 border border-gray-300">{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td> 
+                                   <td class="px-2 py-2 border border-gray-300">{{ $shipment->customsData ? ($shipment->customsData->state == 1 ? 'ضمان ' : 'سداد') : '-' }}</td> 
                                     <td class="px-2 py-2 border border-gray-300">
                                         {{ optional($shipment->shippingLine)->name ?? '-' }}
                                     </td>

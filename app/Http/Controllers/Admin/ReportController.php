@@ -29,7 +29,7 @@ class ReportController extends Controller
 
     public function shipmentReport(Request $request)
     {
-        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'company', 'department', 'shipgroup', 'containers', 'attachedDocuments', 'currentStage', 'warehouseTracking.warehouse'])
+        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'company', 'department', 'shipgroup', 'containers', 'attachedDocuments', 'currentStage', 'warehouseTracking.warehouse', 'customsData'])
             ->latest('sendingdate');
 
         if ($request->has('date_from') && $request->date_from) {
@@ -87,7 +87,7 @@ class ReportController extends Controller
 
     public function shipmentReportPdf(Request $request)
     {
-        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'company', 'department', 'shipgroup', 'containers', 'attachedDocuments', 'currentStage', 'warehouseTracking.warehouse'])
+        $query = ShipmentTransaction::with(['shippingLine', 'customsPort', 'company', 'department', 'shipgroup', 'containers', 'attachedDocuments', 'currentStage', 'warehouseTracking.warehouse', 'customsData'])
             ->latest('sendingdate');
 
          if ($request->has('date_from') && $request->date_from) {

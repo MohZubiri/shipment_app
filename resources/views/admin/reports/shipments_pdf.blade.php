@@ -11,7 +11,7 @@
         }
 
         body {
-            
+
             font-size: 10px;
         }
 
@@ -57,10 +57,12 @@
                     {{ isset($selectedCompany) ? ' | ' : '' }}القسم: {{ $selectedDepartment->name }}
                 @endif
                 @if(isset($selectedPort))
-                    {{ (isset($selectedCompany) || isset($selectedDepartment)) ? ' | ' : '' }}المنفذ الجمركي: {{ $selectedPort->name }}
+                    {{ (isset($selectedCompany) || isset($selectedDepartment)) ? ' | ' : '' }}المنفذ الجمركي:
+                    {{ $selectedPort->name }}
                 @endif
                 @if(isset($selectedShippingLineType))
-                    {{ (isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort)) ? ' | ' : '' }}نوع الخط الملاحي: {{ $selectedShippingLineType }}
+                    {{ (isset($selectedCompany) || isset($selectedDepartment) || isset($selectedPort)) ? ' | ' : '' }}نوع الخط
+                    الملاحي: {{ $selectedShippingLineType }}
                 @endif
             </h3>
         @endif
@@ -73,7 +75,7 @@
                 <th>رقم العملية</th>
                 <th>إسم الشحنة</th>
                 <th>رقم البوليصة</th>
-                
+
                 <th>رقم الببان</th>
                 <th>حالة الببان</th>
                 <th>الخط الملاحي</th>
@@ -84,10 +86,10 @@
                 <th>تاريخ انتهاء فترة السماح</th>
                 <th>نوع المستندات</th>
                 <th>تاريخ استلام المستندات</th>
-                   <th>مرحلة الشحنة الحالية </th>
-                     <th>وجهة الترحيل</th>
+                <th>مرحلة الشحنة الحالية </th>
+                <th>وجهة الترحيل</th>
                 <th>تاريخ الترحيل</th>
-              
+
             </tr>
         </thead>
         <tbody>
@@ -105,9 +107,9 @@
                     <td>{{ $shipment->operationno }}</td>
                     <td>{{ $shipment->shippmintno ?? '-' }}</td>
                     <td>{{ $shipment->pillno ?: '-' }}</td>
-                 
+
                     <td>{{ $shipment->datano }}</td>
-                         <td>{{ (($shipment->customsData->state==1)?'ضمان ':'سداد') ?: '-' }}</td>
+                    <td>{{ $shipment->customsData ? ($shipment->customsData->state == 1 ? 'ضمان ' : 'سداد') : '-' }}</td>
                     <td>{{ optional($shipment->shippingLine)->name ?? '-' }}</td>
                     <td>{{ $shippingLineType }}</td>
                     @php
@@ -148,9 +150,9 @@
                         $relayDate = $shipment->relaydate ?? $shipment->warehouseTracking?->event_date;
                         $relayDestination = $shipment->relayname ?: $shipment->warehouseTracking?->warehouse?->name;
                     @endphp
-                     <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
+                    <td class="px-2 py-2 border border-gray-300">{{ $shipment->currentStage->name ?? '-' }}</td>
                     <td>{{ $relayDestination ?? '-' }}</td>
-                     <td>{{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}</td>
+                    <td>{{ $relayDate ? $relayDate->format('Y-m-d') : '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

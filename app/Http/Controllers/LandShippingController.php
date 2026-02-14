@@ -61,7 +61,8 @@ class LandShippingController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
-        $reports = $query->orderByDesc('id')->paginate(15)->withQueryString();
+        // Default sort: ascending by operation number for clarity
+        $reports = $query->orderBy('operation_number')->paginate(15)->withQueryString();
 
         $companies = Company::query()->orderBy('name')->get();
         $departments = Departement::query()->orderBy('name')->get();
@@ -282,7 +283,7 @@ class LandShippingController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
-        $reports = $query->orderByDesc('id')->get();
+        $reports = $query->orderBy('operation_number')->get();
 
         $headers = [
             'Content-Type' => 'application/vnd.ms-excel',

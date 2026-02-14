@@ -45,9 +45,9 @@ class ShipmentController extends Controller
 
         $this->applyFilters($query, $request);
 
-        // Handle sorting
-        $sortColumn = $request->get('sort', 'created_at');
-        $sortDirection = $request->get('direction', 'desc');
+        // Handle sorting (default: ascending by operation number)
+        $sortColumn = $request->get('sort', 'operationno');
+        $sortDirection = $request->get('direction', 'asc');
 
         // Validate sort column to prevent SQL injection
         $allowedColumns = ['id', 'operationno', 'shippmintno', 'pillno', 'datano', 'dategase', 'endallowdate', 'stillday', 'created_at'];
@@ -306,7 +306,7 @@ class ShipmentController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $shipments = $query->orderByDesc('id')->get();
+        $shipments = $query->orderBy('operationno')->get();
 
         $headers = [
             'Content-Type' => 'application/vnd.ms-excel',
