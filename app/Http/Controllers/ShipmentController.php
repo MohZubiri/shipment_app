@@ -372,16 +372,23 @@ class ShipmentController extends Controller
                 // Calculate stage label
                 $stageLabel = $shipment->currentStage?->name ?? 'غير محددة';
 
-                // Calculate end allow date and still days
+                // Calculate end allow date and still days (align with report display)
                 $today = \Carbon\Carbon::today();
-                $computedEndAllowDate = $shipment->endallowdate;
+                $computedEndAllowDate = null;
+                $displayEndAllowDate = null;
                 $computedStillday = 0;
                 $allowanceDays = $shipment->shippingLine?->time;
+
                 if ($shipment->dategase && $allowanceDays) {
                     $computedEndAllowDate = \Carbon\Carbon::parse($shipment->dategase)->addDays((int) $allowanceDays);
-                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
-                } elseif ($computedEndAllowDate) {
-                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                } elseif ($shipment->endallowdate) {
+                    $computedEndAllowDate = \Carbon\Carbon::parse($shipment->endallowdate);
+                }
+
+                if ($computedEndAllowDate) {
+                    // Reports show the last free day, so subtract one day for display/calculation
+                    $displayEndAllowDate = $computedEndAllowDate->copy()->subDay();
+                    $computedStillday = $today->diffInDays($displayEndAllowDate, false);
                 }
 
                 fputcsv($handle, [
@@ -397,7 +404,7 @@ class ShipmentController extends Controller
                     $shipment->department?->name,
                     $shipment->shippingLine?->name,
                     $shipment->dategase?->format('Y-m-d'),
-                    $computedEndAllowDate?->format('Y-m-d'),
+                    $displayEndAllowDate?->format('Y-m-d'),
                     $shipment->created_at?->format('Y-m-d H:i'),
                     $stageLabel,
                     $computedStillday,

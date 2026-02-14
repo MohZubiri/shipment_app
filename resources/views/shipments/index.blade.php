@@ -201,14 +201,20 @@
                                 $stageLabel = $shipment->currentStage?->name ?? 'غير محددة';
 
                                 $today = \Carbon\Carbon::today();
-                                $computedEndAllowDate = $shipment->endallowdate;
+                                $computedEndAllowDate = null;
+                                $displayEndAllowDate = null;
                                 $computedStillday = 0;
                                 $allowanceDays = $shipment->shippingLine?->time;
+
                                 if ($shipment->dategase && $allowanceDays) {
                                     $computedEndAllowDate = \Carbon\Carbon::parse($shipment->dategase)->addDays((int) $allowanceDays);
-                                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
-                                } elseif ($computedEndAllowDate) {
-                                    $computedStillday = $today->diffInDays($computedEndAllowDate, false);
+                                } elseif ($shipment->endallowdate) {
+                                    $computedEndAllowDate = $shipment->endallowdate->copy();
+                                }
+
+                                if ($computedEndAllowDate) {
+                                    $displayEndAllowDate = $computedEndAllowDate->copy()->subDay();
+                                    $computedStillday = $today->diffInDays($displayEndAllowDate, false);
                                 }
 
                                 $containerCounts = $shipment->containers
@@ -250,7 +256,7 @@
                                 <td class="py-2">{{ $shipment->department?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->shippingLine?->name ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->dategase?->format('Y-m-d') ?? '-' }}</td>
-                                <td class="py-2">{{ $computedEndAllowDate?->format('Y-m-d') ?? '-' }}</td>
+                                <td class="py-2">{{ $displayEndAllowDate?->format('Y-m-d') ?? '-' }}</td>
                                 <td class="py-2">{{ $shipment->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
                                 <td class="py-2">
                                     <span
